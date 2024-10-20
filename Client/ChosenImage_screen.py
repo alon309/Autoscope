@@ -5,6 +5,7 @@ from kivy.uix.screenmanager import Screen
 from kivy.core.image import Image as CoreImage
 from kivy.graphics import Color, Rectangle
 from kivy.uix.label import Label
+from result_screen import ResultsScreen
 
 class ChosenImageScreen(Screen):
     def __init__(self, image=None, image_path=None, **kwargs):
@@ -13,6 +14,9 @@ class ChosenImageScreen(Screen):
         # Store the image or image path for later use
         self.image_path = image_path
         self.image = image  # This could be an image object (e.g., from the otoscope)
+
+        # Variable to save the Kivy image 
+        self.chosen_current_image = None
 
         # Create a layout for the screen
         layout = FloatLayout()
@@ -61,10 +65,24 @@ class ChosenImageScreen(Screen):
         if isinstance(self.image, KivyImage):
             # If self.image is a Kivy Image object, set its texture
             self.image_display.texture = self.image.texture
+            self.chosen_current_image = self.image
         elif isinstance(self.image_path, str):
             # If self.image_path is a string, load the image from path using CoreImage
             self.image_display.texture = CoreImage(self.image_path).texture  # Set the loaded texture
+            self.chosen_current_image = CoreImage(self.image_path)
 
     def analyze_image(self, instance):
         # Placeholder for analysis logic
         print("Analyzing the image...")
+        
+        # get result string here
+        #use model in server
+        results = "this is just example\nDiagnosis for this image is:\nRecommendations are:"
+        
+        # Open the results with the selected image and recieved results
+        results_screen = ResultsScreen(self.chosen_current_image, results)
+        results_screen.name = 'results_screen'
+
+        self.parent.add_widget(results_screen)  # Add the screen to the parent
+        self.parent.current = 'results_screen'  # Switch to the new screen
+        

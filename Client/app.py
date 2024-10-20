@@ -9,8 +9,6 @@ class AutoScopeApp(App):
         # Create ScreenManager and add screens
         sm = ScreenManager()
         sm.add_widget(MainScreen(name='main'))
-        # sm.add_widget(AnalysisScreen(name='analysis'))
-        # sm.add_widget(ResultScreen(name='result'))
         return sm
 
 if __name__ == '__main__':
