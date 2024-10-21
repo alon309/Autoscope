@@ -5,6 +5,8 @@ from kivy.uix.screenmanager import Screen
 from kivy.uix.label import Label
 from kivy.graphics import Color
 
+import requests
+
 class ResultsScreen(Screen):
     def __init__(self, image, result_string, **kwargs):
         super(ResultsScreen, self).__init__(**kwargs)
@@ -59,7 +61,20 @@ class ResultsScreen(Screen):
 
     def save_result(self, instance):
         # Placeholder for save logic
+        print(self.result_string)
+        image_path = self.image.filename
+        print(image_path)
         print("Saving the result...")
+
+        # send to server
+        url = 'http://localhost:5000/api/save_result'
+        files = {'image': open(image_path, 'rb')}
+        data = {'user_id': 'user1', 'diagnose': 'Ear infection detected'}
+
+        response = requests.post(url, files=files, data=data)
+        print(response.json())
+
+
 
     def return_home(self, instance):
         self.parent.remove_widget(self)  # Remove the Help screen

@@ -7,6 +7,8 @@ from kivy.graphics import Color, Rectangle
 from kivy.uix.label import Label
 from result_screen import ResultsScreen
 
+import requests
+
 class ChosenImageScreen(Screen):
     def __init__(self, image=None, image_path=None, **kwargs):
         super(ChosenImageScreen, self).__init__(**kwargs)
@@ -85,4 +87,12 @@ class ChosenImageScreen(Screen):
 
         self.parent.add_widget(results_screen)  # Add the screen to the parent
         self.parent.current = 'results_screen'  # Switch to the new screen
+
+        # send to server
+        url = 'http://localhost:5000/api/analyze_image'
+        files = {'image': open(self.image_path, 'rb')}
+        data = {'user_id': 'user1'}
+
+        response = requests.post(url, files=files, data=data)
+        print(response.json())
         

@@ -5,86 +5,100 @@ import os
 import tempfile
 from werkzeug.utils import secure_filename
 
+import uuid  # לייצור מפתחות ייחודיים
+
 app = Flask(__name__)
 
-# אתחול Firebase
+# Initialize Firebase
 cred = credentials.Certificate("firebase-key.json")
 firebase_admin.initialize_app(cred, {
-    'storageBucket': 'autoscope-88dd0'  # יש להחליף בשם הדלי שלך ב-Firebase Storage
+    'storageBucket': 'autoscope-88dd0.appspot.com' 
 })
 
-# אתחול Firestore
+# Verify bucket initialization
+bucket = storage.bucket()
+print(f"Initialized bucket: {bucket.name}")
+
+# Initialize Firestore
 db = firestore.client()
 
-# מסך הבית
+# Home screen
 @app.route('/')
 def home():
     return "Welcome to the Flask App!"
 
-# עדכון שדה diagnose עבור משתמש מסוים
-@app.route('/api/update_diagnose', methods=['POST'])
-def update_diagnose():
-    data = request.json  # קבלת הנתונים מהבקשה
+@app.route('/api/save_result', methods=['POST'])
+def save_result():
+    # Get the user ID and diagnose string
+    user_id = request.form.get('user_id')
+    diagnose = request.form.get('diagnose')
     
-    if not data or 'user_id' not in data or 'diagnose' not in data:
-        return jsonify({"error": "Missing required fields: user_id, diagnose"}), 400
+    if 'image' not in request.files:
+        return jsonify({"error": "No image file provided"}), 400
 
-    user_id = data['user_id']
-    diagnose = data['diagnose']
+    image_file = request.files['image']
 
-    # מציאת המסמך ועדכון שדה diagnose בתוך תת השדה results/1/diagnose
-    doc_ref = db.collection('Users').document(user_id)
-    
+    # Ensure a safe file name
+    filename = secure_filename(image_file.filename)
+    unique_filename = f"{user_id}_{filename}"  # Ensure uniqueness
+
+    # Create a temporary file
+    temp_file = tempfile.NamedTemporaryFile(delete=False)
+    image_file.save(temp_file.name)
+
+    # Upload the image to Firebase Storage
+    blob = bucket.blob(f'images/{unique_filename}')
     try:
+        blob.upload_from_filename(temp_file.name, content_type=image_file.content_type)
+        blob.make_public()
+        image_url = blob.public_url
+
+        # Update Firestore with the image URL and diagnose
+        doc_ref = db.collection('Users').document(user_id)
+
+        if not doc_ref.get().exists:
+            os.remove(temp_file.name)  # Cleanup temporary file
+            return jsonify({"error": f"User {user_id} does not exist"}), 404
+
+        # Use a unique key for the results
+        result_id = str(uuid.uuid4())  # Generate a unique identifier for the result
+
+        # Create or update the results field in Firestore
         doc_ref.update({
-            'results.1.diagnose': diagnose
+            f'results.{result_id}.diagnose': diagnose,
+            f'results.{result_id}.image': image_url
         })
-        return jsonify({"message": f"Diagnose updated successfully for user {user_id}"}), 200
+
+        return jsonify({"message": f"Image uploaded and diagnose updated successfully for user {user_id}"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
-
-# העלאת תמונה ועדכון השדה 'image' ב-Firestore
-@app.route('/api/upload_image', methods=['POST'])
-def upload_image():
-    if 'file' not in request.files or 'user_id' not in request.form:
-        return jsonify({"error": "Missing file or user_id"}), 400
-    
-    file = request.files['file']
-    user_id = request.form['user_id']
-    
-    if file.filename == '':
-        return jsonify({"error": "No selected file"}), 400
-    
-    if file:
-        filename = secure_filename(file.filename)
-        # שמירת הקובץ זמנית במערכת
-        temp_path = os.path.join(tempfile.gettempdir(), filename)
-        file.save(temp_path)
-        
-        # העלאת הקובץ ל-Firebase Storage
-        bucket = storage.bucket()
-        blob = bucket.blob(f'images/{filename}')
-        blob.upload_from_filename(temp_path)
-        
-        # מחיקת הקובץ הזמני
-        os.remove(temp_path) 
-
-        # קבלת URL ציבורי לתמונה
-        blob.make_public()
-        public_url = blob.public_url
-
-        # עדכון שדה 'image' במסמך של המשתמש ב-Firestore
-        doc_ref = db.collection('Users').document(user_id)
+    finally:
+        # Cleanup temporary file
         try:
-            doc_ref.update({
-                'details.results.1.image': public_url
-            })
-            return jsonify({"message": "Image uploaded and Firestore updated successfully", "url": public_url}), 200
-        except Exception as e:
-            return jsonify({"error": str(e)}), 500
+            os.remove(temp_file.name)
+        except OSError as e:
+            print(f"Error removing temporary file: {e}")
 
 
-# הפעלת השרת
+@app.route('/api/analyze_image', methods=['POST'])
+def analyze_image():
+    # Get the user ID
+    user_id = request.form.get('user_id')
+    
+    if 'image' not in request.files:
+        return jsonify({"error": "No image file provided"}), 400
+
+    image_file = request.files['image']
+
+    try:
+
+        return jsonify({"message": f"Image uploaded and diagnosed successfully for user {user_id}"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        print("test")
+
+
+# Run the server
 if __name__ == '__main__':
     app.run(debug=True)
