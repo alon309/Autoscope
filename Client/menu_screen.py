@@ -8,7 +8,7 @@ from kivy.app import App
 from kivy.graphics import Color, Rectangle
 from about_screen import AboutScreen
 from help_screen import HelpScreen
-from settings_screen import SettingsScreen
+from profile_screen import ProfileSettingsScreen
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 
@@ -26,7 +26,6 @@ class MenuScreen(FloatLayout):
 
         self.option_actions = {
             "Help": self.load_help_screen,
-            "Settings": self.load_settings_screen,
             "About": self.load_about_screen,
             "Invite Friends": self.load_invite_friends_screen,
             "Sign Out": self.show_logout_popup,
@@ -34,11 +33,11 @@ class MenuScreen(FloatLayout):
 
         # Add menu items
         MyAccount = Button(text='My Account', size_hint=(None, None), size=(120, 110), pos_hint={'center_x': 0.5, 'top': 1})
+        MyAccount.bind(on_release=self.load_settings_screen)
         self.add_widget(MyAccount)
 
         # Example menu options with logo on the left
         help_option = self.create_menu_option("Help", "Icons/help.png")
-        settings_option = self.create_menu_option("Settings", "Icons/settings.png")
         about_option = self.create_menu_option("About", "Icons/about.png")
         invite_option = self.create_menu_option("Invite Friends", "Icons/inviteFriends.png")
         signOut_option = self.create_menu_option("Sign Out", "Icons/signOut.png")
@@ -47,14 +46,12 @@ class MenuScreen(FloatLayout):
         back_btn.bind(on_release=self.close_menu)
 
         # Add the options to the menu screen
-        help_option.pos_hint = {'x': 0, 'top': 0.9}
-        settings_option.pos_hint = {'x': 0, 'top': 0.8}
-        about_option.pos_hint = {'x': 0, 'top': 0.7}
-        invite_option.pos_hint = {'x': 0, 'top': 0.6}
-        signOut_option.pos_hint = {'x': 0, 'top': 0.5}
+        help_option.pos_hint = {'x': 0, 'top': 0.7}
+        about_option.pos_hint = {'x': 0, 'top': 0.6}
+        invite_option.pos_hint = {'x': 0, 'top': 0.5}
+        signOut_option.pos_hint = {'x': 0, 'top': 0.4}
 
         self.add_widget(help_option)
-        self.add_widget(settings_option)
         self.add_widget(about_option)
         self.add_widget(invite_option)
         self.add_widget(signOut_option)
@@ -89,7 +86,7 @@ class MenuScreen(FloatLayout):
         self.parent.add_widget(HelpScreen())  # Load the help screen
 
     def load_settings_screen(self, instance):
-        self.parent.add_widget(SettingsScreen())  # Replace with actual implementation
+        self.parent.add_widget(ProfileSettingsScreen())  # Replace with actual implementation
 
     def load_about_screen(self, instance):
         self.parent.add_widget(AboutScreen())  # Load the About screen
