@@ -8,8 +8,10 @@ from kivy.app import App
 from kivy.graphics import Color, Rectangle
 from about_screen import AboutScreen
 from help_screen import HelpScreen
-from sign_out_screen import SignOutScreen
 from settings_screen import SettingsScreen
+from kivy.uix.popup import Popup
+from kivy.uix.label import Label
+
 
 class MenuScreen(FloatLayout):
     def __init__(self, **kwargs):
@@ -27,7 +29,7 @@ class MenuScreen(FloatLayout):
             "Settings": self.load_settings_screen,
             "About": self.load_about_screen,
             "Invite Friends": self.load_invite_friends_screen,
-            "Sign Out": self.load_sign_out_screen,
+            "Sign Out": self.show_logout_popup,
         }
 
         # Add menu items
@@ -95,5 +97,48 @@ class MenuScreen(FloatLayout):
     def load_invite_friends_screen(self, instance):
         print("Invite Friends screen loaded.")  # Load the settings screen
 
-    def load_sign_out_screen(self, instance):
-        self.parent.add_widget(SignOutScreen())  # Load the Sign Out screen
+    def show_logout_popup(self, instance):
+        # Create the layout for the popup
+        popup_layout = BoxLayout(orientation='vertical', padding=10)
+        popup_label = Label(text="Are you sure you want to sign out?")
+        
+        # Create buttons
+        button_layout = BoxLayout(size_hint=(1, 0.4), spacing=10)
+        yes_button = Button(text='Yes, Sign Out')
+        no_button = Button(text='Cancel')
+
+        # Create the popup
+        popup = Popup(title='Sign Out Confirmation',
+                    content=popup_layout,
+                    size_hint=(0.7, 0.4))
+
+        # Bind buttons to functions
+        yes_button.bind(on_release=lambda x: self.logout_callback(popup))  # Pass popup reference to callback
+        no_button.bind(on_release=popup.dismiss)
+
+        button_layout.add_widget(yes_button)
+        button_layout.add_widget(no_button)
+        popup_layout.add_widget(popup_label)
+        popup_layout.add_widget(button_layout)
+
+        # Show the popup
+        popup.open()
+
+    def logout_callback(self, popup):                
+        # Dismiss the popup
+        popup.dismiss()  # Close the popup when signing out
+
+        # Access the App instance and its ScreenManager
+        app = App.get_running_app()
+        sm = app.sm  # Get the ScreenManager from the App instance
+
+        # Remove all screens
+        sm.clear_widgets()  # This will clear all screens from the manager
+
+        # Create a new UserLoginScreen instance and add it back to the ScreenManager
+        from login_screen import UserLoginScreen  # Import the UserLoginScreen class
+        login_screen = UserLoginScreen(name="login")
+        sm.add_widget(login_screen)  # Add the login screen back to the ScreenManager
+
+        # Optionally, switch to the login screen immediately
+        sm.current = "login"

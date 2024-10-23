@@ -76,12 +76,18 @@ class MainScreen(Screen):
         filechooser = FileChooserIconView()
 
         # Create the select button
-        select_button = Button(text='Select', size_hint=(1, None), height=50)
-
-        # Layout for popup window with file chooser and button
+        select_button = Button(text='Select', size_hint=(1, None), height=50)  
+        # Create the close button
+        close_button = Button(text='Close', size_hint=(1, None), height=50)  
+        # Layout for popup window with file chooser and buttons
         layout = BoxLayout(orientation='vertical')
-        layout.add_widget(filechooser)
-        layout.add_widget(select_button)
+        layout.add_widget(filechooser)    
+         # Horizontal layout for buttons
+        button_layout = BoxLayout(orientation='horizontal', size_hint=(1, None), height=50)
+        button_layout.add_widget(select_button)
+        button_layout.add_widget(close_button)
+        
+        layout.add_widget(button_layout)
 
         # Create the popup window
         popup = Popup(title='Select Image', content=layout, size_hint=(0.9, 0.9))
@@ -107,6 +113,9 @@ class MainScreen(Screen):
 
         # Bind the select button to the image selection function
         select_button.bind(on_release=select_image)
+
+        # Bind the close button to dismiss the popup
+        close_button.bind(on_release=popup.dismiss)
 
         # Open the popup
         popup.open()
