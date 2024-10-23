@@ -132,8 +132,8 @@ class SignUpScreen(Screen):
         popup_button.bind(on_release=on_close_popup)
         popup.open()
 
-    def open_main_screen(self):
-        main_screen = MainScreen(name="main")
-        self.parent.add_widget(main_screen)
-        # Switch to the MainScreen
-        self.parent.current = "main"  # This switches to the screen named "main"
+    def open_login_screen(self):
+        from login_screen import UserLoginScreen
+        login_screen = UserLoginScreen(name="login")
+        self.parent.add_widget(login_screen)
+        self.parent.current = "login"  

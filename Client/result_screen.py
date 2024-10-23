@@ -78,4 +78,4 @@ class ResultsScreen(Screen):
 
 
     def return_home(self, instance):
-        self.parent.remove_widget(self)  # Remove the Help screen
+        self.parent.remove_widget(self)   
