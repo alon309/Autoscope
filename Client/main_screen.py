@@ -18,6 +18,7 @@ from kivy.uix.label import Label
 class MainScreen(Screen):
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
+        self.user_id = None  # אתחול ה-uid ל-None
 
         layout = FloatLayout()  # Use FloatLayout for flexible positioning
 
@@ -99,7 +100,7 @@ class MainScreen(Screen):
                 image_path = selected_image[0]
                 if self.is_image_file(image_path):
                     # Open the ChosenImageScreen with the selected image
-                    chosen_image_screen = ChosenImageScreen(image_path=image_path)
+                    chosen_image_screen = ChosenImageScreen(image_path=image_path, user_id=self.user_id)
                     chosen_image_screen.name = 'chosen_image_screen'
 
                     self.parent.add_widget(chosen_image_screen)  # Add the screen to the parent

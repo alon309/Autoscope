@@ -10,12 +10,13 @@ from result_screen import ResultsScreen
 import requests
 
 class ChosenImageScreen(Screen):
-    def __init__(self, image=None, image_path=None, **kwargs):
+    def __init__(self, image=None, image_path=None, user_id=None, **kwargs):
         super(ChosenImageScreen, self).__init__(**kwargs)
         
         # Store the image or image path for later use
         self.image_path = image_path
         self.image = image  # This could be an image object (e.g., from the otoscope)
+        self.user_id = user_id
 
         # Variable to save the Kivy image 
         self.chosen_current_image = None
@@ -82,7 +83,7 @@ class ChosenImageScreen(Screen):
         results = "this is just example\nDiagnosis for this image is:\nRecommendations are:"
         
         # Open the results with the selected image and recieved results
-        results_screen = ResultsScreen(self.chosen_current_image, results)
+        results_screen = ResultsScreen(self.chosen_current_image, results, self.user_id)
         results_screen.name = 'results_screen'
 
         self.parent.add_widget(results_screen)  # Add the screen to the parent
@@ -91,7 +92,7 @@ class ChosenImageScreen(Screen):
         # send to server
         url = 'http://localhost:5000/api/analyze_image'
         files = {'image': open(self.image_path, 'rb')}
-        data = {'user_id': 'user1'}
+        data = {'user_id': self.user_id}
 
         response = requests.post(url, files=files, data=data)
         print(response.json())

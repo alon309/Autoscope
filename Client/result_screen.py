@@ -8,12 +8,13 @@ from kivy.graphics import Color
 import requests
 
 class ResultsScreen(Screen):
-    def __init__(self, image, result_string, **kwargs):
+    def __init__(self, image, result_string, user_id, **kwargs):
         super(ResultsScreen, self).__init__(**kwargs)
 
         # Store the image and result string
         self.image = image
         self.result_string = result_string
+        self.user_id = user_id
 
         # Layout for the screen using BoxLayout
         layout = BoxLayout(orientation='vertical', padding=10, spacing=10)
@@ -63,13 +64,13 @@ class ResultsScreen(Screen):
         # Placeholder for save logic
         print(self.result_string)
         image_path = self.image.filename
-        print(image_path)
+        print(self.user_id)
         print("Saving the result...")
 
         # send to server
         url = 'http://localhost:5000/api/save_result'
         files = {'image': open(image_path, 'rb')}
-        data = {'user_id': 'user1', 'diagnose': 'Ear infection detected'}
+        data = {'user_id': self.user_id, 'diagnose': 'Ear infection detected'}
 
         response = requests.post(url, files=files, data=data)
         print(response.json())

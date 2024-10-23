@@ -10,6 +10,8 @@ from kivy.uix.popup import Popup
 from main_screen import MainScreen
 from sign_up_screen import SignUpScreen
 
+import requests
+
 
 class UserLoginScreen(Screen):
     def __init__(self, **kwargs):
@@ -75,18 +77,45 @@ class UserLoginScreen(Screen):
 
         self.add_widget(layout)
 
-    
+
     def sign_in_func(self, instance):
-        # Get the email and password entered by the user
+        # קבל את הדוא"ל והסיסמה שהזין המשתמש
         email = self.email_input.text
         password = self.password_input.text
 
-        # Tester 
-        #here call server functionality of user authentication
-        if email == "test" and password == "test123":
-            self.show_popup("Login Successful", "Welcome back!", self.open_main_screen)
-        else:
-            self.show_popup("Login Failed", "Invalid email or password")
+        # URL של השרת שלך שיטפל בבקשה
+        server_url = "http://localhost:5000/api/login"  # שים כאן את ה-URL של השרת שלך
+
+        # נתונים לשליחת הבקשה
+        data = {
+            "email": email,
+            "password": password
+        }
+
+        try:
+            response = requests.post(server_url, json=data)
+            response.raise_for_status()  # יעלה שגיאה אם הקוד לא 200
+
+            user_data = response.json()
+            print(user_data)
+            user_id = user_data.get("uid")
+            self.show_popup("Login Successful", "Welcome back!", lambda: self.open_main_screen(user_id))
+
+        except requests.exceptions.HTTPError as http_err:
+            error_details = response.json() if response.content else {}
+            
+            # אם error_details הוא מחרוזת, השתמש בה ישירות
+            if isinstance(error_details, str):
+                error_message = error_details
+            else:
+                error_message = error_details.get("error", {})
+            
+            self.show_popup("Login Failed", str(error_message))
+
+        except Exception as err:
+            self.show_popup("Error", str(err))
+
+
 
     def sign_up_func(self, instance):
         signup_screen = SignUpScreen(name="SignUp")
@@ -113,8 +142,9 @@ class UserLoginScreen(Screen):
         popup.open()
 
 
-    def open_main_screen(self):
+    def open_main_screen(self, user_id):
         main_screen = MainScreen(name="main")
+        main_screen.user_id = user_id  # שמור את ה-uid במסך הראשי
         self.parent.add_widget(main_screen)
         # Switch to the MainScreen
         self.parent.current = "main"  # This switches to the screen named "main"

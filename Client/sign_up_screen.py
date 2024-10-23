@@ -7,6 +7,8 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.popup import Popup
 from main_screen import MainScreen
 
+import requests
+
 class SignUpScreen(Screen):
     def __init__(self, **kwargs):
         super(SignUpScreen, self).__init__(**kwargs)
@@ -89,17 +91,25 @@ class SignUpScreen(Screen):
 
 
     def sign_up_func(self, instance):
-        # Get the full name, email, and password entered by the user
         full_name = self.full_name_input.text
         email = self.email_input.text
         password = self.password_input.text
 
-        # Tester
-        # use server functionallity here
         if full_name and email and password:
-            self.show_popup("Account Created", "Your account has been created successfully!", self.open_main_screen)
+            response = requests.post('http://localhost:5000/api/signup', json={
+                'full_name': full_name,
+                'email': email,
+                'password': password
+            })
+
+            if response.status_code == 201:
+                self.show_popup("Account Created", "Your account has been created successfully!", self.open_main_screen)
+            else:
+                self.show_popup("Sign Up Failed", response.json().get("message", "Error occurred!"))
         else:
             self.show_popup("Sign Up Failed", "Please fill in all fields!")
+
+
 
     def return_to_login(self, instance):
         self.parent.remove_widget(self)
