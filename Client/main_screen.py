@@ -99,6 +99,10 @@ class MainScreen(Screen):
             if selected_image:
                 image_path = selected_image[0]
                 if self.is_image_file(image_path):
+                    # Check if the screen already exists and remove it if necessary
+                    if 'chosen_image_screen' in self.parent.screen_names:
+                        self.parent.remove_widget(self.parent.get_screen('chosen_image_screen'))
+
                     # Open the ChosenImageScreen with the selected image
                     chosen_image_screen = ChosenImageScreen(image_path=image_path, user_id=self.user_id)
                     chosen_image_screen.name = 'chosen_image_screen'
@@ -120,6 +124,7 @@ class MainScreen(Screen):
 
         # Open the popup
         popup.open()
+
 
     def is_image_file(self, file_path):
         # Check if the file has a valid image extension

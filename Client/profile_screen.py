@@ -11,7 +11,7 @@ class ProfileSettingsScreen(FloatLayout):
     def __init__(self, user_id, **kwargs):
         super(ProfileSettingsScreen, self).__init__(**kwargs)
 
-        self.user_id = user_id;
+        self.user_id = user_id
 
         # Background color
         with self.canvas.before:

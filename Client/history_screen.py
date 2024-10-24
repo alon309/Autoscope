@@ -6,6 +6,10 @@ from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
 from kivy.graphics import Color, Rectangle
 
+from io import BytesIO  # ייבוא של BytesIO
+import requests
+from kivy.core.image import Image as CoreImage
+
 class HistoryScreen(Screen):
     def __init__(self, history_data, **kwargs):
         super(HistoryScreen, self).__init__(**kwargs)
@@ -63,9 +67,20 @@ class HistoryScreen(Screen):
         # Populate the layout with history data for the current page
         for entry in self.history_data[start_index:end_index]:
             date_label = Label(text=entry['date'], size_hint_y=None, height=40)
-            image_widget = Image(source=entry['image'], size_hint=(None, None), size=(100, 100))
+
+            # Download the image from the URL
+            img_data = requests.get(entry['image']).content
+            
+            # Convert the downloaded image data to a format Kivy can use
+            image_texture = CoreImage(BytesIO(img_data), ext='png').texture
+
+            # Create an Image widget using the texture
+            image_widget = Image(size_hint=(None, None), size=(100, 100))
+            image_widget.texture = image_texture
+
             result_label = Label(text=entry['result'], size_hint_y=None, height=40)
 
+            # Add widgets to the layout
             self.layout.add_widget(date_label)
             self.layout.add_widget(image_widget)
             self.layout.add_widget(result_label)
@@ -94,3 +109,5 @@ class HistoryScreen(Screen):
 
     def close_history(self, instance):
         self.parent.remove_widget(self)  # Remove the history screen
+
+

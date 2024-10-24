@@ -84,4 +84,9 @@ class ResultsScreen(Screen):
 
 
     def return_home(self, instance):
+        from main_screen import MainScreen
+        main_screen = MainScreen(name="main")
+        self.parent.add_widget(main_screen)
+        # Switch to the MainScreen
+        self.parent.current = "main"  # This switches to the screen named "main"
         self.parent.remove_widget(self)   
