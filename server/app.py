@@ -41,7 +41,8 @@ def save_result():
 
     # Ensure a safe file name
     filename = secure_filename(image_file.filename)
-    unique_filename = f"{user_id}_{filename}"  # Ensure uniqueness
+    unid = str(uuid.uuid4())
+    unique_filename = f"{unid}_{filename}"  # Ensure uniqueness
 
     # Create a temporary file
     try:
@@ -49,7 +50,7 @@ def save_result():
             image_file.save(temp_file.name)
 
             # Upload the image to Firebase Storage
-            blob = bucket.blob(f'images/{unique_filename}')
+            blob = bucket.blob(f'images/{user_id}/{unique_filename}')
             blob.upload_from_filename(temp_file.name, content_type=image_file.content_type)
             blob.make_public()
             image_url = blob.public_url

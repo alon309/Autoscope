@@ -103,7 +103,7 @@ class SignUpScreen(Screen):
             })
 
             if response.status_code == 201:
-                self.show_popup("Account Created", "Your account has been created successfully!", self.open_main_screen)
+                self.show_popup("Account Created", "Your account has been created successfully!", self.open_login_screen)
             else:
                 self.show_popup("Sign Up Failed", response.json().get("message", "Error occurred!"))
         else:
