@@ -69,7 +69,7 @@ class MainScreen(Screen):
     def open_menu(self, instance):
         # Check if the menu is already open to avoid adding multiple menus
         if not any(isinstance(child, MenuScreen) for child in self.children):
-            menu = MenuScreen(size_hint=(0.3, 1), pos_hint={'x': 0, 'y': 0})
+            menu = MenuScreen(self.user_id, size_hint=(0.3, 1), pos_hint={'x': 0, 'y': 0})
             self.add_widget(menu)  # Add the menu to the main screen
 
     def open_file_explorer(self, instance):

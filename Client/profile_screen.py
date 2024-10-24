@@ -5,9 +5,13 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.switch import Switch
 from kivy.graphics import Color, Rectangle
 
+import requests
+
 class ProfileSettingsScreen(FloatLayout):
-    def __init__(self, **kwargs):
+    def __init__(self, user_id, **kwargs):
         super(ProfileSettingsScreen, self).__init__(**kwargs)
+
+        self.user_id = user_id;
 
         # Background color
         with self.canvas.before:
@@ -67,22 +71,29 @@ class ProfileSettingsScreen(FloatLayout):
     def close_settings(self, instance):
         self.parent.remove_widget(self)  # Remove the settings screen
 
+
     def show_history(self, instance):
         from history_screen import HistoryScreen
-        print("history")
-        history_data = [
-            {'date': '2024-10-19', 'image': 'Icons/tests/1.png', 'result': 'Normal'},
-            {'date': '2024-10-18', 'image': 'Icons/tests/2.png', 'result': 'Infection Detected'},
-            {'date': '2024-10-17', 'image': 'Icons/tests/3.png', 'result': 'Normal'},
-            {'date': '2024-10-16', 'image': 'Icons/tests/4.png', 'result': 'Minor Irritation'},
-            {'date': '2024-10-15', 'image': 'Icons/tests/5.png', 'result': 'Normal'},
-            {'date': '2024-10-14', 'image': 'Icons/tests/6.png', 'result': 'Infection Detected'},
-            {'date': '2024-10-13', 'image': 'Icons/tests/7.png', 'result': 'Normal'},
-            {'date': '2024-10-12', 'image': 'Icons/tests/8.png', 'result': 'Slight Redness'},
-            {'date': '2024-10-11', 'image': 'Icons/tests/9.png', 'result': 'Normal'},
-            {'date': '2024-10-10', 'image': 'Icons/tests/10.png', 'result': 'Infection Detected'},
-            {'date': '2024-10-09', 'image': 'Icons/tests/11.png', 'result': 'Normal'},
-            {'date': '2024-10-08', 'image': 'Icons/tests/12.png', 'result': 'Fluid Presence'},
-            {'date': '2024-10-07', 'image': 'Icons/tests/13.png', 'result': 'Normal'},
-        ]
-        self.parent.add_widget(HistoryScreen(history_data))
+        print("Fetching history from server...")
+
+        # Send request to server to get history data
+        url = 'http://localhost:5000/api/get_history'
+        params = {'user_id': self.user_id}  # Assuming you are sending the user_id
+
+        try:
+            response = requests.get(url, params=params)
+            response.raise_for_status()  # Check if the request was successful
+            history_data = response.json()  # Parse the JSON response
+
+            # Format the data if needed (example: ensuring it matches your UI structure)
+            formatted_history = [
+                {'date': entry['date'], 'image': entry['image'], 'result': entry['result']}
+                for entry in history_data
+            ]
+
+            # Pass the formatted history data to HistoryScreen
+            self.parent.add_widget(HistoryScreen(formatted_history))
+
+        except requests.exceptions.RequestException as e:
+            print(f"Error fetching history: {e}")
+

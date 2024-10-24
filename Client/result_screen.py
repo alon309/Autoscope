@@ -5,6 +5,7 @@ from kivy.uix.screenmanager import Screen
 from kivy.uix.label import Label
 from kivy.graphics import Color
 
+from datetime import datetime
 import requests
 
 class ResultsScreen(Screen):
@@ -60,6 +61,7 @@ class ResultsScreen(Screen):
         home_btn.bind(on_release=self.return_home)
         self.add_widget(home_btn)
 
+
     def save_result(self, instance):
         # Placeholder for save logic
         print(self.result_string)
@@ -67,13 +69,17 @@ class ResultsScreen(Screen):
         print(self.user_id)
         print("Saving the result...")
 
-        # send to server
+        # Get current date and time
+        current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        # Send to server
         url = 'http://localhost:5000/api/save_result'
         files = {'image': open(image_path, 'rb')}
-        data = {'user_id': self.user_id, 'diagnose': 'Ear infection detected'}
+        data = {'user_id': self.user_id, 'diagnose': 'Ear infection detected', 'datetime': current_datetime}
 
         response = requests.post(url, files=files, data=data)
         print(response.json())
+
 
 
 
