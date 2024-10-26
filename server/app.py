@@ -133,7 +133,6 @@ def signup():
 
 @app.route('/api/login', methods=['POST'])
 def login():
-    
     data = request.json
     print(data)
     email = data.get("email")
@@ -156,7 +155,18 @@ def login():
         user_data = response.json()
         uid = user_data.get("localId")
         
-        return jsonify({"uid": uid}), 200
+        # קבל את פרטי המשתמש מהדאטאבייס
+        doc_ref = db.collection('Users').document(uid)  # השתמש ב-uid כ-document ID
+        user_doc = doc_ref.get()
+
+        if user_doc.exists:
+            user_details = user_doc.to_dict()  # קבל את כל הפרטים מהמסמך
+            user_details["uid"] = uid  # הוסף את ה-uid למידע
+
+            return jsonify(user_details), 200  # החזרת כל הפרטים כולל uid
+
+        else:
+            return jsonify({"error": "User not found."}), 404  # טיפול במקרה שהמסמך לא קיים
     
     except requests.exceptions.HTTPError as http_err:
         # קבל את פרטי השגיאה מהתגובה
@@ -165,6 +175,7 @@ def login():
     
     except Exception as err:
         return jsonify({"error": str(err)}), 500
+
     
 
 @app.route('/api/get_history', methods=['GET'])

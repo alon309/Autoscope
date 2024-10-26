@@ -14,10 +14,10 @@ from kivy.uix.label import Label
 
 
 class MenuScreen(FloatLayout):
-    def __init__(self, user_id, **kwargs):
+    def __init__(self, user_details, **kwargs):
         super(MenuScreen, self).__init__(**kwargs)
 
-        self.user_id = user_id;
+        self.user_details = user_details
         
         # Background for the menu
         with self.canvas.before:
@@ -88,7 +88,10 @@ class MenuScreen(FloatLayout):
         self.parent.add_widget(HelpScreen())  # Load the help screen
 
     def load_settings_screen(self, instance):
-        self.parent.add_widget(ProfileSettingsScreen(self.user_id))  # Replace with actual implementation
+        print(123)
+        print(self.user_details)
+        print(123)
+        self.parent.add_widget(ProfileSettingsScreen(self.user_details))  # Replace with actual implementation
 
     def load_about_screen(self, instance):
         self.parent.add_widget(AboutScreen())  # Load the About screen

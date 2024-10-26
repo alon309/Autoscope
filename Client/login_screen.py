@@ -96,24 +96,30 @@ class UserLoginScreen(Screen):
             response = requests.post(server_url, json=data)
             response.raise_for_status()  # יעלה שגיאה אם הקוד לא 200
 
-            user_data = response.json()
+            user_data = response.json()  # קבלת המידע המוחזר מהשרת
             print(user_data)
+
+            # קבלת uid ו-details
             user_id = user_data.get("uid")
-            self.show_popup("Login Successful", "Welcome back!", lambda: self.open_main_screen(user_id))
+            user_details = user_data  # המידע המוחזר כולל את כל הפרטים, כולל details
+
+            # הצגת פופאפ עם פרטי המשתמש
+            self.show_popup("Login Successful", f"Welcome back! User Details: {user_details}", lambda: self.open_main_screen(user_details))
 
         except requests.exceptions.HTTPError as http_err:
             error_details = response.json() if response.content else {}
-            
+
             # אם error_details הוא מחרוזת, השתמש בה ישירות
             if isinstance(error_details, str):
                 error_message = error_details
             else:
                 error_message = error_details.get("error", {})
-            
+
             self.show_popup("Login Failed", str(error_message))
 
         except Exception as err:
             self.show_popup("Error", str(err))
+
 
 
 
@@ -142,9 +148,9 @@ class UserLoginScreen(Screen):
         popup.open()
 
 
-    def open_main_screen(self, user_id):
+    def open_main_screen(self, user_details):
         main_screen = MainScreen(name="main")
-        main_screen.user_id = user_id  # שמור את ה-uid במסך הראשי
+        main_screen.user_details = user_details
         self.parent.add_widget(main_screen)
         # Switch to the MainScreen
         self.parent.current = "main"  # This switches to the screen named "main"

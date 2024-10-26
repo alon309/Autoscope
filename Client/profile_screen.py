@@ -8,10 +8,12 @@ from kivy.graphics import Color, Rectangle
 import requests
 
 class ProfileSettingsScreen(FloatLayout):
-    def __init__(self, user_id, **kwargs):
+    def __init__(self, user_details, **kwargs):
         super(ProfileSettingsScreen, self).__init__(**kwargs)
 
-        self.user_id = user_id
+        self.user_details = user_details
+        details = user_details.get('details', {})
+        print(user_details)
 
         # Background color
         with self.canvas.before:
@@ -29,10 +31,10 @@ class ProfileSettingsScreen(FloatLayout):
         profile_label = Label(text='Change Profile Settings', size_hint=(1, None), height=50, pos_hint={'top': 0.8})
         self.add_widget(profile_label)
 
-        self.email_input = TextInput(hint_text='Email', size_hint=(1, None), height=40, pos_hint={'top': 0.7})
+        self.email_input = TextInput(text=details.get("Email", ""), hint_text='Email', size_hint=(1, None), height=40, pos_hint={'top': 0.7})
         self.add_widget(self.email_input)
 
-        self.name_input = TextInput(hint_text='Name', size_hint=(1, None), height=40, pos_hint={'top': 0.6})
+        self.name_input = TextInput(text=details.get("Full Name", ""), hint_text='Name', size_hint=(1, None), height=40, pos_hint={'top': 0.6})
         self.add_widget(self.name_input)
 
         self.phone_input = TextInput(hint_text='Phone Number', size_hint=(1, None), height=40, pos_hint={'top': 0.5})
@@ -78,7 +80,7 @@ class ProfileSettingsScreen(FloatLayout):
 
         # Send request to server to get history data
         url = 'http://localhost:5000/api/get_history'
-        params = {'user_id': self.user_id}  # Assuming you are sending the user_id
+        params = {'user_id': self.user_details.get("uid")}  # Assuming you are sending the user_id
 
         try:
             response = requests.get(url, params=params)
