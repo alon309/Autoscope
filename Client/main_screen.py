@@ -12,13 +12,15 @@ from kivy.graphics.texture import Texture
 from kivy.uix.image import Image as KivyImage
 from kivy.core.image import Image as CoreImage
 from kivy.uix.label import Label
+from kivy.app import App
 
 
 
 class MainScreen(Screen):
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
-        self.user_details = None  # אתחול ה-uid ל-None
+
+
         layout = FloatLayout()  # Use FloatLayout for flexible positioning
 
         with layout.canvas.before:
@@ -69,9 +71,10 @@ class MainScreen(Screen):
         # Check if the menu is already open to avoid adding multiple menus
         if not any(isinstance(child, MenuScreen) for child in self.children):
             print("@@@@")
-            print(self.user_details)
+            app = App.get_running_app()
+            print(app.user_details)
             print("@@@@")
-            menu = MenuScreen(self.user_details, size_hint=(0.3, 1), pos_hint={'x': 0, 'y': 0})
+            menu = MenuScreen(size_hint=(0.3, 1), pos_hint={'x': 0, 'y': 0})
             self.add_widget(menu)  # Add the menu to the main screen
 
     def open_file_explorer(self, instance):
@@ -106,7 +109,8 @@ class MainScreen(Screen):
                         self.parent.remove_widget(self.parent.get_screen('chosen_image_screen'))
 
                     # Open the ChosenImageScreen with the selected image
-                    chosen_image_screen = ChosenImageScreen(image_path=image_path, user_id=self.user_details.get("uid"))
+                    app = App.get_running_app()
+                    chosen_image_screen = ChosenImageScreen(image_path=image_path, user_id=app.user_details.get("uid"))
                     chosen_image_screen.name = 'chosen_image_screen'
 
                     self.parent.add_widget(chosen_image_screen)  # Add the screen to the parent

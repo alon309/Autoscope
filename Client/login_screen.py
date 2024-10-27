@@ -9,6 +9,7 @@ from kivy.uix.image import Image
 from kivy.uix.popup import Popup
 from main_screen import MainScreen
 from sign_up_screen import SignUpScreen
+from kivy.app import App
 
 import requests
 
@@ -101,10 +102,29 @@ class UserLoginScreen(Screen):
 
             # קבלת uid ו-details
             user_id = user_data.get("uid")
-            user_details = user_data  # המידע המוחזר כולל את כל הפרטים, כולל details
+            full_name = user_data.get("display_name", "Unknown")  # השתמש ב-"Unknown" אם אין שם
+            email = user_data.get("email", "No Email Provided")
+            phone_number = user_data.get("phone_number", "No Phone Number Provided")
+            results = user_data.get("results", {})  # קבלת התוצאות מהמידע
 
+            # עדכון user_details באפליקציה
+            app = App.get_running_app()
+            app.user_details = {
+                "uid": user_id,
+                "details": {
+                    "Full Name": full_name,
+                    "Email": email,
+                    "Phone Number": phone_number
+                },
+                "results": results  # שמירת התוצאות
+            }
             # הצגת פופאפ עם פרטי המשתמש
-            self.show_popup("Login Successful", f"Welcome back! User Details: {user_details}", lambda: self.open_main_screen(user_details))
+            user_details_message = (f"User ID: {user_id}\n"
+                                    f"Full Name: {full_name}\n"
+                                    f"Email: {email}\n"
+                                    f"Phone Number: {phone_number}")
+            print(app.user_details)
+            self.show_popup("Login Successful", f"Welcome back!\n\n{user_details_message}", lambda: self.open_main_screen())
 
         except requests.exceptions.HTTPError as http_err:
             error_details = response.json() if response.content else {}
@@ -119,6 +139,7 @@ class UserLoginScreen(Screen):
 
         except Exception as err:
             self.show_popup("Error", str(err))
+
 
 
 
@@ -148,9 +169,8 @@ class UserLoginScreen(Screen):
         popup.open()
 
 
-    def open_main_screen(self, user_details):
+    def open_main_screen(self):
         main_screen = MainScreen(name="main")
-        main_screen.user_details = user_details
         self.parent.add_widget(main_screen)
         # Switch to the MainScreen
         self.parent.current = "main"  # This switches to the screen named "main"

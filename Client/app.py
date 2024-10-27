@@ -6,6 +6,10 @@ from login_screen import UserLoginScreen
 
 
 class AutoScopeApp(App):
+    def __init__(self, **kwargs):
+        super(AutoScopeApp, self).__init__(**kwargs)
+        self.user_details = {}  # משתנה גלובלי שזמין לכל המסכים
+
     def build(self):
         # Create ScreenManager and add screens
         self.sm = ScreenManager()

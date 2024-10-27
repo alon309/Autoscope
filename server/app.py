@@ -72,7 +72,7 @@ def save_result():
                 f'results.{result_id}.datetime': datetime_str
             })
 
-            return jsonify({"message": f"Image uploaded and diagnose updated successfully for user {user_id}"}), 200
+            return jsonify({"result_id": result_id, "image_url": image_url, "message": f"Image uploaded and diagnose updated successfully for user {user_id}"}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -83,6 +83,7 @@ def save_result():
             os.remove(temp_file.name)
         except OSError as e:
             print(f"Error removing temporary file: {e}")
+
 
 
 
@@ -116,13 +117,13 @@ def signup():
         user = auth.create_user(
             email=email,
             password=password,
-            display_name=full_name
+            display_name=full_name,
+            phone_number="+972111111111"
         )
 
         user_doc_ref = db.collection('Users').document(user.uid)
 
         user_doc_ref.set({
-            'details': None,
             'results': None
         })
 
@@ -154,6 +155,15 @@ def login():
         
         user_data = response.json()
         uid = user_data.get("localId")
+
+        # קבל את פרטי המשתמש מ-Firebase Authentication
+        firebase_user_info = {
+            "email": user_data.get("email"),
+            "display_name": user_data.get("displayName"),
+            "phone_number": user_data.get("phoneNumber", "+972111111111"),
+            "uid": uid
+        }
+        print(response.json())
         
         # קבל את פרטי המשתמש מהדאטאבייס
         doc_ref = db.collection('Users').document(uid)  # השתמש ב-uid כ-document ID
@@ -161,7 +171,7 @@ def login():
 
         if user_doc.exists:
             user_details = user_doc.to_dict()  # קבל את כל הפרטים מהמסמך
-            user_details["uid"] = uid  # הוסף את ה-uid למידע
+            user_details.update(firebase_user_info)  # עדכן את המידע עם פרטי Firebase
 
             return jsonify(user_details), 200  # החזרת כל הפרטים כולל uid
 
@@ -176,7 +186,36 @@ def login():
     except Exception as err:
         return jsonify({"error": str(err)}), 500
 
-    
+
+@app.route('/api/save_settings', methods=['POST'])
+def save_settings():
+    if not request.is_json:
+        return jsonify({"status": "error", "message": "Content-Type must be application/json"}), 415
+
+    data = request.json
+    print(f"Received data: {data}")  # הדפס את הנתונים המתקבלים
+
+    user_id = data.get('user_id')
+    full_name = data.get('full_name')
+    email = data.get('email')
+    phone_number = data.get('phone_number')
+
+    try:
+        # Update user details in Firebase Authentication
+        user = auth.update_user(
+            user_id,
+            display_name=full_name,
+            email=email,
+            phone_number=phone_number
+        )
+
+        print(f"Updated user: {user.uid}")  # הדפס את מזהה המשתמש המעודכן
+        return jsonify({"status": "success", "message": "User details updated successfully"}), 200
+    except Exception as e:
+        print(f"Error updating user: {str(e)}")  # הדפס שגיאות אם יש
+        return jsonify({"status": "error", "message": str(e)}), 400
+
+
 
 @app.route('/api/get_history', methods=['GET'])
 def get_history():

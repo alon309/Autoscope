@@ -4,6 +4,7 @@ from kivy.uix.image import Image
 from kivy.uix.screenmanager import Screen
 from kivy.uix.label import Label
 from kivy.graphics import Color
+from kivy.app import App
 
 from datetime import datetime
 import requests
@@ -77,8 +78,42 @@ class ResultsScreen(Screen):
         files = {'image': open(image_path, 'rb')}
         data = {'user_id': self.user_id, 'diagnose': 'Ear infection detected', 'datetime': current_datetime}
 
-        response = requests.post(url, files=files, data=data)
-        print(response.json())
+        try:
+            response = requests.post(url, files=files, data=data)
+            result_data = response.json()
+
+            # Check if the request was successful
+            if response.status_code == 200:
+                # Create a new result entry
+                result_key = result_data.get('result_id')  # Assuming the server returns a unique ID for the result
+                new_result = {
+                    'datetime': current_datetime,
+                    'diagnose': 'Ear infection detected',
+                    'image': result_data.get('image_url')  # Assuming the server returns the image URL
+                }
+
+                # Update app.user_details with the new result
+                app = App.get_running_app()
+
+                # Ensure user_details and results are initialized
+                if app.user_details is None:
+                    app.user_details = {'results': {}}
+                elif app.user_details.get('results') is None:
+                    app.user_details['results'] = {}
+
+                # Now safely update results
+                app.user_details['results'][result_key] = new_result
+
+                print(f"Result saved successfully: {new_result}")
+            else:
+                print(f"Failed to save result: {result_data.get('message')}")
+        except Exception as e:
+            print(f"An error occurred: {str(e)}")
+        finally:
+            files['image'].close()  # Close the file after use
+
+
+
 
 
 
