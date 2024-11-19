@@ -10,13 +10,15 @@ from history_screen import HistoryScreen
 from profile_screen import ProfileSettingsScreen
 from result_screen import ResultsScreen
 from sign_up_screen import SignUpScreen
-from menu_screen import MenuScreen
+from kivy.uix.screenmanager import SlideTransition
 
 class AutoScopeApp(App):
     def __init__(self, **kwargs):
         super(AutoScopeApp, self).__init__(**kwargs)
+        
         self.user_details = {}  # Global variable accessible from all screens
         self.sm = ScreenManager()  # Global ScreenManager
+        self.sm.transition = SlideTransition()  # הגדרת האנימציה
 
     def build(self):
         # Adding initial screens

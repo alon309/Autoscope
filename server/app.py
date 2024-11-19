@@ -111,18 +111,20 @@ def signup():
     full_name = data.get('full_name')
     email = data.get('email')
     password = data.get('password')
+    phone_number = data.get('phone_number')
 
     try:
         user = auth.create_user(
             email=email,
             password=password,
             display_name=full_name,
-            phone_number="+972111111111"
+            phone_number=phone_number
         )
 
         user_doc_ref = db.collection('Users').document(user.uid)
 
         user_doc_ref.set({
+            'phone_number': phone_number,
             'results': None
         })
 
@@ -134,7 +136,6 @@ def signup():
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.json
-    print(data)
     email = data.get("email")
     password = data.get("password")
 
@@ -159,17 +160,18 @@ def login():
         firebase_user_info = {
             "email": user_data.get("email"),
             "display_name": user_data.get("displayName"),
-            "phone_number": user_data.get("phoneNumber", "+972111111111"),
+            #"phone_number": user_data.get("phone_number", "+972111111111"),
             "uid": uid
         }
-        print(response.json())
         
         # קבל את פרטי המשתמש מהדאטאבייס
         doc_ref = db.collection('Users').document(uid)  # השתמש ב-uid כ-document ID
         user_doc = doc_ref.get()
 
         if user_doc.exists:
+            
             user_details = user_doc.to_dict()  # קבל את כל הפרטים מהמסמך
+
             user_details.update(firebase_user_info)  # עדכן את המידע עם פרטי Firebase
 
             return jsonify(user_details), 200  # החזרת כל הפרטים כולל uid
@@ -192,7 +194,6 @@ def save_settings():
         return jsonify({"status": "error", "message": "Content-Type must be application/json"}), 415
 
     data = request.json
-    print(f"Received data: {data}")  # הדפס את הנתונים המתקבלים
 
     user_id = data.get('user_id')
     full_name = data.get('full_name')
@@ -208,7 +209,12 @@ def save_settings():
             phone_number=phone_number
         )
 
-        print(f"Updated user: {user.uid}")  # הדפס את מזהה המשתמש המעודכן
+        user_doc_ref = db.collection('Users').document(user.uid)
+
+        user_doc_ref.update({
+            'phone_number': phone_number,
+        })
+
         return jsonify({"status": "success", "message": "User details updated successfully"}), 200
     except Exception as e:
         print(f"Error updating user: {str(e)}")  # הדפס שגיאות אם יש

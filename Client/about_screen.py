@@ -1,7 +1,7 @@
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
-from kivy.uix.button import Button
+from rounded_button import RoundedButton
 from kivy.app import App
 from kivy.graphics import Color, Rectangle
 from kivy.uix.screenmanager import Screen
@@ -12,7 +12,7 @@ class AboutScreen(Screen):
 
         # Background color for the about screen
         with self.canvas.before:
-            Color(0.1, 0.3, 0.6, 1)  # A darker blue background
+            Color(0.2, 0.5, 0.8, 1)  # A darker blue background
             self.rect = Rectangle(size=self.size, pos=self.pos)
         
         self.bind(size=self._update_rect, pos=self._update_rect)
@@ -44,12 +44,12 @@ class AboutScreen(Screen):
         self.feedback_input = TextInput(size_hint=(0.8, None), height=100, pos_hint={'center_x': 0.5, 'y': 0.15}, multiline=True)
         self.add_widget(self.feedback_input)
 
-        submit_button = Button(text='Submit Feedback', size_hint=(None, None), size=(150, 50), pos_hint={'center_x': 0.5, 'y': 0.05})
+        submit_button = RoundedButton(text='Submit Feedback', size_hint=(None, None), size=(150, 50), pos_hint={'center_x': 0.5, 'y': 0.05})
         submit_button.bind(on_release=self.submit_feedback)
         self.add_widget(submit_button)
 
 
-        back_btn = Button(background_normal = "Icons/back.png", size_hint=(None, None), height=65, width=75, pos_hint={'x': 0, 'top': 0.1})
+        back_btn = RoundedButton(background_normal = "Icons/back.png", size_hint=(None, None), height=65, width=75, pos_hint={'x': 0, 'top': 0.1})
         back_btn.bind(on_release=self.close_about)
         self.add_widget(back_btn)
 

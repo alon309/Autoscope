@@ -2,11 +2,11 @@ from kivy.uix.screenmanager import Screen
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.label import Label
 from kivy.uix.image import Image
-from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
 from kivy.graphics import Color, Rectangle
+from rounded_button import RoundedButton
 
-from io import BytesIO  # ייבוא של BytesIO
+from io import BytesIO
 import requests
 from kivy.core.image import Image as CoreImage
 
@@ -14,65 +14,70 @@ class HistoryScreen(Screen):
     def __init__(self, **kwargs):
         super(HistoryScreen, self).__init__(**kwargs)
 
-        # Background color
+        # רקע
         with self.canvas.before:
-            Color(0.1, 0.5, 0.8, 1)  # Blue background
+            Color(0.2, 0.5, 0.8, 1)  # רקע כחול
             self.rect = Rectangle(size=self.size, pos=self.pos)
 
         self.bind(size=self._update_rect, pos=self._update_rect)
 
-        # Pagination variables
-        self.history_data = []  # Empty by default, updated via `update_history`
-        self.page_size = 5
-        self.current_page = 0
-        self.max_pages = 0  # Initialize with 0 pages
+        # פריסה ראשית
+        main_layout = BoxLayout(orientation='vertical', padding=20, spacing=10)
 
-        # Layout for the history entries
-        self.layout = GridLayout(cols=3, spacing=10, padding=10, size_hint_y=None)
-        self.layout.bind(minimum_height=self.layout.setter('height'))
+        # כפתור חזרה
+        back_btn = RoundedButton(text='Back', size_hint=(1, None), height=50)
+        back_btn.bind(on_release=self.close_history)
+        main_layout.add_widget(back_btn)
 
-        # Add the layout to the screen
-        self.add_widget(self.layout)
+        # אזור נתונים
+        self.data_layout = GridLayout(cols=3, spacing=10, padding=10, size_hint_y=None)
+        self.data_layout.bind(minimum_height=self.data_layout.setter('height'))
 
-        # Navigation buttons
-        self.nav_layout = BoxLayout(size_hint_y=None, height=50, pos_hint={'center_x': 0.5, 'y': 0.05})
-        self.prev_button = Button(text='Previous', on_release=self.prev_page)
-        self.next_button = Button(text='Next', on_release=self.next_page)
+        # גלילה עבור הנתונים
+        from kivy.uix.scrollview import ScrollView
+        scroll_view = ScrollView(size_hint=(1, 0.8))
+        scroll_view.add_widget(self.data_layout)
+        main_layout.add_widget(scroll_view)
+
+        # כפתורי ניווט
+        self.nav_layout = BoxLayout(size_hint_y=None, height=50)
+        self.prev_button = RoundedButton(text='Previous', on_release=self.prev_page)
+        self.next_button = RoundedButton(text='Next', on_release=self.next_page)
         self.nav_layout.add_widget(self.prev_button)
         self.nav_layout.add_widget(self.next_button)
-        self.add_widget(self.nav_layout)
+        main_layout.add_widget(self.nav_layout)
 
-        # Back Button
-        back_btn = Button(text='Back', size_hint=(1, None), height=50, pos_hint={'top': 1})
-        back_btn.bind(on_release=self.close_history)
-        self.add_widget(back_btn)
+        # הוספת הפריסה הראשית למסך
+        self.add_widget(main_layout)
 
-        # Initial population
+        # משתני עמודים
+        self.history_data = []  # רשימת נתונים ריקה כברירת מחדל
+        self.page_size = 5
+        self.current_page = 0
+        self.max_pages = 0
+
+        # עמוד התחלתי
         self.update_page()
 
     def update_page(self):
-        # Clear the current layout
-        self.layout.clear_widgets()
+        # ניקוי נתונים קיימים
+        self.data_layout.clear_widgets()
 
         if not self.history_data:
-            # Show a message if no data is available
-            self.layout.add_widget(Label(text="No history available", size_hint_y=None, height=40))
+            self.data_layout.add_widget(Label(text="No history available", size_hint_y=None, height=40))
             self.update_nav_buttons()
             return
 
-        # Convert history_data to a list of items for slicing
+        # חישוב עמוד
         history_items = list(self.history_data.items())
-
-        # Determine the starting and ending indices for the current page
         start_index = self.current_page * self.page_size
         end_index = min(start_index + self.page_size, len(history_items))
 
-        # Populate the layout with history data for the current page
         for key, entry in history_items[start_index:end_index]:
-            # Add date label
+            # תווית תאריך
             date_label = Label(text=entry.get('datetime', 'Unknown'), size_hint_y=None, height=40)
 
-            # Attempt to load image
+            # נסיון לטעון תמונה
             try:
                 image_url = entry.get('image', '')
                 if image_url:
@@ -82,23 +87,21 @@ class HistoryScreen(Screen):
                     image_widget.texture = image_texture
                 else:
                     raise ValueError("No image URL")
-            except Exception as e:
+            except Exception:
                 image_widget = Label(text="No Image", size_hint_y=None, height=40)
 
-            # Add result label
+            # תווית תוצאה
             result_label = Label(text=entry.get('diagnose', 'No Result'), size_hint_y=None, height=40)
 
-            # Add widgets to the layout
-            self.layout.add_widget(date_label)
-            self.layout.add_widget(image_widget)
-            self.layout.add_widget(result_label)
+            # הוספת ווידג'טים
+            self.data_layout.add_widget(date_label)
+            self.data_layout.add_widget(image_widget)
+            self.data_layout.add_widget(result_label)
 
-        # Update button states
+        # עדכון כפתורי ניווט
         self.update_nav_buttons()
 
-
     def update_nav_buttons(self):
-        # Enable/disable navigation buttons based on the current page
         self.prev_button.disabled = self.current_page == 0
         self.next_button.disabled = self.current_page >= self.max_pages - 1
 
@@ -120,11 +123,7 @@ class HistoryScreen(Screen):
         self.manager.current = 'main'
 
     def update_history(self, history_data):
-        # Update the history data and refresh the display
         self.history_data = history_data
-        print(7979)
-        print(history_data)
-        print(7979)
-        self.max_pages = (len(history_data) + self.page_size - 1) // self.page_size  # Recalculate total pages
-        self.current_page = 0  # Reset to the first page
+        self.max_pages = (len(history_data) + self.page_size - 1) // self.page_size
+        self.current_page = 0
         self.update_page()

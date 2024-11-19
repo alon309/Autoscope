@@ -8,6 +8,9 @@ from kivy.uix.widget import Widget
 from kivy.uix.image import Image
 from kivy.uix.popup import Popup
 from kivy.app import App
+from kivy.graphics import Color, Rectangle, RoundedRectangle
+from rounded_button import RoundedButton
+from feedbackMessage import FeedbackMessage
 
 import requests
 
@@ -16,7 +19,16 @@ class UserLoginScreen(Screen):
     def __init__(self, **kwargs):
         super(UserLoginScreen, self).__init__(**kwargs)
 
+        self.feedback = FeedbackMessage()
+
         layout = FloatLayout()  # Use FloatLayout for positioning
+
+        with self.canvas.before:
+            Color(0.2, 0.5, 0.8, 1)  # Background color (light blue)
+            self.rect = Rectangle(size=self.size, pos=self.pos)
+
+        self.bind(size=self.update_rect)
+        self.bind(pos=self.update_rect)
 
         # Welcome text
         welcome_label = Label(
@@ -56,7 +68,7 @@ class UserLoginScreen(Screen):
             spacing=20
         )
 
-        sign_in_button = Button(
+        sign_in_button = RoundedButton(
             text="Sign In",
             size_hint=(0.5, None),
             height=50
@@ -64,7 +76,7 @@ class UserLoginScreen(Screen):
         sign_in_button.bind(on_release=self.sign_in_func)
         button_layout.add_widget(sign_in_button)
 
-        create_user_button = Button(
+        create_user_button = RoundedButton(
             text="Create User",
             size_hint=(0.5, None),
             height=50
@@ -76,11 +88,15 @@ class UserLoginScreen(Screen):
 
         self.add_widget(layout)
 
+    def update_rect(self, *args):
+        self.rect.pos = self.pos
+        self.rect.size = self.size
 
     def sign_in_func(self, instance):
 
-        #email = self.email_input.text
-        #password = self.password_input.text
+        # email = self.email_input.text
+        # password = self.password_input.text
+
         email = "ndvp39@gmail.com"
         password = "123123"
 
@@ -118,10 +134,14 @@ class UserLoginScreen(Screen):
                                     f"Full Name: {full_name}\n"
                                     f"Email: {email}\n"
                                     f"Phone Number: {phone_number}")
-            print("jhjsghjvjgffgdhgd")
             app.on_login_success()
-            print("testttttt")
-            self.show_popup("Login Successful", f"Welcome back!\n\n{user_details_message}", lambda: self.open_main_screen())
+
+            self.feedback.show_message(
+                "Login Successful",  # הכותרת
+                f"Welcome back, {full_name}!",  # הטקסט
+                color='green',  # צבע ירוק
+                callback=lambda: self.open_main_screen()  # קריאה לפונקציה לאחר סגירת ההודעה
+            )
 
         except requests.exceptions.HTTPError as http_err:
             error_details = response.json() if response.content else {}
@@ -130,39 +150,13 @@ class UserLoginScreen(Screen):
                 error_message = error_details
             else:
                 error_message = error_details.get("error", {})
-
-            self.show_popup("Login Failed", str(error_message))
+            self.feedback.show_message("Login Failed", str(error_message), color ='red')
 
         except Exception as err:
-            self.show_popup("Error", str(err))
-            print(str(err))
-
-
-
-
+            self.feedback.show_message("Error", str(err), color ='red')
 
     def sign_up_func(self, instance):
-        self.manager.current = 'signUp'
-        
-        
-    def show_popup(self, title, message, callback=None):
-        # Show a popup message to the user
-        popup_layout = BoxLayout(orientation='vertical', padding=10)
-        popup_label = Label(text=message)
-        popup_button = Button(text='Close', size_hint=(1, 0.25))
-        popup_layout.add_widget(popup_label)
-        popup_layout.add_widget(popup_button)
-
-        popup = Popup(title=title, content=popup_layout, size_hint=(0.7, 0.3))
-
-        def on_close_popup(instance):
-            popup.dismiss()
-            if callback:
-                callback()
-
-        popup_button.bind(on_release=on_close_popup)
-        popup.open()
-
+        self.manager.current = 'signUp'    
 
     def open_main_screen(self):
         self.manager.current = 'main'

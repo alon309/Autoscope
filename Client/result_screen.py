@@ -9,6 +9,7 @@ from datetime import datetime
 from kivy.core.image import Image as CoreImage
 from io import BytesIO
 import requests
+from rounded_button import RoundedButton
 
 class ResultsScreen(Screen):
     def __init__(self, **kwargs):
@@ -23,7 +24,7 @@ class ResultsScreen(Screen):
 
         # Background color
         with self.canvas.before:
-            Color(0.8, 0.8, 1, 1)  # Light blue background
+            Color(0.2, 0.5, 0.8, 1)  # Light blue background
 
         # Display image area
         self.image_display = Image(size_hint=(1, 0.4))  # Empty image initially
@@ -40,7 +41,7 @@ class ResultsScreen(Screen):
         self.layout.add_widget(self.result_label)
 
         # Save button
-        save_button = Button(
+        save_button = RoundedButton(
             text="Save",
             size_hint=(0.4, 0.1),
             pos_hint={'center_x': 0.5}  # Center the button horizontally
@@ -51,7 +52,7 @@ class ResultsScreen(Screen):
         self.add_widget(self.layout)
 
         # Home button
-        home_btn = Button(
+        home_btn = RoundedButton(
             background_normal="Icons/home.jpg",
             size_hint=(None, None),
             height=65,

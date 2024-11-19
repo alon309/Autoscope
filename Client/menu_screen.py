@@ -1,30 +1,30 @@
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.image import Image
-from kivy.uix.button import Button
+from rounded_button import RoundedButton
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.screenmanager import Screen
 from kivy.app import App
-from kivy.graphics import Color, Rectangle
+from kivy.graphics import Color, RoundedRectangle
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
-
 
 
 class MenuScreen(FloatLayout):
     def __init__(self, manager=None, **kwargs):
         super(MenuScreen, self).__init__(**kwargs)
 
-        print("managerrrrr")
         self.manager = manager
-        print(manager)
-        print("managerrrrr")
-        
-        # Background for the menu
+
+        # Background for the menu with rounded corners
         with self.canvas.before:
-            Color(0, 0, 0.5, 0.9)  # Black background with some transparency
-            self.rect = Rectangle(size=self.size, pos=self.pos)
-        
-        self.bind(size=self._update_rect, pos=self._update_rect)
+            Color(0.9, 0.9, 0.9, 1)  # Light grey background color
+            self.background_rect = RoundedRectangle(
+                size=(self.width * 0.8, self.height * 0.5),  # Adjust width and height
+                pos=(self.width * 0.1, self.height * 0.25),  # Centered vertically
+                radius=[(20, 20), (20, 20), (20, 20), (20, 20)]  # Rounded corners
+            )
+
+        self.bind(size=self._update_background, pos=self._update_background)
 
         self.option_actions = {
             "Help": self.load_help_screen,
@@ -34,7 +34,7 @@ class MenuScreen(FloatLayout):
         }
 
         # Add menu items
-        MyAccount = Button(text='My Account', size_hint=(None, None), size=(120, 110), pos_hint={'center_x': 0.5, 'top': 1})
+        MyAccount = RoundedButton(text='My Account', size_hint=(None, None), size=(120, 110), pos_hint={'center_x': 0.5, 'top': 1})
         MyAccount.bind(on_release=self.load_settings_screen)
         self.add_widget(MyAccount)
 
@@ -55,23 +55,25 @@ class MenuScreen(FloatLayout):
         self.add_widget(invite_option)
         self.add_widget(signOut_option)
 
-    def _update_rect(self, instance, value):
-        self.rect.pos = instance.pos
-        self.rect.size = instance.size
+
+    def _update_background(self, instance, value):
+        """Update background position and size when the window is resized."""
+        self.background_rect.size = (self.width * 1, self.height * 1)
+        self.background_rect.pos = (self.width * 0, self.height * 0)
 
     def create_menu_option(self, option_text, logo_path):
         # Create a layout with a logo and text for each menu option
-        layout = BoxLayout(orientation='horizontal', size_hint=(1, None), height=50)
+        layout = BoxLayout(orientation='horizontal', size_hint=(1, None), height=60)
 
         # Add the logo (aligned left)
         logo = Image(source=logo_path, size_hint=(None, None), size=(40, 40), allow_stretch=True)
         layout.add_widget(logo)
 
         # Add the text (button)
-        button = Button(text=option_text, size_hint=(1, None), height=50)
+        button = RoundedButton(text=option_text, size_hint=(1, None), height=50,
+                        font_size=18, bold=True, padding=(10, 10), border=(20, 20, 20, 20))  # Rounded button
 
-        if option_text in self.option_actions:
-            button.bind(on_release=self.option_actions[option_text])
+        button.bind(on_release=self.option_actions.get(option_text, lambda x: None))  # Default action for unknown options
 
         layout.add_widget(button)
 
@@ -81,10 +83,6 @@ class MenuScreen(FloatLayout):
         self.manager.current = 'help'
 
     def load_settings_screen(self, instance):
-        print(123)
-        app = App.get_running_app()
-        print(app.user_details)
-        print(123)
         self.manager.current = 'profile'
 
     def load_about_screen(self, instance):
@@ -100,8 +98,8 @@ class MenuScreen(FloatLayout):
         
         # Create buttons
         button_layout = BoxLayout(size_hint=(1, 0.4), spacing=10)
-        yes_button = Button(text='Yes, Sign Out')
-        no_button = Button(text='Cancel')
+        yes_button = RoundedButton(text='Yes, Sign Out', background_color=(0.9, 0.3, 0.3, 1))
+        no_button = RoundedButton(text='Cancel', background_color=(0.3, 0.9, 0.3, 1))
 
         # Create the popup
         popup = Popup(title='Sign Out Confirmation',
@@ -140,5 +138,3 @@ class MenuScreen(FloatLayout):
 
         for screen in screens_to_readd:
             sm.add_widget(screen)
-
-         

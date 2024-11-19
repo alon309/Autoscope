@@ -4,6 +4,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.graphics import Color, Rectangle
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.screenmanager import ScreenManager, Screen
+from rounded_button import RoundedButton
 
 
 
@@ -13,7 +14,7 @@ class HelpScreen(Screen):
 
         # Background color for the help screen
         with self.canvas.before:
-            Color(0.1, 0.3, 0.6, 1)  # A darker blue background
+            Color(0.2, 0.5, 0.8, 1)  # A darker blue background
             self.rect = Rectangle(size=self.size, pos=self.pos)
         
         self.bind(size=self._update_rect, pos=self._update_rect)
@@ -48,7 +49,7 @@ class HelpScreen(Screen):
         contact_info.bind(size=contact_info.setter('text_size'))  # Allow text wrapping
         self.add_widget(contact_info)
 
-        back_btn = Button(background_normal = "Icons/back.png", size_hint=(None, None), height=65, width=75, pos_hint={'x': 0, 'top': 0.1})
+        back_btn = RoundedButton(background_normal = "Icons/back.png", size_hint=(None, None), height=65, width=75, pos_hint={'x': 0, 'top': 0.1})
         back_btn.bind(on_release=self.close_help)
         self.add_widget(back_btn)
 

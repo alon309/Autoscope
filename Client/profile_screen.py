@@ -6,6 +6,8 @@ from kivy.uix.switch import Switch
 from kivy.graphics import Color, Rectangle
 from kivy.app import App
 from kivy.uix.screenmanager import Screen
+from rounded_button import RoundedButton
+from feedbackMessage import FeedbackMessage
 
 import requests
 
@@ -13,16 +15,18 @@ class ProfileSettingsScreen(Screen):
     def __init__(self, **kwargs):
         super(ProfileSettingsScreen, self).__init__(**kwargs)
 
+        self.feedback = FeedbackMessage()
+
         app = App.get_running_app()
         # Background color
         with self.canvas.before:
-            Color(0.1, 0.5, 0.8, 1)  # Blue background
+            Color(0.2, 0.5, 0.8, 1)  # Blue background
             self.rect = Rectangle(size=self.size, pos=self.pos)
 
         self.bind(size=self._update_rect, pos=self._update_rect)
 
         # Show History Button
-        show_history_button = Button(text='Show History', size_hint=(1, None), height=50, pos_hint={'top': 0.9})
+        show_history_button = RoundedButton(text='Show History', size_hint=(1, None), height=50, pos_hint={'top': 0.9})
         show_history_button.bind(on_release=self.show_history)  # Bind to your history function
         self.add_widget(show_history_button)
 
@@ -47,11 +51,11 @@ class ProfileSettingsScreen(Screen):
         self.add_widget(self.notification_switch)
 
         # Submit Button
-        submit_button = Button(text='Save Settings', size_hint=(1, None), height=50, pos_hint={'top': 0.2})
+        submit_button = RoundedButton(text='Save Settings', size_hint=(1, None), height=50, pos_hint={'top': 0.2})
         submit_button.bind(on_release=self.save_settings)
         self.add_widget(submit_button)
 
-        back_btn = Button(background_normal="Icons/back.png", size_hint=(None, None), height=65, width=75, pos_hint={'x': 0, 'top': 0.1})
+        back_btn = RoundedButton(background_normal="Icons/back.png", size_hint=(None, None), height=65, width=75, pos_hint={'x': 0, 'top': 0.1})
         back_btn.bind(on_release=self.close_settings)
         self.add_widget(back_btn)
 
@@ -60,22 +64,20 @@ class ProfileSettingsScreen(Screen):
         self.rect.size = instance.size
 
     def save_settings(self, instance):
-        
-        # Handle the saving logic here
+
         email = self.email_input.text
         name = self.name_input.text
         phone = self.phone_input.text
         notifications_enabled = self.notification_switch.active
 
         app = App.get_running_app()
-        print(app.user_details)
         app.user_details['details'] = {
             "Full Name": name,
             "Email": email,
             "Phone Number": phone
         }
 
-        # save - Send to server
+
         url = 'http://localhost:5000/api/save_settings'
         data = {
             'user_id': app.user_details['uid'],
@@ -84,12 +86,20 @@ class ProfileSettingsScreen(Screen):
             'phone_number': phone
         }
 
+        try:
+            response = requests.post(url, json=data)
 
-        response = requests.post(url, json=data)
-        print(response.json())
-        
-        # You can add logic to save these settings as needed
-        print(f'Settings Saved: {email}, {name}, {phone}, Notifications: {"On" if notifications_enabled else "Off"}')
+
+            if response.status_code != 200:
+                raise ValueError(f"Error from server: {response.json().get('message', 'Unknown error')}")
+
+
+            response_data = response.json()
+            self.feedback.show_message("Settings Saved", f'{email}, {name}, {phone}, Notifications: {"On" if notifications_enabled else "Off"}')
+
+        except Exception as e:
+            self.feedback.show_message("Failed to save settings", f'{str(e)}')
+
 
     def close_settings(self, instance):
         self.manager.current = 'main'

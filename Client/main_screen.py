@@ -13,6 +13,7 @@ from kivy.core.image import Image as CoreImage
 from kivy.uix.label import Label
 from kivy.app import App
 from menu_screen import MenuScreen
+from rounded_button import RoundedButton
 
 
 class MainScreen(Screen):
@@ -24,7 +25,7 @@ class MainScreen(Screen):
         layout = FloatLayout()  # Use FloatLayout for flexible positioning
 
         with layout.canvas.before:
-            Color(0, 0, 1, 1)  # RGB for blue (0-1 range)
+            Color(0.2, 0.5, 0.8, 1)  # RGB for blue (0-1 range)
             self.rect = Rectangle(size=layout.size, pos=layout.pos)
 
         # Update the rectangle size when the layout size changes
@@ -34,17 +35,35 @@ class MainScreen(Screen):
         otoscope_image = Image(
             source=r'Icons/otoscope.png',
             size_hint=(None, None),  # Disable size hint
-            size=(250, 250),         # Set the desired size
+            size=(150, 150),         # Set the desired size
             allow_stretch=True
         )
         # Center the image horizontally and position it slightly down from the top
-        otoscope_image.pos_hint = {'center_x': 0.5, 'top': 0.8}
+        otoscope_image.pos_hint = {'center_x': 0.5, 'top': 0.65}
         layout.add_widget(otoscope_image)
 
+
+        main_label = Label(
+            text="Autoscope",
+            font_size=32,
+            pos_hint={'center_x': 0.5, 'top': 0.8},
+            size_hint=(None, None)
+        )
+        layout.add_widget(main_label)
+
+        sec_label = Label(
+            text="Early detection of ear infections",
+            font_size=24,
+            pos_hint={'center_x': 0.5, 'top': 0.75},
+            size_hint=(None, None)
+        )
+        layout.add_widget(sec_label)
+
         # Create the button layout below the image
-        button_layout = BoxLayout(orientation='horizontal', size_hint=(None, None), pos_hint={'center_x': 0.35, 'center_y': 0.2}, spacing=50)
-        take_picture_button = Button(text='Take Picture', size_hint=(None, None), width=150, height=50)
-        upload_picture_button = Button(text='Upload Picture', size_hint=(None, None), width=150, height=50)
+        button_layout = BoxLayout(orientation='horizontal', size_hint=(None, None), pos_hint={'center_x': 0.35, 'center_y': 0.2}, spacing=50)   
+        
+        take_picture_button = RoundedButton(text='Take Picture', size_hint=(None, None), width=150, height=50)
+        upload_picture_button = RoundedButton(text='Upload Picture', size_hint=(None, None), width=150, height=50)
         upload_picture_button.bind(on_release=self.open_file_explorer)
 
         button_layout.add_widget(take_picture_button)
@@ -52,7 +71,7 @@ class MainScreen(Screen):
         layout.add_widget(button_layout)
 
         # Create a button to open/close the MenuScreen in the top-left corner
-        menu_button = Button(
+        menu_button = RoundedButton(
             size_hint=(None, None),
             size=(75, 75),
             pos_hint={'x': 0, 'top': 1},
@@ -73,7 +92,6 @@ class MainScreen(Screen):
             self.remove_widget(self.menu)
         else:
             self.menu = MenuScreen(size_hint=(0.3, 1), pos_hint={'x': 0, 'y': 0}, manager=self.manager)
-
             self.add_widget(self.menu)
         self.menu_open = not self.menu_open  # Toggle the menu state
 
@@ -82,9 +100,9 @@ class MainScreen(Screen):
         filechooser = FileChooserIconView()
 
         # Create the select button
-        select_button = Button(text='Select', size_hint=(1, None), height=50)  
+        select_button = RoundedButton(text='Select', size_hint=(1, None), height=50)  
         # Create the close button
-        close_button = Button(text='Close', size_hint=(1, None), height=50)  
+        close_button = RoundedButton(text='Close', size_hint=(1, None), height=50)  
         # Layout for popup window with file chooser and buttons
         layout = BoxLayout(orientation='vertical')
         layout.add_widget(filechooser)    
@@ -115,7 +133,7 @@ class MainScreen(Screen):
                     popup.dismiss()  # Close the popup once an image is selected
                 else:
                     # Show error message if not a valid image
-                    self.show_error_message("Invalid file type! Please select an image file.")
+                    self.show_error_message(message='Invalid file type! Please select an image file.',text_color=(1, 0, 0, 1))
             else:
                 popup.dismiss()  # Close the popup if no file is selected
 
@@ -133,26 +151,43 @@ class MainScreen(Screen):
         # Check if the file has a valid image extension
         valid_extensions = ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.tiff']
         return any(file_path.lower().endswith(ext) for ext in valid_extensions)
+    
+    def show_error_message(self, text_color=(1, 0, 0, 1), message=''):
+        # Create a BoxLayout for the error message
+        error_layout = BoxLayout(orientation='horizontal', size_hint=(1, None), height=60, padding=10)
+        
+        # Create a label for the error message with dynamic text color
+        error_label = Label(
+            text=message,
+            font_size=20,
+            color=text_color
+        )
 
-    def show_error_message(self, message):
-        # Create a BoxLayout for the error message popup
-        error_layout = BoxLayout(orientation='vertical', padding=10)
+        # Create a button to close the message
+        close_button = RoundedButton(
+            text='Close',
+            size_hint=(None, None),
+            width=100,
+            height=50
+        )
+        close_button.bind(on_release=self.close_error_message)
 
-        # Create a label for the error message
-        error_label = Label(text=message)
-
-        # Create a close button
-        close_button = Button(text='Close', size_hint=(1, None), height=50)
-
-        # Add the label and button to the layout
+        # Add the label and close button to the layout
         error_layout.add_widget(error_label)
         error_layout.add_widget(close_button)
 
-        # Create the error popup
-        error_popup = Popup(title='Error', content=error_layout, size_hint=(0.8, 0.4))
-
-        # Function to close the popup
-        close_button.bind(on_release=error_popup.dismiss)
+        # Create a pop-up for the error message that will appear at the bottom
+        self.error_popup = Popup(
+            title='Error',
+            content=error_layout,
+            size_hint=(0.8, None),
+            height=80,  # Set height to keep it at the bottom of the screen
+            pos_hint={'x': 0.1, 'bottom': 0}  # Position the popup at the bottom
+        )
 
         # Open the error popup
-        error_popup.open()
+        self.error_popup.open()
+
+    def close_error_message(self, instance):
+        # Dismiss the error popup
+        self.error_popup.dismiss()

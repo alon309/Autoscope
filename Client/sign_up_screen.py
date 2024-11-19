@@ -2,9 +2,12 @@ from kivy.uix.screenmanager import Screen
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
-from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.popup import Popup
+from kivy.graphics import Color, Rectangle
+from rounded_button import RoundedButton
+from feedbackMessage import FeedbackMessage
+from kivy.uix.spinner import Spinner
 
 import requests
 
@@ -12,8 +15,17 @@ class SignUpScreen(Screen):
     def __init__(self, **kwargs):
         super(SignUpScreen, self).__init__(**kwargs)
 
+        self.feedback = FeedbackMessage()
+
         # Create the layout for the screen
         layout = FloatLayout()
+
+        with self.canvas.before:
+            Color(0.2, 0.5, 0.8, 1)
+            self.rect = Rectangle(size=self.size, pos=self.pos)
+
+        self.bind(size=self.update_rect)
+        self.bind(pos=self.update_rect)
 
         # Welcome text
         SignUp_label = Label(
@@ -29,7 +41,7 @@ class SignUpScreen(Screen):
             hint_text="Full Name",
             size_hint=(0.7, None),
             height=50,
-            pos_hint={'center_x': 0.5, 'top': 0.85},
+            pos_hint={'center_x': 0.5, 'top': 0.75},
             multiline=False
         )
         layout.add_widget(self.full_name_input)
@@ -39,10 +51,38 @@ class SignUpScreen(Screen):
             hint_text="Email",
             size_hint=(0.7, None),
             height=50,
-            pos_hint={'center_x': 0.5, 'top': 0.75},
+            pos_hint={'center_x': 0.5, 'top': 0.65},
             multiline=False
         )
         layout.add_widget(self.email_input)
+
+        # Spinner for country codes
+        self.country_code_spinner = Spinner(
+            text="+972",  # Default to Israel
+            values=["+972", "+1", "+44", "+33", "+91", "+86"],  # Add more country codes as needed
+            size_hint=(0.3, None),
+            height=50
+        )
+
+        # TextInput for phone number
+        self.phone_input = TextInput(
+            hint_text="Phone Number",
+            size_hint=(0.7, None),
+            height=50,
+            multiline=False
+        )
+
+        # Combine spinner and phone input in a row
+        phone_row = BoxLayout(
+            orientation='horizontal',
+            size_hint=(0.7, None),  # Match other fields' size
+            height=50,
+            spacing=10,
+            pos_hint={'center_x': 0.5, 'top': 0.55}  # Match the vertical position of other fields
+        )
+        phone_row.add_widget(self.country_code_spinner)
+        phone_row.add_widget(self.phone_input)
+        layout.add_widget(phone_row)
 
         # Password field
         self.password_input = TextInput(
@@ -50,7 +90,7 @@ class SignUpScreen(Screen):
             password=True,
             size_hint=(0.7, None),
             height=50,
-            pos_hint={'center_x': 0.5, 'top': 0.65},
+            pos_hint={'center_x': 0.5, 'top': 0.45},
             multiline=False
         )
         layout.add_widget(self.password_input)
@@ -60,21 +100,21 @@ class SignUpScreen(Screen):
             orientation='horizontal',
             size_hint=(0.7, None),
             height=50,
-            pos_hint={'center_x': 0.5, 'top': 0.5},
+            pos_hint={'center_x': 0.5, 'top': 0.3},
             spacing=20
         )
 
         # Cancel button
-        cancel_button = Button(
+        cancel_button = RoundedButton(
             text="Cancel",
             size_hint=(0.5, None),
             height=50
         )
-        cancel_button.bind(on_release=self.open_login_screen)
+        cancel_button.bind(on_release=self.open_login_screen_2)
         button_layout.add_widget(cancel_button)
 
         # Sign Up button
-        sign_up_button = Button(
+        sign_up_button = RoundedButton(
             text="Sign Up",
             size_hint=(0.5, None),
             height=50
@@ -88,44 +128,34 @@ class SignUpScreen(Screen):
         # Add the layout to the screen
         self.add_widget(layout)
 
+    def update_rect(self, *args):
+        self.rect.pos = self.pos
+        self.rect.size = self.size
+
 
     def sign_up_func(self, instance):
         full_name = self.full_name_input.text
         email = self.email_input.text
         password = self.password_input.text
+        phone_number = self.country_code_spinner.text + self.phone_input.text
 
-        if full_name and email and password:
+        if full_name and email and password and phone_number:
             response = requests.post('http://localhost:5000/api/signup', json={
                 'full_name': full_name,
                 'email': email,
-                'password': password
+                'password': password,
+                'phone_number': phone_number
             })
 
             if response.status_code == 201:
-                self.show_popup("Account Created", "Your account has been created successfully!", self.open_login_screen)
+                self.feedback.show_message("Account Created", "Your account has been created successfully!", callback=self.open_login_screen)
             else:
-                self.show_popup("Sign Up Failed", response.json().get("message", "Error occurred!"))
+                self.feedback.show_message("Sign Up Failed", response.json().get("message", "Error occurred!"))
         else:
-            self.show_popup("Sign Up Failed", "Please fill in all fields!")
+            self.feedback.show_message("Sign Up Failed", "Please fill in all fields!", color='red')
 
+    def open_login_screen(self):
+        self.parent.current = "login"  
 
-    def show_popup(self, title, message, callback=None):
-        # Show a popup message to the user
-        popup_layout = BoxLayout(orientation='vertical', padding=10)
-        popup_label = Label(text=message)
-        popup_button = Button(text='Close', size_hint=(1, 0.25))
-        popup_layout.add_widget(popup_label)
-        popup_layout.add_widget(popup_button)
-
-        popup = Popup(title=title, content=popup_layout, size_hint=(0.7, 0.3))
-
-        def on_close_popup(instance):
-            popup.dismiss()
-            if callback:
-                callback()
-
-        popup_button.bind(on_release=on_close_popup)
-        popup.open()
-
-    def open_login_screen(self, instance):
+    def open_login_screen_2(self, instance):
         self.parent.current = "login"  
