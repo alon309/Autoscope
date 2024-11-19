@@ -7,8 +7,6 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.widget import Widget
 from kivy.uix.image import Image
 from kivy.uix.popup import Popup
-from main_screen import MainScreen
-from sign_up_screen import SignUpScreen
 from kivy.app import App
 
 import requests
@@ -80,14 +78,14 @@ class UserLoginScreen(Screen):
 
 
     def sign_in_func(self, instance):
-        # קבל את הדוא"ל והסיסמה שהזין המשתמש
-        email = self.email_input.text
-        password = self.password_input.text
 
-        # URL של השרת שלך שיטפל בבקשה
-        server_url = "http://localhost:5000/api/login"  # שים כאן את ה-URL של השרת שלך
+        #email = self.email_input.text
+        #password = self.password_input.text
+        email = "ndvp39@gmail.com"
+        password = "123123"
 
-        # נתונים לשליחת הבקשה
+        server_url = "http://localhost:5000/api/login"
+
         data = {
             "email": email,
             "password": password
@@ -95,19 +93,16 @@ class UserLoginScreen(Screen):
 
         try:
             response = requests.post(server_url, json=data)
-            response.raise_for_status()  # יעלה שגיאה אם הקוד לא 200
+            response.raise_for_status()
 
-            user_data = response.json()  # קבלת המידע המוחזר מהשרת
-            print(user_data)
+            user_data = response.json()
 
-            # קבלת uid ו-details
             user_id = user_data.get("uid")
-            full_name = user_data.get("display_name", "Unknown")  # השתמש ב-"Unknown" אם אין שם
+            full_name = user_data.get("display_name", "Unknown")
             email = user_data.get("email", "No Email Provided")
             phone_number = user_data.get("phone_number", "No Phone Number Provided")
-            results = user_data.get("results", {})  # קבלת התוצאות מהמידע
+            results = user_data.get("results", {})
 
-            # עדכון user_details באפליקציה
             app = App.get_running_app()
             app.user_details = {
                 "uid": user_id,
@@ -116,20 +111,21 @@ class UserLoginScreen(Screen):
                     "Email": email,
                     "Phone Number": phone_number
                 },
-                "results": results  # שמירת התוצאות
+                "results": results
             }
-            # הצגת פופאפ עם פרטי המשתמש
+
             user_details_message = (f"User ID: {user_id}\n"
                                     f"Full Name: {full_name}\n"
                                     f"Email: {email}\n"
                                     f"Phone Number: {phone_number}")
-            print(app.user_details)
+            print("jhjsghjvjgffgdhgd")
+            app.on_login_success()
+            print("testttttt")
             self.show_popup("Login Successful", f"Welcome back!\n\n{user_details_message}", lambda: self.open_main_screen())
 
         except requests.exceptions.HTTPError as http_err:
             error_details = response.json() if response.content else {}
 
-            # אם error_details הוא מחרוזת, השתמש בה ישירות
             if isinstance(error_details, str):
                 error_message = error_details
             else:
@@ -139,15 +135,14 @@ class UserLoginScreen(Screen):
 
         except Exception as err:
             self.show_popup("Error", str(err))
+            print(str(err))
 
 
 
 
 
     def sign_up_func(self, instance):
-        signup_screen = SignUpScreen(name="SignUp")
-        self.parent.add_widget(signup_screen)
-        self.parent.current = "SignUp"
+        self.manager.current = 'signUp'
         
         
     def show_popup(self, title, message, callback=None):
@@ -170,7 +165,4 @@ class UserLoginScreen(Screen):
 
 
     def open_main_screen(self):
-        main_screen = MainScreen(name="main")
-        self.parent.add_widget(main_screen)
-        # Switch to the MainScreen
-        self.parent.current = "main"  # This switches to the screen named "main"
+        self.manager.current = 'main'

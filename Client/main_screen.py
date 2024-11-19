@@ -5,7 +5,6 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.screenmanager import Screen
 from kivy.graphics import Color, Rectangle
 from menu_screen import MenuScreen
-from ChosenImage_screen import ChosenImageScreen
 from kivy.uix.filechooser import FileChooserIconView
 from kivy.uix.popup import Popup
 from kivy.graphics.texture import Texture
@@ -13,13 +12,14 @@ from kivy.uix.image import Image as KivyImage
 from kivy.core.image import Image as CoreImage
 from kivy.uix.label import Label
 from kivy.app import App
-
+from menu_screen import MenuScreen
 
 
 class MainScreen(Screen):
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
 
+        self.menu_open = False  # Variable to track if the menu is open or closed
 
         layout = FloatLayout()  # Use FloatLayout for flexible positioning
 
@@ -51,14 +51,14 @@ class MainScreen(Screen):
         button_layout.add_widget(upload_picture_button)
         layout.add_widget(button_layout)
 
-        # Create a button to open the MenuScreen in the top-left corner
+        # Create a button to open/close the MenuScreen in the top-left corner
         menu_button = Button(
             size_hint=(None, None),
             size=(75, 75),
             pos_hint={'x': 0, 'top': 1},
             background_normal=r'Icons/menu.png',  # Path to the button image
         )
-        menu_button.bind(on_release=self.open_menu)
+        menu_button.bind(on_release=self.toggle_menu)
         layout.add_widget(menu_button)
 
         self.add_widget(layout)
@@ -66,16 +66,16 @@ class MainScreen(Screen):
     def _update_rect(self, instance, value):
         self.rect.pos = instance.pos
         self.rect.size = instance.size
-    
-    def open_menu(self, instance):
-        # Check if the menu is already open to avoid adding multiple menus
-        if not any(isinstance(child, MenuScreen) for child in self.children):
-            print("@@@@")
-            app = App.get_running_app()
-            print(app.user_details)
-            print("@@@@")
-            menu = MenuScreen(size_hint=(0.3, 1), pos_hint={'x': 0, 'y': 0})
-            self.add_widget(menu)  # Add the menu to the main screen
+
+    def toggle_menu(self, instance):
+        # If the menu is open, remove it; if it's closed, add it
+        if self.menu_open:
+            self.remove_widget(self.menu)
+        else:
+            self.menu = MenuScreen(size_hint=(0.3, 1), pos_hint={'x': 0, 'y': 0}, manager=self.manager)
+
+            self.add_widget(self.menu)
+        self.menu_open = not self.menu_open  # Toggle the menu state
 
     def open_file_explorer(self, instance):
         # Create the file chooser
@@ -104,17 +104,14 @@ class MainScreen(Screen):
             if selected_image:
                 image_path = selected_image[0]
                 if self.is_image_file(image_path):
-                    # Check if the screen already exists and remove it if necessary
-                    if 'chosen_image_screen' in self.parent.screen_names:
-                        self.parent.remove_widget(self.parent.get_screen('chosen_image_screen'))
 
                     # Open the ChosenImageScreen with the selected image
                     app = App.get_running_app()
-                    chosen_image_screen = ChosenImageScreen(image_path=image_path, user_id=app.user_details.get("uid"))
-                    chosen_image_screen.name = 'chosen_image_screen'
 
-                    self.parent.add_widget(chosen_image_screen)  # Add the screen to the parent
-                    self.parent.current = 'chosen_image_screen'  # Switch to the new screen
+                    choseImage_screen = self.manager.get_screen('choseImage')
+                    choseImage_screen.update_data(image_path=image_path, user_id=app.user_details.get("uid"))
+                    self.manager.current = 'choseImage'
+
                     popup.dismiss()  # Close the popup once an image is selected
                 else:
                     # Show error message if not a valid image

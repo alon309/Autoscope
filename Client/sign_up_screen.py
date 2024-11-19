@@ -5,7 +5,6 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.popup import Popup
-from main_screen import MainScreen
 
 import requests
 
@@ -71,7 +70,7 @@ class SignUpScreen(Screen):
             size_hint=(0.5, None),
             height=50
         )
-        cancel_button.bind(on_release=self.return_to_login)
+        cancel_button.bind(on_release=self.open_login_screen)
         button_layout.add_widget(cancel_button)
 
         # Sign Up button
@@ -110,10 +109,6 @@ class SignUpScreen(Screen):
             self.show_popup("Sign Up Failed", "Please fill in all fields!")
 
 
-
-    def return_to_login(self, instance):
-        self.parent.remove_widget(self)
-
     def show_popup(self, title, message, callback=None):
         # Show a popup message to the user
         popup_layout = BoxLayout(orientation='vertical', padding=10)
@@ -132,8 +127,5 @@ class SignUpScreen(Screen):
         popup_button.bind(on_release=on_close_popup)
         popup.open()
 
-    def open_login_screen(self):
-        from login_screen import UserLoginScreen
-        login_screen = UserLoginScreen(name="login")
-        self.parent.add_widget(login_screen)
+    def open_login_screen(self, instance):
         self.parent.current = "login"  

@@ -5,17 +5,15 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.switch import Switch
 from kivy.graphics import Color, Rectangle
 from kivy.app import App
+from kivy.uix.screenmanager import Screen
 
 import requests
 
-class ProfileSettingsScreen(FloatLayout):
+class ProfileSettingsScreen(Screen):
     def __init__(self, **kwargs):
         super(ProfileSettingsScreen, self).__init__(**kwargs)
 
         app = App.get_running_app()
-        print(111)
-        print(app.user_details)
-        print(111)
         # Background color
         with self.canvas.before:
             Color(0.1, 0.5, 0.8, 1)  # Blue background
@@ -94,19 +92,16 @@ class ProfileSettingsScreen(FloatLayout):
         print(f'Settings Saved: {email}, {name}, {phone}, Notifications: {"On" if notifications_enabled else "Off"}')
 
     def close_settings(self, instance):
-        self.parent.remove_widget(self)  # Remove the settings screen
+        self.manager.current = 'main'
 
 
     def show_history(self, instance):
-        from history_screen import HistoryScreen
 
-        # הנתונים מהשרת
         app = App.get_running_app()
-        history_data = app.user_details  # עדכן למקור המתאים שלך
+        history_data = app.user_details.get('results', {})
 
-        # בדוק אם היסטוריית האבחנות ריקה
-        if not history_data['results']:
-            # הצגת אזהרה שההיסטוריה ריקה
+        if not history_data:
+
             from kivy.uix.popup import Popup
             from kivy.uix.label import Label
 
@@ -114,21 +109,18 @@ class ProfileSettingsScreen(FloatLayout):
                         content=Label(text='ההיסטוריה ריקה! אין נתונים להציג.'),
                         size_hint=(None, None), size=(400, 200))
             popup.open()
-            return  # עצור את המשך הפונקציה אם ההיסטוריה ריקה
+            return
 
-        # עיבוד הנתונים לפורמט הדרוש
-        formatted_history = []
-        for diagnose_id, diagnose_data in history_data['results'].items():
-            formatted_history.append({
-                'date': diagnose_data['datetime'],
-                'image': diagnose_data['image'],
-                'result': diagnose_data['diagnose']
-            })
+        history_screen = self.parent.get_screen('history')
 
-        # העברת המידע המעובד למסך היסטוריה
-        history_screen = HistoryScreen(formatted_history)
-        self.parent.add_widget(history_screen)
-        self.parent.current = "history_screen"  # מעבר למסך ההיסטוריה
+        print(4545)
+        print(history_data)
+        print(4545)
+        print(history_screen)
+        history_screen.update_history(history_data)
+
+        self.parent.current = 'history'
+
 
 
 

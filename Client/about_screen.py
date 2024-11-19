@@ -4,8 +4,9 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.app import App
 from kivy.graphics import Color, Rectangle
+from kivy.uix.screenmanager import Screen
 
-class AboutScreen(FloatLayout):
+class AboutScreen(Screen):
     def __init__(self, **kwargs):
         super(AboutScreen, self).__init__(**kwargs)
 
@@ -57,7 +58,7 @@ class AboutScreen(FloatLayout):
         self.rect.size = instance.size
 
     def close_about(self, instance):
-        self.parent.remove_widget(self)  # Remove the About screen
+        self.manager.current = 'main'
 
     def submit_feedback(self, instance):
         feedback = self.feedback_input.text

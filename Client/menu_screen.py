@@ -2,20 +2,22 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.image import Image
 from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.screenmanager import ScreenManager
 from kivy.uix.screenmanager import Screen
 from kivy.app import App
 from kivy.graphics import Color, Rectangle
-from about_screen import AboutScreen
-from help_screen import HelpScreen
-from profile_screen import ProfileSettingsScreen
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 
 
+
 class MenuScreen(FloatLayout):
-    def __init__(self, **kwargs):
+    def __init__(self, manager=None, **kwargs):
         super(MenuScreen, self).__init__(**kwargs)
+
+        print("managerrrrr")
+        self.manager = manager
+        print(manager)
+        print("managerrrrr")
         
         # Background for the menu
         with self.canvas.before:
@@ -42,9 +44,6 @@ class MenuScreen(FloatLayout):
         invite_option = self.create_menu_option("Invite Friends", "Icons/inviteFriends.png")
         signOut_option = self.create_menu_option("Sign Out", "Icons/signOut.png")
 
-        back_btn = Button(background_normal = "Icons/back.png", size_hint=(None, None), height=65, width=75, pos_hint={'x': 0, 'top': 0.1})
-        back_btn.bind(on_release=self.close_menu)
-
         # Add the options to the menu screen
         help_option.pos_hint = {'x': 0, 'top': 0.7}
         about_option.pos_hint = {'x': 0, 'top': 0.6}
@@ -55,14 +54,10 @@ class MenuScreen(FloatLayout):
         self.add_widget(about_option)
         self.add_widget(invite_option)
         self.add_widget(signOut_option)
-        self.add_widget(back_btn)
 
     def _update_rect(self, instance, value):
         self.rect.pos = instance.pos
         self.rect.size = instance.size
-
-    def close_menu(self, instance):
-        self.parent.remove_widget(self)  # Remove the menu from the main screen
 
     def create_menu_option(self, option_text, logo_path):
         # Create a layout with a logo and text for each menu option
@@ -83,17 +78,17 @@ class MenuScreen(FloatLayout):
         return layout
 
     def load_help_screen(self, instance):
-        self.parent.add_widget(HelpScreen())  # Load the help screen
+        self.manager.current = 'help'
 
     def load_settings_screen(self, instance):
         print(123)
         app = App.get_running_app()
         print(app.user_details)
         print(123)
-        self.parent.add_widget(ProfileSettingsScreen())  # Replace with actual implementation
+        self.manager.current = 'profile'
 
     def load_about_screen(self, instance):
-        self.parent.add_widget(AboutScreen())  # Load the About screen
+        self.manager.current = 'about'
 
     def load_invite_friends_screen(self, instance):
         print("Invite Friends screen loaded.")  # Load the settings screen
@@ -129,17 +124,21 @@ class MenuScreen(FloatLayout):
         # Dismiss the popup
         popup.dismiss()  # Close the popup when signing out
 
-        # Access the App instance and its ScreenManager
-        app = App.get_running_app()
-        sm = app.sm  # Get the ScreenManager from the App instance
+        self.clear_screens_except_basic()
 
-        # Remove all screens
-        sm.clear_widgets()  # This will clear all screens from the manager
+    def clear_screens_except_basic(self):
+        sm = self.manager
 
-        # Create a new UserLoginScreen instance and add it back to the ScreenManager
-        from login_screen import UserLoginScreen  # Import the UserLoginScreen class
-        login_screen = UserLoginScreen(name="login")
-        sm.add_widget(login_screen)  # Add the login screen back to the ScreenManager
+        screens_to_keep = ['signUp', 'login']
+        screens_to_readd = []
 
-        # Optionally, switch to the login screen immediately
-        sm.current = "login"
+        for screen_name in sm.screen_names:
+            if screen_name in screens_to_keep:
+                screens_to_readd.append(sm.get_screen(screen_name))
+
+        sm.clear_widgets()
+
+        for screen in screens_to_readd:
+            sm.add_widget(screen)
+
+         

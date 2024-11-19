@@ -90,15 +90,14 @@ def save_result():
 
 @app.route('/api/analyze_image', methods=['POST'])
 def analyze_image():
-    # Get the user ID
-    user_id = request.form.get('user_id')
-    
-    if 'image' not in request.files:
-        return jsonify({"error": "No image file provided"}), 400
-
-    image_file = request.files['image']
-
     try:
+        # Get the user ID
+        user_id = request.form.get('user_id')
+        
+        if 'image' not in request.files:
+            return jsonify({"error": "No image file provided"}), 400
+
+        image_file = request.files['image']
 
         return jsonify({"message": f"Image uploaded and diagnosed successfully for user {user_id}"}), 200
     except Exception as e:

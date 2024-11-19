@@ -5,18 +5,18 @@ from kivy.uix.screenmanager import Screen
 from kivy.core.image import Image as CoreImage
 from kivy.graphics import Color, Rectangle
 from kivy.uix.label import Label
-from result_screen import ResultsScreen
+from kivy.app import App
 
 import requests
 
 class ChosenImageScreen(Screen):
-    def __init__(self, image=None, image_path=None, user_id=None, **kwargs):
+    def __init__(self, **kwargs):
         super(ChosenImageScreen, self).__init__(**kwargs)
         
         # Store the image or image path for later use
-        self.image_path = image_path
-        self.image = image  # This could be an image object (e.g., from the otoscope)
-        self.user_id = user_id
+        self.image_path = None
+        self.image = None  # This could be an image object (e.g., from the otoscope)
+        self.user_id = None
 
         # Variable to save the Kivy image 
         self.chosen_current_image = None
@@ -47,22 +47,19 @@ class ChosenImageScreen(Screen):
 
         self.add_widget(layout)
 
-        # Display the image when initializing
-        self.display_image()
-
         back_btn = Button(background_normal = "Icons/back.png", size_hint=(None, None), height=65, width=75, pos_hint={'x': 0, 'top': 0.1})
         back_btn.bind(on_release=self.close_chosenImage)
         self.add_widget(back_btn)
 
 
     def close_chosenImage(self, instance):
-        from main_screen import MainScreen
-        main_screen = MainScreen(name="main")
-        self.parent.add_widget(main_screen)
-        # Switch to the MainScreen
-        self.parent.current = "main"  # This switches to the screen named "main"
-        self.parent.remove_widget(self)  # Remove the chosenImage screen
+        self.manager.current = 'main'
 
+    def update_data(self, image_path, user_id):
+        self.image_path = image_path
+        self.user_id = user_id
+        self.image = None
+        self.display_image()
 
 
     def _update_rect(self, instance, value):
@@ -70,36 +67,45 @@ class ChosenImageScreen(Screen):
         self.rect.size = instance.size
 
     def display_image(self):
-        # Check if an image object is provided or just a path
-        if isinstance(self.image, KivyImage):
-            # If self.image is a Kivy Image object, set its texture
-            self.image_display.texture = self.image.texture
-            self.chosen_current_image = self.image
-        elif isinstance(self.image_path, str):
-            # If self.image_path is a string, load the image from path using CoreImage
-            self.image_display.texture = CoreImage(self.image_path).texture  # Set the loaded texture
-            self.chosen_current_image = CoreImage(self.image_path)
+        if self.image_path:
+            try:
+                img = CoreImage(self.image_path)
+                self.image_display.texture = img.texture
+                self.chosen_current_image = img
+                print(f"Image loaded: {self.image_path}")
+            except Exception as e:
+                print(f"Error loading image: {e}")
+                self.image_display.texture = None
 
     def analyze_image(self, instance):
-        # Placeholder for analysis logic
         print("Analyzing the image...")
-        
-        # get result string here
-        #use model in server
-        results = "this is just example\nDiagnosis for this image is:\nRecommendations are:"
-        
-        # Open the results with the selected image and recieved results
-        results_screen = ResultsScreen(self.chosen_current_image, results, self.user_id)
-        results_screen.name = 'results_screen'
+        results = "This is just an example\nDiagnosis for this image is:\nRecommendations are:"
 
-        self.parent.add_widget(results_screen)  # Add the screen to the parent
-        self.parent.current = 'results_screen'  # Switch to the new screen
+        # Send to the server
+        if self.image_path:
+            try:
+                print(f"Image path: {self.image_path}")
 
-        # send to server
-        url = 'http://localhost:5000/api/analyze_image'
-        files = {'image': open(self.image_path, 'rb')}
-        data = {'user_id': self.user_id}
+                url = 'http://localhost:5000/api/analyze_image'
 
-        response = requests.post(url, files=files, data=data)
-        print(response.json())
+                # Open the image file in binary mode
+                with open(self.image_path, 'rb') as image_file:
+                    files = {'image': image_file}
+                    # Ensure user_id is a string
+                    data = {'user_id': str(self.user_id)}
+
+                    # Send the POST request
+                    response = requests.post(url, files=files, data=data)
+                    response_data = response.json()
+                    print(response_data)
+
+                    # Update the results screen
+                    results_screen = self.manager.get_screen('result')
+                    results_screen.update_data(self.chosen_current_image, results, self.user_id)
+                    self.manager.current = 'result'
+            except Exception as e:
+                print(f"Error during analysis request: {e}")
+
+
+
         

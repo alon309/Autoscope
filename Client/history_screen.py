@@ -11,7 +11,7 @@ import requests
 from kivy.core.image import Image as CoreImage
 
 class HistoryScreen(Screen):
-    def __init__(self, history_data, **kwargs):
+    def __init__(self, **kwargs):
         super(HistoryScreen, self).__init__(**kwargs)
 
         # Background color
@@ -22,20 +22,14 @@ class HistoryScreen(Screen):
         self.bind(size=self._update_rect, pos=self._update_rect)
 
         # Pagination variables
-        self.history_data = history_data
+        self.history_data = []  # Empty by default, updated via `update_history`
         self.page_size = 5
         self.current_page = 0
-        self.max_pages = (len(history_data) + self.page_size - 1) // self.page_size  # Ceiling division
+        self.max_pages = 0  # Initialize with 0 pages
 
         # Layout for the history entries
         self.layout = GridLayout(cols=3, spacing=10, padding=10, size_hint_y=None)
         self.layout.bind(minimum_height=self.layout.setter('height'))
-
-        # Set a fixed height for the layout
-        self.layout.height = 100  # Set a height that fits your needs
-
-        # Set the position of the layout to avoid collision with buttons
-        self.layout.pos_hint = {'center_x': 0.5, 'top': 0.9}  # Centered and 75% from the top
 
         # Add the layout to the screen
         self.add_widget(self.layout)
@@ -53,32 +47,46 @@ class HistoryScreen(Screen):
         back_btn.bind(on_release=self.close_history)
         self.add_widget(back_btn)
 
-        # Populate the first page
+        # Initial population
         self.update_page()
 
     def update_page(self):
         # Clear the current layout
         self.layout.clear_widgets()
 
+        if not self.history_data:
+            # Show a message if no data is available
+            self.layout.add_widget(Label(text="No history available", size_hint_y=None, height=40))
+            self.update_nav_buttons()
+            return
+
+        # Convert history_data to a list of items for slicing
+        history_items = list(self.history_data.items())
+
         # Determine the starting and ending indices for the current page
         start_index = self.current_page * self.page_size
-        end_index = min(start_index + self.page_size, len(self.history_data))
+        end_index = min(start_index + self.page_size, len(history_items))
 
         # Populate the layout with history data for the current page
-        for entry in self.history_data[start_index:end_index]:
-            date_label = Label(text=entry['date'], size_hint_y=None, height=40)
+        for key, entry in history_items[start_index:end_index]:
+            # Add date label
+            date_label = Label(text=entry.get('datetime', 'Unknown'), size_hint_y=None, height=40)
 
-            # Download the image from the URL
-            img_data = requests.get(entry['image']).content
-            
-            # Convert the downloaded image data to a format Kivy can use
-            image_texture = CoreImage(BytesIO(img_data), ext='png').texture
+            # Attempt to load image
+            try:
+                image_url = entry.get('image', '')
+                if image_url:
+                    img_data = requests.get(image_url).content
+                    image_texture = CoreImage(BytesIO(img_data), ext='png').texture
+                    image_widget = Image(size_hint=(None, None), size=(100, 100))
+                    image_widget.texture = image_texture
+                else:
+                    raise ValueError("No image URL")
+            except Exception as e:
+                image_widget = Label(text="No Image", size_hint_y=None, height=40)
 
-            # Create an Image widget using the texture
-            image_widget = Image(size_hint=(None, None), size=(100, 100))
-            image_widget.texture = image_texture
-
-            result_label = Label(text=entry['result'], size_hint_y=None, height=40)
+            # Add result label
+            result_label = Label(text=entry.get('diagnose', 'No Result'), size_hint_y=None, height=40)
 
             # Add widgets to the layout
             self.layout.add_widget(date_label)
@@ -87,6 +95,7 @@ class HistoryScreen(Screen):
 
         # Update button states
         self.update_nav_buttons()
+
 
     def update_nav_buttons(self):
         # Enable/disable navigation buttons based on the current page
@@ -108,6 +117,14 @@ class HistoryScreen(Screen):
         self.rect.size = instance.size
 
     def close_history(self, instance):
-        self.parent.remove_widget(self)  # Remove the history screen
+        self.manager.current = 'main'
 
-
+    def update_history(self, history_data):
+        # Update the history data and refresh the display
+        self.history_data = history_data
+        print(7979)
+        print(history_data)
+        print(7979)
+        self.max_pages = (len(history_data) + self.page_size - 1) // self.page_size  # Recalculate total pages
+        self.current_page = 0  # Reset to the first page
+        self.update_page()
