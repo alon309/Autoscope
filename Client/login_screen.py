@@ -2,11 +2,7 @@ from kivy.uix.screenmanager import Screen
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
-from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.widget import Widget
-from kivy.uix.image import Image
-from kivy.uix.popup import Popup
 from kivy.app import App
 from kivy.graphics import Color, Rectangle, RoundedRectangle
 from rounded_button import RoundedButton
@@ -94,11 +90,11 @@ class UserLoginScreen(Screen):
 
     def sign_in_func(self, instance):
 
-        # email = self.email_input.text
-        # password = self.password_input.text
+        email = self.email_input.text
+        password = self.password_input.text
 
-        email = "ndvp39@gmail.com"
-        password = "123123"
+        # email = "ndvp39@gmail.com"
+        # password = "123123"
 
         server_url = "http://localhost:5000/api/login"
 

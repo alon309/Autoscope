@@ -7,18 +7,18 @@ from kivy.graphics import Color, Rectangle
 from menu_screen import MenuScreen
 from kivy.uix.filechooser import FileChooserIconView
 from kivy.uix.popup import Popup
-from kivy.graphics.texture import Texture
-from kivy.uix.image import Image as KivyImage
-from kivy.core.image import Image as CoreImage
 from kivy.uix.label import Label
 from kivy.app import App
 from menu_screen import MenuScreen
 from rounded_button import RoundedButton
+from feedbackMessage import FeedbackMessage
 
 
 class MainScreen(Screen):
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
+
+        self.feedback = FeedbackMessage()
 
         self.menu_open = False  # Variable to track if the menu is open or closed
 
@@ -133,7 +133,7 @@ class MainScreen(Screen):
                     popup.dismiss()  # Close the popup once an image is selected
                 else:
                     # Show error message if not a valid image
-                    self.show_error_message(message='Invalid file type! Please select an image file.',text_color=(1, 0, 0, 1))
+                    self.feedback.show_message('Invalid file type!', 'Please select an image file.',color='red')
             else:
                 popup.dismiss()  # Close the popup if no file is selected
 
@@ -152,41 +152,6 @@ class MainScreen(Screen):
         valid_extensions = ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.tiff']
         return any(file_path.lower().endswith(ext) for ext in valid_extensions)
     
-    def show_error_message(self, text_color=(1, 0, 0, 1), message=''):
-        # Create a BoxLayout for the error message
-        error_layout = BoxLayout(orientation='horizontal', size_hint=(1, None), height=60, padding=10)
-        
-        # Create a label for the error message with dynamic text color
-        error_label = Label(
-            text=message,
-            font_size=20,
-            color=text_color
-        )
-
-        # Create a button to close the message
-        close_button = RoundedButton(
-            text='Close',
-            size_hint=(None, None),
-            width=100,
-            height=50
-        )
-        close_button.bind(on_release=self.close_error_message)
-
-        # Add the label and close button to the layout
-        error_layout.add_widget(error_label)
-        error_layout.add_widget(close_button)
-
-        # Create a pop-up for the error message that will appear at the bottom
-        self.error_popup = Popup(
-            title='Error',
-            content=error_layout,
-            size_hint=(0.8, None),
-            height=80,  # Set height to keep it at the bottom of the screen
-            pos_hint={'x': 0.1, 'bottom': 0}  # Position the popup at the bottom
-        )
-
-        # Open the error popup
-        self.error_popup.open()
 
     def close_error_message(self, instance):
         # Dismiss the error popup
