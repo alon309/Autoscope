@@ -23,8 +23,8 @@ class FeedbackMessage:
         else:
             color_value = self.colors.get(self.color, (0, 1, 0, 1))
 
-        # Outer layout for the popup content
-        popup_background = BoxLayout(
+        # Outer layout for the popup
+        popup_layout = BoxLayout(
             orientation='vertical',
             spacing=10,
             padding=20,
@@ -32,17 +32,17 @@ class FeedbackMessage:
 
         # Title label
         title_label = Label(
-            text=f"[b]{title}[/b]",
-            markup=True,
+            text=title,
             font_size=24,
             size_hint=(1, None),
             height=40,
             halign='center',
             valign='middle',
-            color=(1, 1, 1, 1)  # White text for the title
+            color=(1, 1, 1, 1)  # White text
         )
+        popup_layout.add_widget(title_label)
 
-        # Scrollable container for the message
+        # Scrollable message content
         scroll_view = ScrollView(size_hint=(1, None), size=(400, 120))
         message_label = Label(
             text=message,
@@ -55,45 +55,35 @@ class FeedbackMessage:
         )
         message_label.bind(texture_size=message_label.setter('size'))
         scroll_view.add_widget(message_label)
+        popup_layout.add_widget(scroll_view)
 
-        # Close button
-        close_button = RoundedButton(
-            text="Close",
+        # Button layout
+        button_layout = BoxLayout(size_hint=(1, None), height=50, spacing=10)
+        ok_button = RoundedButton(
+            text="OK",
             size_hint=(1, None),
             height=50,
-            background_color=(0.2, 0.6, 1, 1),  # Light blue button
-            color=(1, 1, 1, 1)  # White text
+            background_color=(0.1, 0.6, 0.8, 1),
+            color=(1, 1, 1, 1)
         )
+        button_layout.add_widget(ok_button)
+        popup_layout.add_widget(button_layout)
 
-        # Layout setup
-        popup_background.add_widget(title_label)
-        popup_background.add_widget(scroll_view)
-        popup_background.add_widget(close_button)
-
-        # Popup container with gray rounded background
+        # Popup container
         popup = Popup(
-            title="",
-            content=popup_background,
-            size_hint=(0.85, 0.5),
-            auto_dismiss=False,
+            title='Message',
+            content=popup_layout,
+            size_hint=(0.7, 0.5),
+            auto_dismiss=False
         )
 
-        # Add a rounded gray background to the popup
-        with popup.canvas.before:
-            Color(0.2, 0.2, 0.2, 1)  # Dark gray background
-            popup.bg = RoundedRectangle(size=popup.size, pos=popup.pos, radius=[20])
-            popup.bind(size=self.update_bg, pos=self.update_bg)
-
-        # Button callback
+        # Button actions
         def close_and_execute_callback(instance):
             popup.dismiss()
             if callback:
                 callback()
 
-        close_button.bind(on_release=close_and_execute_callback)
+        ok_button.bind(on_release=close_and_execute_callback)
 
         popup.open()
 
-    def update_bg(self, instance, value):
-        instance.bg.size = instance.size
-        instance.bg.pos = instance.pos

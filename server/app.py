@@ -15,7 +15,8 @@ from flask_cors import CORS  # Import CORS
 app = Flask(__name__)
 
 load_dotenv()
-firebase_credentials = os.getenv("FIREBASE_CREDENTIALS")
+firebase_credentials = os.getenv('FIREBASE_CREDENTIALS')
+print(firebase_credentials)
 
 # Enable CORS for the entire app
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -41,7 +42,7 @@ db = firestore.client()
 # Home screen
 @app.route('/')
 def home():
-    return "Welcome to the Flask App!"
+    return "AutoScope - Server is Running...!"
 
 @app.route('/api/save_result', methods=['POST'])
 def save_result():
@@ -272,4 +273,5 @@ def get_history():
 
 # Run the server
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run()

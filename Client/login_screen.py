@@ -3,14 +3,11 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 from kivy.uix.floatlayout import FloatLayout
+from kivy.graphics import Color, Rectangle
 from kivy.app import App
-from kivy.graphics import Color, Rectangle, RoundedRectangle
 from rounded_button import RoundedButton
 from feedbackMessage import FeedbackMessage
-
 from config import SERVER_URL
-
-
 import requests
 
 
@@ -20,65 +17,78 @@ class UserLoginScreen(Screen):
 
         self.feedback = FeedbackMessage()
 
-        layout = FloatLayout()  # Use FloatLayout for positioning
+        layout = FloatLayout()  # Layout for dynamic positioning
 
+        # Dark mode background
         with self.canvas.before:
-            Color(0.2, 0.5, 0.8, 1)  # Background color (light blue)
+            Color(0.1, 0.1, 0.1, 1)  # Dark background
             self.rect = Rectangle(size=self.size, pos=self.pos)
 
         self.bind(size=self.update_rect)
         self.bind(pos=self.update_rect)
 
-        # Welcome text
+        # Welcome label
         welcome_label = Label(
             text="Welcome to Autoscope",
-            font_size=32,
-            pos_hint={'center_x': 0.5, 'top': 0.95},
-            size_hint=(None, None)
+            font_size=40,
+            pos_hint={'center_x': 0.5, 'top': 0.85},
+            size_hint=(None, None),
+            color=(1, 1, 1, 1)  # White text
         )
         layout.add_widget(welcome_label)
 
-        # Sign-in fields (email and password)
+        # Email input
         self.email_input = TextInput(
             hint_text="Email",
-            size_hint=(0.7, None),
-            height=50,
-            pos_hint={'center_x': 0.5, 'top': 0.7},
-            multiline=False
+            size_hint=(0.9, None),
+            height=60,
+            pos_hint={'center_x': 0.5, 'top': 0.65},
+            multiline=False,
+            background_color=(0.2, 0.2, 0.2, 1),
+            foreground_color=(1, 1, 1, 1),
+            hint_text_color=(0.6, 0.6, 0.6, 1)
         )
         layout.add_widget(self.email_input)
 
+        # Password input
         self.password_input = TextInput(
             hint_text="Password",
             password=True,
-            size_hint=(0.7, None),
-            height=50,
-            pos_hint={'center_x': 0.5, 'top': 0.6},
-            multiline=False
+            size_hint=(0.9, None),
+            height=60,
+            pos_hint={'center_x': 0.5, 'top': 0.55},
+            multiline=False,
+            background_color=(0.2, 0.2, 0.2, 1),
+            foreground_color=(1, 1, 1, 1),
+            hint_text_color=(0.6, 0.6, 0.6, 1)
         )
         layout.add_widget(self.password_input)
 
-        # Sign-in and Create User buttons
+        # Buttons layout
         button_layout = BoxLayout(
-            orientation='horizontal',
-            size_hint=(0.7, None),
-            height=50,
-            pos_hint={'center_x': 0.5, 'top': 0.45},
+            orientation='vertical',
+            size_hint=(0.9, None),
+            height=140,
+            pos_hint={'center_x': 0.5, 'top': 0.4},
             spacing=20
         )
 
         sign_in_button = RoundedButton(
             text="Sign In",
-            size_hint=(0.5, None),
-            height=50
+            size_hint=(1, None),
+            height=60,
+            background_color=(0.1, 0.6, 0.8, 1),
+            color=(1, 1, 1, 1)  # White text
         )
         sign_in_button.bind(on_release=self.sign_in_func)
         button_layout.add_widget(sign_in_button)
 
         create_user_button = RoundedButton(
             text="Create User",
-            size_hint=(0.5, None),
-            height=50
+            size_hint=(1, None),
+            height=60,
+            background_color=(0.3, 0.3, 0.3, 1),
+            color=(1, 1, 1, 1)
         )
         create_user_button.bind(on_release=self.sign_up_func)
         button_layout.add_widget(create_user_button)
@@ -92,12 +102,11 @@ class UserLoginScreen(Screen):
         self.rect.size = self.size
 
     def sign_in_func(self, instance):
+        #email = self.email_input.text
+        #password = self.password_input.text
 
-        email = self.email_input.text
-        password = self.password_input.text
-
-        # email = "ndvp39@gmail.com"
-        # password = "123123"
+        email = 'ndvp39@gmail.com'
+        password = '123123'
 
         server_url = f"{SERVER_URL}/api/login"
 
@@ -136,10 +145,10 @@ class UserLoginScreen(Screen):
             app.on_login_success()
 
             self.feedback.show_message(
-                "Login Successful",  # הכותרת
-                f"Welcome back, {full_name}!",  # הטקסט
-                color='green',  # צבע ירוק
-                callback=lambda: self.open_main_screen()  # קריאה לפונקציה לאחר סגירת ההודעה
+                "Login Successful",
+                f"Welcome back, {full_name}!",
+                color='green',
+                callback=lambda: self.open_main_screen()
             )
 
         except requests.exceptions.HTTPError as http_err:
@@ -149,13 +158,14 @@ class UserLoginScreen(Screen):
                 error_message = error_details
             else:
                 error_message = error_details.get("error", {})
-            self.feedback.show_message("Login Failed", str(error_message), color ='red')
+            self.feedback.show_message("Login Failed", str(error_message), color='red')
 
         except Exception as err:
-            self.feedback.show_message("Error", str(err), color ='red')
+            print(str(err))
+            self.feedback.show_message("Error", str(err), color='red')
 
     def sign_up_func(self, instance):
-        self.manager.current = 'signUp'    
+        self.manager.current = 'signUp'
 
     def open_main_screen(self):
         self.manager.current = 'main'

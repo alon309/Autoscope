@@ -4,7 +4,7 @@ from rounded_button import RoundedButton
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.screenmanager import Screen
 from kivy.app import App
-from kivy.graphics import Color, RoundedRectangle
+from kivy.graphics import Color, RoundedRectangle, Line
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 
@@ -17,116 +17,152 @@ class MenuScreen(FloatLayout):
 
         # Background for the menu with rounded corners
         with self.canvas.before:
-            Color(0.9, 0.9, 0.9, 1)  # Light grey background color
+            Color(1, 1, 1, 1)  # White background
             self.background_rect = RoundedRectangle(
-                size=(self.width * 0.8, self.height * 0.5),  # Adjust width and height
-                pos=(self.width * 0.1, self.height * 0.25),  # Centered vertically
-                radius=[(20, 20), (20, 20), (20, 20), (20, 20)]  # Rounded corners
+                size=(self.width * 0.8, self.height * 0.7),
+                pos=(self.width * 0.1, self.height * 0.15),
+                radius=[(20, 20), (20, 20), (20, 20), (20, 20)]
             )
 
         self.bind(size=self._update_background, pos=self._update_background)
 
-        self.option_actions = {
-            "Help": self.load_help_screen,
-            "About": self.load_about_screen,
-            "Invite Friends": self.load_invite_friends_screen,
-            "Sign Out": self.show_logout_popup,
-        }
-
-        # Add menu items
-        MyAccount = RoundedButton(text='My Account', size_hint=(None, None), size=(120, 110), pos_hint={'center_x': 0.5, 'top': 1})
-        MyAccount.bind(on_release=self.load_settings_screen)
-        self.add_widget(MyAccount)
-
-        # Example menu options with logo on the left
-        help_option = self.create_menu_option("Help", "Icons/help.png")
-        about_option = self.create_menu_option("About", "Icons/about.png")
-        invite_option = self.create_menu_option("Invite Friends", "Icons/inviteFriends.png")
-        signOut_option = self.create_menu_option("Sign Out", "Icons/signOut.png")
-
-        # Add the options to the menu screen
-        help_option.pos_hint = {'x': 0, 'top': 0.7}
-        about_option.pos_hint = {'x': 0, 'top': 0.6}
-        invite_option.pos_hint = {'x': 0, 'top': 0.5}
-        signOut_option.pos_hint = {'x': 0, 'top': 0.4}
-
-        self.add_widget(help_option)
-        self.add_widget(about_option)
-        self.add_widget(invite_option)
-        self.add_widget(signOut_option)
-
-
     def _update_background(self, instance, value):
         """Update background position and size when the window is resized."""
-        self.background_rect.size = (self.width * 1, self.height * 1)
-        self.background_rect.pos = (self.width * 0, self.height * 0)
+        self.background_rect.size = (self.width * 0.8, self.height * 0.7)
+        self.background_rect.pos = (self.width * 0.1, self.height * 0.15)
 
-    def create_menu_option(self, option_text, logo_path):
-        # Create a layout with a logo and text for each menu option
-        layout = BoxLayout(orientation='horizontal', size_hint=(1, None), height=60)
+        # Redraw dividers to match the new size
+        self.redraw_dividers()
 
-        # Add the logo (aligned left)
-        logo = Image(source=logo_path, size_hint=(None, None), size=(40, 40), allow_stretch=True)
-        layout.add_widget(logo)
+    def add_menu_options(self):
+        """Add menu options with dividers."""
+        # Add a primary "My Account" option
+        y_start = self.height * 0.75  # Start position for the first option
 
-        # Add the text (button)
-        button = RoundedButton(text=option_text, size_hint=(1, None), height=50,
-                        font_size=18, bold=True, padding=(10, 10), border=(20, 20, 20, 20))  # Rounded button
+        self.add_menu_item(
+            y_position=y_start,
+            text="My Account",
+            icon_path="Icons/account.png",
+            callback=self.load_settings_screen,
+            is_primary=True
+        )
 
-        button.bind(on_release=self.option_actions.get(option_text, lambda x: None))  # Default action for unknown options
+        # Other options
+        options = [
+            ("Help", "Icons/help.png", self.load_help_screen),
+            ("About", "Icons/about.png", self.load_about_screen),
+            ("Invite Friends", "Icons/inviteFriends.png", self.load_invite_friends_screen),
+            ("Sign Out", "Icons/signOut.png", self.show_logout_popup),
+        ]
 
+        for index, (text, icon, callback) in enumerate(options):
+            y_position = y_start - (index + 1) * 0.12 * self.height
+            self.add_menu_item(y_position, text, icon, callback)
+
+    def add_menu_item(self, y_position, text, icon_path, callback, is_primary=False):
+        """Add a single menu item with a divider."""
+        with self.canvas:
+            # Divider line
+            Color(0.8, 0.8, 0.8, 0.5)  # Light gray
+            Line(
+                points=[
+                    self.width * 0.1, y_position + 10,  # Start point of the line
+                    self.width * 0.3, y_position + 10   # End point of the line
+                ],
+                width=2
+            )
+
+        # Layout for the option
+        layout = BoxLayout(
+            orientation="horizontal",
+            size_hint=(0.8, None),
+            height=70 if is_primary else 60,
+            pos=(self.width * 0.1, y_position - 40)
+        )
+
+        # Icon
+        icon = Image(
+            source=icon_path,
+            size_hint=(None, None),
+            size=(50, 50) if is_primary else (40, 40),
+            allow_stretch=True
+        )
+        layout.add_widget(icon)
+
+        # Button
+        button = RoundedButton(
+            text=text,
+            size_hint=(1, None),
+            height=70 if is_primary else 60,
+            font_size=20 if is_primary else 18,
+            bold=is_primary,
+            background_color=(0.1, 0.6, 0.8, 1) if is_primary else (0.3, 0.3, 0.3, 1),
+            color=(1, 1, 1, 1)  # White text
+        )
+        button.bind(on_release=callback)
         layout.add_widget(button)
 
-        return layout
+        self.add_widget(layout)
+
+    def redraw_dividers(self):
+        """Redraw all dividers when the menu is resized."""
+        self.canvas.after.clear()
+        self.add_menu_options()
 
     def load_help_screen(self, instance):
+        self.manager.transition.duration = 0
         self.manager.current = 'help'
 
     def load_settings_screen(self, instance):
+        self.manager.transition.duration = 0
         self.manager.current = 'profile'
 
     def load_about_screen(self, instance):
+        self.manager.transition.duration = 0
         self.manager.current = 'about'
 
     def load_invite_friends_screen(self, instance):
-        print("Invite Friends screen loaded.")  # Load the settings screen
+        self.manager.transition.duration = 0
+        print("Invite Friends screen loaded.")  # Load the Invite Friends screen
 
     def show_logout_popup(self, instance):
-        # Create the layout for the popup
+        """Display a popup for logout confirmation."""
         popup_layout = BoxLayout(orientation='vertical', padding=10)
-        popup_label = Label(text="Are you sure you want to sign out?")
-        
-        # Create buttons
-        button_layout = BoxLayout(size_hint=(1, 0.4), spacing=10)
-        yes_button = RoundedButton(text='Yes, Sign Out', background_color=(0.9, 0.3, 0.3, 1))
-        no_button = RoundedButton(text='Cancel', background_color=(0.3, 0.9, 0.3, 1))
+        popup_label = Label(text="Are you sure you want to sign out?", size_hint=(1, None), height=50)
 
-        # Create the popup
-        popup = Popup(title='Sign Out Confirmation',
-                    content=popup_layout,
-                    size_hint=(0.7, 0.4))
+        # Buttons
+        button_layout = BoxLayout(size_hint=(1, None), height=50, spacing=10)
+        yes_button = RoundedButton(text='Yes, Sign Out', background_color=(0.1, 0.6, 0.8, 1))
+        no_button = RoundedButton(text='Cancel', background_color=(0.3, 0.3, 0.3, 1))
 
-        # Bind buttons to functions
-        yes_button.bind(on_release=lambda x: self.logout_callback(popup))  # Pass popup reference to callback
+        # Popup
+        popup = Popup(
+            title='Sign Out Confirmation',
+            content=popup_layout,
+            size_hint=(0.7, 0.4),
+            auto_dismiss=False
+        )
+
+        # Button callbacks
+        yes_button.bind(on_release=lambda x: self.logout_callback(popup))
         no_button.bind(on_release=popup.dismiss)
 
+        # Add widgets to layouts
         button_layout.add_widget(yes_button)
         button_layout.add_widget(no_button)
         popup_layout.add_widget(popup_label)
         popup_layout.add_widget(button_layout)
 
-        # Show the popup
         popup.open()
 
-    def logout_callback(self, popup):                
-        # Dismiss the popup
-        popup.dismiss()  # Close the popup when signing out
-
+    def logout_callback(self, popup):
+        """Handle logout logic."""
+        popup.dismiss()
         self.clear_screens_except_basic()
 
     def clear_screens_except_basic(self):
+        """Clear all screens except the login and signup screens."""
         sm = self.manager
-
         screens_to_keep = ['signUp', 'login']
         screens_to_readd = []
 

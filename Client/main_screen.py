@@ -4,7 +4,6 @@ from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.screenmanager import Screen
 from kivy.graphics import Color, Rectangle
-from menu_screen import MenuScreen
 from kivy.uix.filechooser import FileChooserIconView
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
@@ -12,73 +11,100 @@ from kivy.app import App
 from menu_screen import MenuScreen
 from rounded_button import RoundedButton
 from feedbackMessage import FeedbackMessage
+from kivy.uix.behaviors import ButtonBehavior
 
+# Create a clickable image
+class ClickableImage(ButtonBehavior, Image):
+    pass
 
 class MainScreen(Screen):
     def __init__(self, **kwargs):
         super(MainScreen, self).__init__(**kwargs)
 
         self.feedback = FeedbackMessage()
+        self.menu_open = False  # Track menu state
 
-        self.menu_open = False  # Variable to track if the menu is open or closed
+        # Main layout
+        layout = FloatLayout()
 
-        layout = FloatLayout()  # Use FloatLayout for flexible positioning
-
+        # Dark mode background
         with layout.canvas.before:
-            Color(0.2, 0.5, 0.8, 1)  # RGB for blue (0-1 range)
+            Color(0.1, 0.1, 0.1, 1)  # Dark background
             self.rect = Rectangle(size=layout.size, pos=layout.pos)
 
-        # Update the rectangle size when the layout size changes
         layout.bind(size=self._update_rect, pos=self._update_rect)
 
-        # Create the image with size and allow_stretch
+        # App logo
         otoscope_image = Image(
             source=r'Icons/otoscope.png',
-            size_hint=(None, None),  # Disable size hint
-            size=(150, 150),         # Set the desired size
-            allow_stretch=True
+            size_hint=(None, None),
+            size=(120, 120),
+            allow_stretch=True,
+            pos_hint={'center_x': 0.5, 'top': 0.75}
         )
-        # Center the image horizontally and position it slightly down from the top
-        otoscope_image.pos_hint = {'center_x': 0.5, 'top': 0.65}
         layout.add_widget(otoscope_image)
 
-
+        # Main title
         main_label = Label(
             text="Autoscope",
-            font_size=32,
-            pos_hint={'center_x': 0.5, 'top': 0.8},
-            size_hint=(None, None)
+            font_size=36,
+            pos_hint={'center_x': 0.5, 'top': 1.05},
+            color=(1, 1, 1, 1)
         )
         layout.add_widget(main_label)
 
+        # Subtitle
         sec_label = Label(
             text="Early detection of ear infections",
-            font_size=24,
-            pos_hint={'center_x': 0.5, 'top': 0.75},
-            size_hint=(None, None)
+            font_size=20,
+            pos_hint={'center_x': 0.5, 'top': 1},
+            color=(0.8, 0.8, 0.8, 1)  # Lighter text color for subtitle
         )
         layout.add_widget(sec_label)
 
-        # Create the button layout below the image
-        button_layout = BoxLayout(orientation='horizontal', size_hint=(None, None), pos_hint={'center_x': 0.35, 'center_y': 0.2}, spacing=50)   
-        
-        take_picture_button = RoundedButton(text='Take Picture', size_hint=(None, None), width=150, height=50)
-        upload_picture_button = RoundedButton(text='Upload Picture', size_hint=(None, None), width=150, height=50)
-        upload_picture_button.bind(on_release=self.open_file_explorer)
+        # Buttons layout
+        button_layout = BoxLayout(
+            orientation='horizontal',
+            size_hint=(0.9, None),
+            height=60,
+            pos_hint={'center_x': 0.5, 'center_y': 0.2},
+            spacing=20
+        )
 
+        # Take Picture button
+        take_picture_button = RoundedButton(
+            text='Take Picture',
+            size_hint=(0.5, None),
+            height=60,
+            background_color=(0.1, 0.6, 0.8, 1),
+            color=(1, 1, 1, 1)
+        )
         button_layout.add_widget(take_picture_button)
+
+        # Upload Picture button
+        upload_picture_button = RoundedButton(
+            text='Upload Picture',
+            size_hint=(0.5, None),
+            height=60,
+            background_color=(0.3, 0.3, 0.3, 1),
+            color=(1, 1, 1, 1)
+        )
+        upload_picture_button.bind(on_release=self.open_file_explorer)
         button_layout.add_widget(upload_picture_button)
+
         layout.add_widget(button_layout)
 
-        # Create a button to open/close the MenuScreen in the top-left corner
-        menu_button = RoundedButton(
+        # Add the menu icon as a clickable image
+        self.menu_icon = ClickableImage(
+            source="Icons/menu.png",
             size_hint=(None, None),
-            size=(75, 75),
-            pos_hint={'x': 0, 'top': 1},
-            background_normal=r'Icons/menu.png',  # Path to the button image
+            size=(50, 50),
+            pos_hint={'x': 0.05, 'top': 0.95},
+            allow_stretch=True
         )
-        menu_button.bind(on_release=self.toggle_menu)
-        layout.add_widget(menu_button)
+
+        self.menu_icon.bind(on_release=self.toggle_menu)  # Bind the click action
+        layout.add_widget(self.menu_icon)
 
         self.add_widget(layout)
 
@@ -87,72 +113,55 @@ class MainScreen(Screen):
         self.rect.size = instance.size
 
     def toggle_menu(self, instance):
-        # If the menu is open, remove it; if it's closed, add it
         if self.menu_open:
             self.remove_widget(self.menu)
+            self.menu_icon.source = "Icons/menu.png"
         else:
             self.menu = MenuScreen(size_hint=(0.3, 1), pos_hint={'x': 0, 'y': 0}, manager=self.manager)
             self.add_widget(self.menu)
-        self.menu_open = not self.menu_open  # Toggle the menu state
+            self.menu_icon.source = "Icons/menu_close.png"
+        self.menu_open = not self.menu_open
 
     def open_file_explorer(self, instance):
-        # Create the file chooser
+        # File chooser
         filechooser = FileChooserIconView()
 
-        # Create the select button
-        select_button = RoundedButton(text='Select', size_hint=(1, None), height=50)  
-        # Create the close button
-        close_button = RoundedButton(text='Close', size_hint=(1, None), height=50)  
-        # Layout for popup window with file chooser and buttons
+        # Buttons for the popup
+        select_button = RoundedButton(text='Select', size_hint=(1, None), height=50)
+        close_button = RoundedButton(text='Close', size_hint=(1, None), height=50)
+
+        # Layout for the popup
         layout = BoxLayout(orientation='vertical')
-        layout.add_widget(filechooser)    
-         # Horizontal layout for buttons
+        layout.add_widget(filechooser)
         button_layout = BoxLayout(orientation='horizontal', size_hint=(1, None), height=50)
         button_layout.add_widget(select_button)
         button_layout.add_widget(close_button)
-        
         layout.add_widget(button_layout)
 
-        # Create the popup window
+        # Popup window
         popup = Popup(title='Select Image', content=layout, size_hint=(0.9, 0.9))
 
-        # Function to handle selection of the image
+        # Select image function
         def select_image(instance):
-            selected_image = filechooser.selection  # Get the selected image path
+            selected_image = filechooser.selection
             if selected_image:
                 image_path = selected_image[0]
                 if self.is_image_file(image_path):
-
-                    # Open the ChosenImageScreen with the selected image
                     app = App.get_running_app()
-
                     choseImage_screen = self.manager.get_screen('choseImage')
                     choseImage_screen.update_data(image_path=image_path, user_id=app.user_details.get("uid"))
                     self.manager.current = 'choseImage'
-
-                    popup.dismiss()  # Close the popup once an image is selected
+                    popup.dismiss()
                 else:
-                    # Show error message if not a valid image
-                    self.feedback.show_message('Invalid file type!', 'Please select an image file.',color='red')
+                    self.feedback.show_message('Invalid file type!', 'Please select an image file.', color='red')
             else:
-                popup.dismiss()  # Close the popup if no file is selected
+                popup.dismiss()
 
-        # Bind the select button to the image selection function
         select_button.bind(on_release=select_image)
-
-        # Bind the close button to dismiss the popup
         close_button.bind(on_release=popup.dismiss)
 
-        # Open the popup
         popup.open()
 
-
     def is_image_file(self, file_path):
-        # Check if the file has a valid image extension
         valid_extensions = ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.tiff']
         return any(file_path.lower().endswith(ext) for ext in valid_extensions)
-    
-
-    def close_error_message(self, instance):
-        # Dismiss the error popup
-        self.error_popup.dismiss()
