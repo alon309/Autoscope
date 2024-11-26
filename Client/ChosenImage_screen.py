@@ -8,6 +8,9 @@ from kivy.uix.label import Label
 from kivy.app import App
 from rounded_button import RoundedButton
 
+from config import SERVER_URL
+
+
 import requests
 
 class ChosenImageScreen(Screen):
@@ -87,7 +90,7 @@ class ChosenImageScreen(Screen):
             try:
                 print(f"Image path: {self.image_path}")
 
-                url = 'http://localhost:5000/api/analyze_image'
+                url = f"{SERVER_URL}/api/analyze_image"
 
                 # Open the image file in binary mode
                 with open(self.image_path, 'rb') as image_file:

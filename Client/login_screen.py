@@ -8,6 +8,9 @@ from kivy.graphics import Color, Rectangle, RoundedRectangle
 from rounded_button import RoundedButton
 from feedbackMessage import FeedbackMessage
 
+from config import SERVER_URL
+
+
 import requests
 
 
@@ -96,7 +99,7 @@ class UserLoginScreen(Screen):
         # email = "ndvp39@gmail.com"
         # password = "123123"
 
-        server_url = "http://localhost:5000/api/login"
+        server_url = f"{SERVER_URL}/api/login"
 
         data = {
             "email": email,

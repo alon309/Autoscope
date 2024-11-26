@@ -11,6 +11,9 @@ from io import BytesIO
 import requests
 from rounded_button import RoundedButton
 
+from config import SERVER_URL
+
+
 class ResultsScreen(Screen):
     def __init__(self, **kwargs):
         super(ResultsScreen, self).__init__(**kwargs)
@@ -85,7 +88,7 @@ class ResultsScreen(Screen):
         current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
         # Send to server
-        url = 'http://localhost:5000/api/save_result'
+        url = f"{SERVER_URL}/api/save_result"
         files = {'image': open(image_path, 'rb')}
         data = {'user_id': self.user_id, 'diagnose': 'Ear infection detected', 'datetime': current_datetime}
 

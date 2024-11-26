@@ -1,1 +1,2 @@
-server/firebase-key.json
+server/.env
+server/requirements.txt

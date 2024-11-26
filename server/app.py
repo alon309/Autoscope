@@ -4,16 +4,31 @@ from flask import Flask, request, jsonify
 import os
 import tempfile
 from werkzeug.utils import secure_filename
+from dotenv import load_dotenv
+import json
 
 import uuid  # לייצור מפתחות ייחודיים
 import requests
 
+from flask_cors import CORS  # Import CORS
+
 app = Flask(__name__)
 
+load_dotenv()
+firebase_credentials = os.getenv("FIREBASE_CREDENTIALS")
+
+# Enable CORS for the entire app
+CORS(app, resources={r"/*": {"origins": "*"}})
+
+if firebase_credentials is None:
+    raise ValueError("Missing FIREBASE_CREDENTIALS in environment variables.")
+
+cred_dict = json.loads(firebase_credentials)
+
 # Initialize Firebase
-cred = credentials.Certificate("firebase-key.json")
+cred = credentials.Certificate(cred_dict)
 firebase_admin.initialize_app(cred, {
-    'storageBucket': 'autoscope-88dd0.appspot.com' 
+    'storageBucket': 'autoscope-88dd0.appspot.com'
 })
 
 # Verify bucket initialization
@@ -257,4 +272,4 @@ def get_history():
 
 # Run the server
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)

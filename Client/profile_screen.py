@@ -9,6 +9,9 @@ from kivy.uix.screenmanager import Screen
 from rounded_button import RoundedButton
 from feedbackMessage import FeedbackMessage
 
+from config import SERVER_URL
+
+
 import requests
 
 class ProfileSettingsScreen(Screen):
@@ -78,7 +81,7 @@ class ProfileSettingsScreen(Screen):
         }
 
 
-        url = 'http://localhost:5000/api/save_settings'
+        url = f"{SERVER_URL}/api/save_settings"
         data = {
             'user_id': app.user_details['uid'],
             'full_name': name,

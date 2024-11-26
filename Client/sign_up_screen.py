@@ -7,6 +7,10 @@ from kivy.graphics import Color, Rectangle
 from rounded_button import RoundedButton
 from feedbackMessage import FeedbackMessage
 from kivy.uix.spinner import Spinner
+from requests.exceptions import RequestException, ConnectionError, Timeout
+
+from config import SERVER_URL
+
 
 import requests
 
@@ -138,20 +142,61 @@ class SignUpScreen(Screen):
         password = self.password_input.text
         phone_number = self.country_code_spinner.text + self.phone_input.text
 
+        # בדיקה אם כל השדות מלאים
         if full_name and email and password and phone_number:
-            response = requests.post('http://localhost:5000/api/signup', json={
-                'full_name': full_name,
-                'email': email,
-                'password': password,
-                'phone_number': phone_number
-            })
-
-            if response.status_code == 201:
-                self.feedback.show_message("Account Created", "Your account has been created successfully!", callback=self.open_login_screen)
-            else:
-                self.feedback.show_message("Sign Up Failed", response.json().get("message", "Error occurred!"))
+            try:
+                # שליחת בקשה לשרת
+                response = requests.post(f"{SERVER_URL}/api/signup", json={
+                    'full_name': full_name,
+                    'email': email,
+                    'password': password,
+                    'phone_number': phone_number
+                }, timeout=10)  # הגדרת מגבלת זמן של 10 שניות
+                
+                # בדיקה אם התגובה מהשרת הצליחה
+                if response.status_code == 201:
+                    self.feedback.show_message(
+                        "Account Created",
+                        "Your account has been created successfully!",
+                        callback=self.open_login_screen
+                    )
+                else:
+                    # טיפול בשגיאות מהשרת
+                    server_message = response.json().get("message", "An error occurred on the server!")
+                    self.feedback.show_message(
+                        "Sign Up Failed",
+                        f"Server error: {server_message}",
+                        color='red'
+                    )
+            except ConnectionError:
+                # טיפול במקרה שבו השרת לא זמין
+                self.feedback.show_message(
+                    "Server Unavailable",
+                    "Could not connect to the server. Please try again later.",
+                    color='red'
+                )
+            except Timeout:
+                # טיפול במקרה שבו השרת לא מגיב בזמן
+                self.feedback.show_message(
+                    "Request Timeout",
+                    "The server did not respond in time. Please try again later.",
+                    color='red'
+                )
+            except RequestException as e:
+                # טיפול בשגיאות אחרות בתקשורת
+                self.feedback.show_message(
+                    "Request Failed",
+                    f"An error occurred: {str(e)}",
+                    color='red'
+                )
         else:
-            self.feedback.show_message("Sign Up Failed", "Please fill in all fields!", color='red')
+            # טיפול במקרה שבו השדות אינם מלאים
+            self.feedback.show_message(
+                "Sign Up Failed",
+                "Please fill in all fields!",
+                color='red'
+            )
+
 
     def open_login_screen(self):
         self.parent.current = "login"  
