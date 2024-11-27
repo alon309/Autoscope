@@ -167,6 +167,7 @@ class SignUpScreen(Screen):
                     self.feedback.show_message(
                         "Account Created",
                         "Your account has been created successfully!",
+                        color='success',
                         callback=self.open_login_screen
                     )
                 else:
@@ -174,31 +175,31 @@ class SignUpScreen(Screen):
                     self.feedback.show_message(
                         "Sign Up Failed",
                         f"Server error: {server_message}",
-                        color='red'
+                        color='error'
                     )
             except ConnectionError:
                 self.feedback.show_message(
                     "Server Unavailable",
                     "Could not connect to the server. Please try again later.",
-                    color='red'
+                    color='error'
                 )
             except Timeout:
                 self.feedback.show_message(
                     "Request Timeout",
                     "The server did not respond in time. Please try again later.",
-                    color='red'
+                    color='error'
                 )
             except RequestException as e:
                 self.feedback.show_message(
                     "Request Failed",
                     f"An error occurred: {str(e)}",
-                    color='red'
+                    color='error'
                 )
         else:
             self.feedback.show_message(
                 "Sign Up Failed",
                 "Please fill in all fields!",
-                color='red'
+                color='error'
             )
 
     def open_login_screen(self):

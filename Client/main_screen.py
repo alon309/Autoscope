@@ -1,6 +1,5 @@
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.image import Image
-from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.screenmanager import Screen
 from kivy.graphics import Color, Rectangle
@@ -8,11 +7,19 @@ from kivy.uix.filechooser import FileChooserIconView
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.app import App
+from kivy.uix.behaviors import ButtonBehavior
+from kivy.metrics import dp
 from menu_screen import MenuScreen
 from rounded_button import RoundedButton
 from feedbackMessage import FeedbackMessage
-from kivy.uix.behaviors import ButtonBehavior
-from kivy.metrics import dp
+
+# Check if running on Android
+try:
+    from android.permissions import request_permissions, Permission # type: ignore
+    ANDROID = True
+except ImportError:
+    print("Running outside of Android. 'android.permissions' is not available.")
+    ANDROID = False
 
 # Create a clickable image
 class ClickableImage(ButtonBehavior, Image):
@@ -68,7 +75,7 @@ class MainScreen(Screen):
             orientation='horizontal',
             size_hint=(0.9, None),
             height=dp(60),
-            pos_hint={'center_x': 0.5, 'center_y': 0.2},
+            pos_hint={'center_x': 0.5, 'center_y': 0.1},
             spacing=dp(20)
         )
 
@@ -123,15 +130,23 @@ class MainScreen(Screen):
             self.menu_icon.source = "Icons/menu_close.png"
         self.menu_open = not self.menu_open
 
+    def request_storage_permissions(self):
+        if ANDROID:
+            request_permissions([Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE])
+        else:
+            print("Permissions are not required outside of Android.")
+
     def open_file_explorer(self, instance):
-        # File chooser - הגדרת פילטרים להצגת תמונות בלבד
+        self.request_storage_permissions()
+
         filechooser = FileChooserIconView(
+            path='/storage/emulated/0/' if ANDROID else './',
             filters=['*.png', '*.jpg', '*.jpeg', '*.gif', '*.bmp', '*.tiff'],  # Allow only image files
-            show_hidden=False  # Don't show hidden files
+            show_hidden=False
         )
 
         # Buttons for the popup
-        select_button = RoundedButton(text='Select', size_hint=(1, None), height=dp(50))
+        select_button = RoundedButton(text='Select', size_hint=(1, None), height=dp(50), background_color=(0.1, 0.6, 0.8, 1))
         close_button = RoundedButton(text='Close', size_hint=(1, None), height=dp(50))
 
         # Layout for the popup
@@ -145,19 +160,18 @@ class MainScreen(Screen):
         # Popup window
         popup = Popup(title='Select Image', content=layout, size_hint=(0.9, 0.9))
 
-        # Select image function
         def select_image(instance):
             selected_image = filechooser.selection
             if selected_image:
                 image_path = selected_image[0]
-                if self.is_image_file(image_path):  # בדוק אם הקובץ הוא תמונה
+                if self.is_image_file(image_path):
                     app = App.get_running_app()
                     choseImage_screen = self.manager.get_screen('choseImage')
                     choseImage_screen.update_data(image_path=image_path, user_id=app.user_details.get("uid"))
                     self.manager.current = 'choseImage'
                     popup.dismiss()
                 else:
-                    self.feedback.show_message('Invalid file type!', 'Please select an image file.', color='red')
+                    self.feedback.show_message('Invalid file type!', 'Please select an image file.', color='error')
             else:
                 popup.dismiss()
 

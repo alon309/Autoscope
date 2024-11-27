@@ -7,6 +7,7 @@ from kivy.graphics import Color, Rectangle
 from kivy.uix.label import Label
 from kivy.app import App
 from rounded_button import RoundedButton
+from kivy.metrics import dp
 
 from config import SERVER_URL
 
@@ -30,7 +31,7 @@ class ChosenImageScreen(Screen):
 
         # Set the background color to blue
         with layout.canvas.before:
-            Color(0.2, 0.5, 0.8, 1)  # Light blue color
+            Color(0.1, 0.1, 0.1, 1)
             self.rect = Rectangle(size=layout.size, pos=layout.pos)
 
         # Update the rectangle size when the layout size changes
@@ -45,13 +46,13 @@ class ChosenImageScreen(Screen):
         layout.add_widget(header)
 
         # Analysis button
-        analysis_button = RoundedButton(text="Analyze", size_hint=(0.4, 0.1), pos_hint={'center_x': 0.5, 'top': 0.2})
+        analysis_button = RoundedButton(text="Analyze", size_hint=(0.4, 0.1), pos_hint={'center_x': 0.5, 'top': 0.2}, background_color=(0.1, 0.6, 0.8, 1))
         analysis_button.bind(on_release=self.analyze_image)
         layout.add_widget(analysis_button)
 
         self.add_widget(layout)
 
-        back_btn = RoundedButton(background_normal = "Icons/back.png", size_hint=(None, None), height=65, width=75, pos_hint={'x': 0, 'top': 0.1})
+        back_btn = RoundedButton(background_normal = "Icons/back.png", size_hint=(None, None), height=dp(65), width=dp(75), pos_hint={'x': 0, 'top': 0.1})
         back_btn.bind(on_release=self.close_chosenImage)
         self.add_widget(back_btn)
 

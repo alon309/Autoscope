@@ -104,11 +104,11 @@ class UserLoginScreen(Screen):
         self.rect.size = self.size
 
     def sign_in_func(self, instance):
-        email = self.email_input.text
-        password = self.password_input.text
+        #email = self.email_input.text
+        #password = self.password_input.text
 
-        #email = 'ndvp39@gmail.com'
-        #password = '123123'
+        email = 'ndvp39@gmail.com'
+        password = '123123'
 
         server_url = f"{SERVER_URL}/api/login"
 
@@ -149,7 +149,7 @@ class UserLoginScreen(Screen):
             self.feedback.show_message(
                 "Login Successful",
                 f"Welcome back, {full_name}!",
-                color='green',
+                color='success',
                 callback=lambda: self.open_main_screen()
             )
 
@@ -160,11 +160,11 @@ class UserLoginScreen(Screen):
                 error_message = error_details
             else:
                 error_message = error_details.get("error", {})
-            self.feedback.show_message("Login Failed", str(error_message), color='red')
+            self.feedback.show_message("Login Failed", str(error_message), color='error')
 
         except Exception as err:
             print(str(err))
-            self.feedback.show_message("Error", str(err), color='red')
+            self.feedback.show_message("Error", str(err), color='error')
 
     def sign_up_func(self, instance):
         self.manager.current = 'signUp'

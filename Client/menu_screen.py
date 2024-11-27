@@ -128,8 +128,8 @@ class MenuScreen(FloatLayout):
 
     def show_logout_popup(self, instance):
         """Display a popup for logout confirmation."""
-        popup_layout = BoxLayout(orientation='vertical', padding=dp(10))
-        popup_label = Label(text="Are you sure you want to sign out?", size_hint=(1, None), height=dp(50))
+        popup_layout = BoxLayout(orientation='vertical')
+        popup_label = Label(text="Are you sure you want to sign out?", size_hint=(1, None),)
 
         # Buttons
         button_layout = BoxLayout(size_hint=(1, None), height=dp(50), spacing=dp(10))
@@ -140,7 +140,7 @@ class MenuScreen(FloatLayout):
         popup = Popup(
             title='Sign Out Confirmation',
             content=popup_layout,
-            size_hint=(0.7, 0.4),
+            size_hint=(dp(0.7), dp(0.4)),
             auto_dismiss=False
         )
 

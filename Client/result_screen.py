@@ -1,17 +1,16 @@
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.button import Button
 from kivy.uix.image import Image
 from kivy.uix.screenmanager import Screen
 from kivy.uix.label import Label
-from kivy.graphics import Color
+from kivy.graphics import Color, Rectangle
 from kivy.app import App
 from datetime import datetime
-from kivy.core.image import Image as CoreImage
-from io import BytesIO
-import requests
+from kivy.metrics import dp
 from rounded_button import RoundedButton
+from kivy.uix.floatlayout import FloatLayout
 
 from config import SERVER_URL
+import requests
 
 
 class ResultsScreen(Screen):
@@ -22,58 +21,80 @@ class ResultsScreen(Screen):
         self.result_string = "No results yet"
         self.user_id = None
 
-        # Layout for the screen using BoxLayout
-        self.layout = BoxLayout(orientation='vertical', padding=10, spacing=10)
+        self.layout = FloatLayout()
 
         # Background color
-        with self.canvas.before:
-            Color(0.2, 0.5, 0.8, 1)  # Light blue background
+        with self.layout.canvas.before:
+            Color(0.1, 0.1, 0.1, 1)  # Dark background
+            self.rect = Rectangle(size=self.size, pos=self.pos)
 
-        # Display image area
-        self.image_display = Image(size_hint=(1, 0.4))  # Empty image initially
-        self.layout.add_widget(self.image_display)
+        self.layout.bind(size=self._update_rect, pos=self._update_rect)
+
+        # Centered result layout
+        centered_layout = BoxLayout(
+            orientation='vertical',
+            size_hint=(0.8, 0.6),
+            pos_hint={'center_x': 0.5, 'center_y': 0.5},
+            spacing=dp(20)
+        )
+
+        # Display image
+        self.image_display = Image(
+            size_hint=(1, 0.7),
+            allow_stretch=True
+        )
+        centered_layout.add_widget(self.image_display)
 
         # Result label
         self.result_label = Label(
             text=self.result_string,
-            size_hint=(1, 0.2),
+            size_hint=(1, 0.3),
+            font_size=dp(18),
             halign="center",
             valign="middle",
-            text_size=(self.width * 0.8, None)  # Wrap text
+            color=(1, 1, 1, 1)
         )
-        self.layout.add_widget(self.result_label)
+        self.result_label.bind(size=self.result_label.setter('text_size'))
+        centered_layout.add_widget(self.result_label)
+
+        self.layout.add_widget(centered_layout)
 
         # Save button
         save_button = RoundedButton(
             text="Save",
-            size_hint=(0.4, 0.1),
-            pos_hint={'center_x': 0.5}  # Center the button horizontally
+            size_hint=(None, None),
+            size=(dp(150), dp(50)),
+            pos_hint={'center_x': 0.5, 'y': 0.1},
+            background_color=(0.1, 0.6, 0.8, 1),
+            color=(1, 1, 1, 1)
         )
-        save_button.bind(on_release=self.save_result)  # Implement save logic
+        save_button.bind(on_release=self.save_result)
         self.layout.add_widget(save_button)
-
-        self.add_widget(self.layout)
 
         # Home button
         home_btn = RoundedButton(
             background_normal="Icons/home.jpg",
             size_hint=(None, None),
-            height=65,
-            width=75,
+            height=dp(65),
+            width=dp(75),
             pos_hint={'x': 0, 'top': 0.1}
         )
         home_btn.bind(on_release=self.return_home)
-        self.add_widget(home_btn)
+        self.layout.add_widget(home_btn)
+
+        self.add_widget(self.layout)
+
+    def _update_rect(self, instance, value):
+        self.rect.pos = instance.pos
+        self.rect.size = instance.size
 
     def update_data(self, image, result_string, user_id):
-
         self.image = image
         self.result_string = result_string
         self.user_id = user_id
 
         if self.image:
-            image_texture = self.image.texture
-            self.image_display.texture = image_texture
+            self.image_display.texture = self.image.texture
         self.result_label.text = self.result_string
         print(f"Data updated: {self.image}, {self.result_string}, {self.user_id}")
 
@@ -98,7 +119,6 @@ class ResultsScreen(Screen):
 
             # Check if the request was successful
             if response.status_code == 200:
-                # Create a new result entry
                 result_key = result_data.get('result_id')  # Assuming the server returns a unique ID for the result
                 new_result = {
                     'datetime': current_datetime,
@@ -108,16 +128,12 @@ class ResultsScreen(Screen):
 
                 # Update app.user_details with the new result
                 app = App.get_running_app()
-
-                # Ensure user_details and results are initialized
                 if app.user_details is None:
                     app.user_details = {'results': {}}
                 elif app.user_details.get('results') is None:
                     app.user_details['results'] = {}
 
-                # Now safely update results
                 app.user_details['results'][result_key] = new_result
-
                 print(f"Result saved successfully: {new_result}")
             else:
                 print(f"Failed to save result: {result_data.get('message')}")

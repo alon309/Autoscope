@@ -4,65 +4,67 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.scrollview import ScrollView
 from kivy.graphics import Color, RoundedRectangle
 from rounded_button import RoundedButton
-
+from kivy.metrics import dp
 
 class FeedbackMessage:
-    def __init__(self, color='green'):
-        self.color = color  # Default to green
+    def __init__(self):
+        # Define default colors for messages
         self.colors = {
-            'red': (1, 0, 0, 1),  # Red
-            'green': (0, 1, 0, 1),  # Green
-            'blue': (0, 0, 1, 1),   # Blue
-            'yellow': (1, 1, 0, 1),  # Yellow
+            'error': (1, 0, 0, 1),
+            'success': (0.1, 0.6, 0.8, 1)
         }
 
-    def show_message(self, title, message, color=None, callback=None):
-        # Determine the color for the message text
-        if color:
-            color_value = self.colors.get(color, (0, 1, 0, 1))
-        else:
-            color_value = self.colors.get(self.color, (0, 1, 0, 1))
+    def show_message(self, title, message, color, callback=None):
+        """
+        Display a popup message.
+        :param title: Title of the popup.
+        :param message: Message text.
+        :param color_key: Key for the message color ('error' or 'success').
+        :param callback: Optional callback function to execute after dismissing.
+        """
+        # Get color from the predefined colors or default to white
+        color = self.colors.get(color, (1, 1, 1, 1))
 
         # Outer layout for the popup
         popup_layout = BoxLayout(
             orientation='vertical',
-            spacing=10,
-            padding=20,
+            spacing=dp(10),
+            padding=dp(20),
         )
 
         # Title label
         title_label = Label(
             text=title,
-            font_size=24,
+            font_size=dp(24),
             size_hint=(1, None),
-            height=40,
+            height=dp(40),
             halign='center',
             valign='middle',
-            color=(1, 1, 1, 1)  # White text
+            color=(1, 1, 1, 1)  # Title text color
         )
         popup_layout.add_widget(title_label)
 
         # Scrollable message content
-        scroll_view = ScrollView(size_hint=(1, None), size=(400, 120))
+        scroll_view = ScrollView(size_hint=(1, None), size=(dp(400), dp(120)))
         message_label = Label(
             text=message,
-            font_size=18,
+            font_size=dp(18),
             size_hint_y=None,
             halign='center',
             valign='middle',
-            color=color_value,
-            text_size=(400, None)  # Ensures the text wraps properly
+            color=color,  # Message text color
+            text_size=(dp(400), None)  # Ensures the text wraps properly
         )
         message_label.bind(texture_size=message_label.setter('size'))
         scroll_view.add_widget(message_label)
         popup_layout.add_widget(scroll_view)
 
         # Button layout
-        button_layout = BoxLayout(size_hint=(1, None), height=50, spacing=10)
+        button_layout = BoxLayout(size_hint=(1, None), height=dp(50), spacing=dp(10))
         ok_button = RoundedButton(
             text="OK",
             size_hint=(1, None),
-            height=50,
+            height=dp(50),
             background_color=(0.1, 0.6, 0.8, 1),
             color=(1, 1, 1, 1)
         )
@@ -73,7 +75,7 @@ class FeedbackMessage:
         popup = Popup(
             title='Message',
             content=popup_layout,
-            size_hint=(0.7, 0.5),
+            size_hint=(0.8, 0.6),  # Adjust size as needed
             auto_dismiss=False
         )
 
@@ -85,5 +87,5 @@ class FeedbackMessage:
 
         ok_button.bind(on_release=close_and_execute_callback)
 
+        # Open the popup
         popup.open()
-
