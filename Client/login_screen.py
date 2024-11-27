@@ -8,7 +8,9 @@ from kivy.app import App
 from rounded_button import RoundedButton
 from feedbackMessage import FeedbackMessage
 from config import SERVER_URL
+from kivy.metrics import dp
 import requests
+import certifi
 
 
 class UserLoginScreen(Screen):
@@ -30,7 +32,7 @@ class UserLoginScreen(Screen):
         # Welcome label
         welcome_label = Label(
             text="Welcome to Autoscope",
-            font_size=40,
+            font_size=dp(40),
             pos_hint={'center_x': 0.5, 'top': 0.85},
             size_hint=(None, None),
             color=(1, 1, 1, 1)  # White text
@@ -41,7 +43,7 @@ class UserLoginScreen(Screen):
         self.email_input = TextInput(
             hint_text="Email",
             size_hint=(0.9, None),
-            height=60,
+            height=dp(60),
             pos_hint={'center_x': 0.5, 'top': 0.65},
             multiline=False,
             background_color=(0.2, 0.2, 0.2, 1),
@@ -55,7 +57,7 @@ class UserLoginScreen(Screen):
             hint_text="Password",
             password=True,
             size_hint=(0.9, None),
-            height=60,
+            height=dp(60),
             pos_hint={'center_x': 0.5, 'top': 0.55},
             multiline=False,
             background_color=(0.2, 0.2, 0.2, 1),
@@ -68,15 +70,15 @@ class UserLoginScreen(Screen):
         button_layout = BoxLayout(
             orientation='vertical',
             size_hint=(0.9, None),
-            height=140,
+            height=dp(140),
             pos_hint={'center_x': 0.5, 'top': 0.4},
-            spacing=20
+            spacing=dp(20)
         )
 
         sign_in_button = RoundedButton(
             text="Sign In",
             size_hint=(1, None),
-            height=60,
+            height=dp(60),
             background_color=(0.1, 0.6, 0.8, 1),
             color=(1, 1, 1, 1)  # White text
         )
@@ -86,7 +88,7 @@ class UserLoginScreen(Screen):
         create_user_button = RoundedButton(
             text="Create User",
             size_hint=(1, None),
-            height=60,
+            height=dp(60),
             background_color=(0.3, 0.3, 0.3, 1),
             color=(1, 1, 1, 1)
         )
@@ -102,11 +104,11 @@ class UserLoginScreen(Screen):
         self.rect.size = self.size
 
     def sign_in_func(self, instance):
-        #email = self.email_input.text
-        #password = self.password_input.text
+        email = self.email_input.text
+        password = self.password_input.text
 
-        email = 'ndvp39@gmail.com'
-        password = '123123'
+        #email = 'ndvp39@gmail.com'
+        #password = '123123'
 
         server_url = f"{SERVER_URL}/api/login"
 
@@ -116,7 +118,7 @@ class UserLoginScreen(Screen):
         }
 
         try:
-            response = requests.post(server_url, json=data)
+            response = requests.post(server_url, json=data, verify=certifi.where())
             response.raise_for_status()
 
             user_data = response.json()

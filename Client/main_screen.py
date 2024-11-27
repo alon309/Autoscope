@@ -12,6 +12,7 @@ from menu_screen import MenuScreen
 from rounded_button import RoundedButton
 from feedbackMessage import FeedbackMessage
 from kivy.uix.behaviors import ButtonBehavior
+from kivy.metrics import dp
 
 # Create a clickable image
 class ClickableImage(ButtonBehavior, Image):
@@ -38,16 +39,16 @@ class MainScreen(Screen):
         otoscope_image = Image(
             source=r'Icons/otoscope.png',
             size_hint=(None, None),
-            size=(120, 120),
+            size=(dp(120), dp(120)),
             allow_stretch=True,
-            pos_hint={'center_x': 0.5, 'top': 0.75}
+            pos_hint={'center_x': 0.5, 'top': 0.85}
         )
         layout.add_widget(otoscope_image)
 
         # Main title
         main_label = Label(
             text="Autoscope",
-            font_size=36,
+            font_size=dp(36),
             pos_hint={'center_x': 0.5, 'top': 1.05},
             color=(1, 1, 1, 1)
         )
@@ -56,7 +57,7 @@ class MainScreen(Screen):
         # Subtitle
         sec_label = Label(
             text="Early detection of ear infections",
-            font_size=20,
+            font_size=dp(20),
             pos_hint={'center_x': 0.5, 'top': 1},
             color=(0.8, 0.8, 0.8, 1)  # Lighter text color for subtitle
         )
@@ -66,16 +67,16 @@ class MainScreen(Screen):
         button_layout = BoxLayout(
             orientation='horizontal',
             size_hint=(0.9, None),
-            height=60,
+            height=dp(60),
             pos_hint={'center_x': 0.5, 'center_y': 0.2},
-            spacing=20
+            spacing=dp(20)
         )
 
         # Take Picture button
         take_picture_button = RoundedButton(
             text='Take Picture',
             size_hint=(0.5, None),
-            height=60,
+            height=dp(60),
             background_color=(0.1, 0.6, 0.8, 1),
             color=(1, 1, 1, 1)
         )
@@ -85,7 +86,7 @@ class MainScreen(Screen):
         upload_picture_button = RoundedButton(
             text='Upload Picture',
             size_hint=(0.5, None),
-            height=60,
+            height=dp(60),
             background_color=(0.3, 0.3, 0.3, 1),
             color=(1, 1, 1, 1)
         )
@@ -98,7 +99,7 @@ class MainScreen(Screen):
         self.menu_icon = ClickableImage(
             source="Icons/menu.png",
             size_hint=(None, None),
-            size=(50, 50),
+            size=(dp(50), dp(50)),
             pos_hint={'x': 0.05, 'top': 0.95},
             allow_stretch=True
         )
@@ -127,13 +128,13 @@ class MainScreen(Screen):
         filechooser = FileChooserIconView()
 
         # Buttons for the popup
-        select_button = RoundedButton(text='Select', size_hint=(1, None), height=50)
-        close_button = RoundedButton(text='Close', size_hint=(1, None), height=50)
+        select_button = RoundedButton(text='Select', size_hint=(1, None), height=dp(50))
+        close_button = RoundedButton(text='Close', size_hint=(1, None), height=dp(50))
 
         # Layout for the popup
         layout = BoxLayout(orientation='vertical')
         layout.add_widget(filechooser)
-        button_layout = BoxLayout(orientation='horizontal', size_hint=(1, None), height=50)
+        button_layout = BoxLayout(orientation='horizontal', size_hint=(1, None), height=dp(50))
         button_layout.add_widget(select_button)
         button_layout.add_widget(close_button)
         layout.add_widget(button_layout)

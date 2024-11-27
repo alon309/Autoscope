@@ -8,6 +8,7 @@ from rounded_button import RoundedButton
 from feedbackMessage import FeedbackMessage
 from kivy.uix.spinner import Spinner
 from requests.exceptions import RequestException, ConnectionError, Timeout
+from kivy.metrics import dp
 from config import SERVER_URL
 import requests
 
@@ -31,7 +32,7 @@ class SignUpScreen(Screen):
         # Title Label
         sign_up_label = Label(
             text="Create New User",
-            font_size=36,
+            font_size=dp(36),
             pos_hint={'center_x': 0.5, 'top': 0.9},
             size_hint=(None, None),
             color=(1, 1, 1, 1)  # White text
@@ -42,7 +43,7 @@ class SignUpScreen(Screen):
         self.full_name_input = TextInput(
             hint_text="Full Name",
             size_hint=(0.9, None),
-            height=60,
+            height=dp(60),
             pos_hint={'center_x': 0.5, 'top': 0.75},
             multiline=False,
             background_color=(0.2, 0.2, 0.2, 1),
@@ -55,7 +56,7 @@ class SignUpScreen(Screen):
         self.email_input = TextInput(
             hint_text="Email",
             size_hint=(0.9, None),
-            height=60,
+            height=dp(60),
             pos_hint={'center_x': 0.5, 'top': 0.65},
             multiline=False,
             background_color=(0.2, 0.2, 0.2, 1),
@@ -69,14 +70,14 @@ class SignUpScreen(Screen):
             text="+972",
             values=["+972", "+1", "+44", "+33", "+91", "+86"],
             size_hint=(0.2, None),
-            height=60,
+            height=dp(60),
             background_color=(0.2, 0.2, 0.2, 1),
             color=(1, 1, 1, 1)
         )
         self.phone_input = TextInput(
             hint_text="Phone Number",
             size_hint=(0.7, None),
-            height=60,
+            height=dp(60),
             multiline=False,
             background_color=(0.2, 0.2, 0.2, 1),
             foreground_color=(1, 1, 1, 1),
@@ -85,8 +86,8 @@ class SignUpScreen(Screen):
         phone_row = BoxLayout(
             orientation='horizontal',
             size_hint=(0.9, None),
-            height=60,
-            spacing=10,
+            height=dp(60),
+            spacing=dp(10),
             pos_hint={'center_x': 0.5, 'top': 0.55}
         )
         phone_row.add_widget(self.country_code_spinner)
@@ -98,7 +99,7 @@ class SignUpScreen(Screen):
             hint_text="Password",
             password=True,
             size_hint=(0.9, None),
-            height=60,
+            height=dp(60),
             pos_hint={'center_x': 0.5, 'top': 0.45},
             multiline=False,
             background_color=(0.2, 0.2, 0.2, 1),
@@ -111,16 +112,16 @@ class SignUpScreen(Screen):
         button_layout = BoxLayout(
             orientation='horizontal',
             size_hint=(0.9, None),
-            height=60,
+            height=dp(60),
             pos_hint={'center_x': 0.5, 'top': 0.3},
-            spacing=20
+            spacing=dp(20)
         )
 
         # Cancel Button
         cancel_button = RoundedButton(
             text="Cancel",
             size_hint=(0.5, None),
-            height=60,
+            height=dp(60),
             background_color=(0.8, 0.1, 0.1, 1),
             color=(1, 1, 1, 1)
         )
@@ -131,7 +132,7 @@ class SignUpScreen(Screen):
         sign_up_button = RoundedButton(
             text="Sign Up",
             size_hint=(0.5, None),
-            height=60,
+            height=dp(60),
             background_color=(0.1, 0.6, 0.8, 1),
             color=(1, 1, 1, 1)
         )

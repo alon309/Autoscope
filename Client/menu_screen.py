@@ -7,6 +7,7 @@ from kivy.app import App
 from kivy.graphics import Color, RoundedRectangle, Line
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
+from kivy.metrics import dp
 
 
 class MenuScreen(FloatLayout):
@@ -21,7 +22,7 @@ class MenuScreen(FloatLayout):
             self.background_rect = RoundedRectangle(
                 size=(self.width * 0.8, self.height * 0.7),
                 pos=(self.width * 0.1, self.height * 0.15),
-                radius=[(20, 20), (20, 20), (20, 20), (20, 20)]
+                radius=[(dp(20), dp(20)), (dp(20), dp(20)), (dp(20), dp(20)), (dp(20), dp(20))]
             )
 
         self.bind(size=self._update_background, pos=self._update_background)
@@ -66,25 +67,25 @@ class MenuScreen(FloatLayout):
             Color(0.8, 0.8, 0.8, 0.5)  # Light gray
             Line(
                 points=[
-                    self.width * 0.1, y_position + 10,  # Start point of the line
-                    self.width * 0.3, y_position + 10   # End point of the line
+                    self.width * 0.1, y_position + dp(10),  # Start point of the line
+                    self.width * 0.9, y_position + dp(10)   # End point of the line
                 ],
-                width=2
+                width=dp(2)
             )
 
         # Layout for the option
         layout = BoxLayout(
             orientation="horizontal",
             size_hint=(0.8, None),
-            height=70 if is_primary else 60,
-            pos=(self.width * 0.1, y_position - 40)
+            height=dp(70) if is_primary else dp(60),
+            pos=(self.width * 0.1, y_position - dp(40))
         )
 
         # Icon
         icon = Image(
             source=icon_path,
             size_hint=(None, None),
-            size=(50, 50) if is_primary else (40, 40),
+            size=(dp(50), dp(50)) if is_primary else (dp(40), dp(40)),
             allow_stretch=True
         )
         layout.add_widget(icon)
@@ -93,11 +94,11 @@ class MenuScreen(FloatLayout):
         button = RoundedButton(
             text=text,
             size_hint=(1, None),
-            height=70 if is_primary else 60,
-            font_size=20 if is_primary else 18,
+            height=dp(70) if is_primary else dp(60),
+            font_size=dp(20) if is_primary else dp(18),
             bold=is_primary,
             background_color=(0.1, 0.6, 0.8, 1) if is_primary else (0.3, 0.3, 0.3, 1),
-            color=(1, 1, 1, 1)  # White text
+            color=(1, 1, 1, 1)
         )
         button.bind(on_release=callback)
         layout.add_widget(button)
@@ -127,11 +128,11 @@ class MenuScreen(FloatLayout):
 
     def show_logout_popup(self, instance):
         """Display a popup for logout confirmation."""
-        popup_layout = BoxLayout(orientation='vertical', padding=10)
-        popup_label = Label(text="Are you sure you want to sign out?", size_hint=(1, None), height=50)
+        popup_layout = BoxLayout(orientation='vertical', padding=dp(10))
+        popup_label = Label(text="Are you sure you want to sign out?", size_hint=(1, None), height=dp(50))
 
         # Buttons
-        button_layout = BoxLayout(size_hint=(1, None), height=50, spacing=10)
+        button_layout = BoxLayout(size_hint=(1, None), height=dp(50), spacing=dp(10))
         yes_button = RoundedButton(text='Yes, Sign Out', background_color=(0.1, 0.6, 0.8, 1))
         no_button = RoundedButton(text='Cancel', background_color=(0.3, 0.3, 0.3, 1))
 
