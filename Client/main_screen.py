@@ -124,8 +124,11 @@ class MainScreen(Screen):
         self.menu_open = not self.menu_open
 
     def open_file_explorer(self, instance):
-        # File chooser
-        filechooser = FileChooserIconView()
+        # File chooser - הגדרת פילטרים להצגת תמונות בלבד
+        filechooser = FileChooserIconView(
+            filters=['*.png', '*.jpg', '*.jpeg', '*.gif', '*.bmp', '*.tiff'],  # Allow only image files
+            show_hidden=False  # Don't show hidden files
+        )
 
         # Buttons for the popup
         select_button = RoundedButton(text='Select', size_hint=(1, None), height=dp(50))
@@ -147,7 +150,7 @@ class MainScreen(Screen):
             selected_image = filechooser.selection
             if selected_image:
                 image_path = selected_image[0]
-                if self.is_image_file(image_path):
+                if self.is_image_file(image_path):  # בדוק אם הקובץ הוא תמונה
                     app = App.get_running_app()
                     choseImage_screen = self.manager.get_screen('choseImage')
                     choseImage_screen.update_data(image_path=image_path, user_id=app.user_details.get("uid"))
@@ -164,5 +167,6 @@ class MainScreen(Screen):
         popup.open()
 
     def is_image_file(self, file_path):
+        """Check if the file is a valid image."""
         valid_extensions = ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.tiff']
         return any(file_path.lower().endswith(ext) for ext in valid_extensions)
