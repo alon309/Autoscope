@@ -18,6 +18,7 @@ from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.image import Image
 from custom_widgets import RoundedTextInput, RoundedButton_
 from kivy.uix.boxlayout import BoxLayout
+from otoscope_video_screen import OtoScopeVideoScreen
 from kivy.uix.screenmanager import Screen
 
 class Menu(BoxLayout):
@@ -43,6 +44,7 @@ class AutoScopeApp(App):
         Builder.load_file("screens/home.kv")
         Builder.load_file("screens/account.kv")
         Builder.load_file("screens/ear_check.kv")
+        Builder.load_file("screens/otoscope.kv")
         Builder.load_file("screens/chosen_image.kv")
         Builder.load_file("screens/result.kv")
         Builder.load_file("screens/history.kv")
@@ -72,12 +74,13 @@ class AutoScopeApp(App):
             side_menu.pos_hint = {"x": 0, "top": 1} if side_menu.pos_hint["x"] == -1 else {"x": -1, "top": 1}
 
     def on_login_success(self):
-
+        
         # Define screens to add
         screens_to_add = [
             (HomeScreen, 'home'),
             (AccountScreen, 'account'),
             (EarCheckScreen, 'earCheck'),
+            (OtoScopeVideoScreen, 'otoscope'),
             (SettingsScreen, 'settings'),
             (ResultsScreen, 'result'),
             (AboutScreen, 'about'),

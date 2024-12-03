@@ -81,6 +81,11 @@ class EarCheckScreen(Screen):
         valid_extensions = ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.tiff']
         return any(file_path.lower().endswith(ext) for ext in valid_extensions)
 
+    def load_otoscope_video_screen(self):
+        print("otoscope video screen load!")
+        self.manager.transition.duration = 0
+        self.manager.current = 'otoscope'
+
     def go_back(self):
         self.manager.transition.duration = 0
         self.manager.current = 'home'

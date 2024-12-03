@@ -1,0 +1,24 @@
+<OtoScopeVideoScreen>:
+    BoxLayout:
+        orientation: "vertical"
+        spacing: dp(10)
+        padding: dp(10)
+
+        # Area to display video
+        Image:
+            id: video_area
+            allow_stretch: True
+            keep_ratio: True
+
+        # Buttons at the bottom
+        BoxLayout:
+            size_hint_y: None
+            height: dp(50)
+            spacing: dp(10)
+
+            Button:
+                text: "Back"
+                on_release: root.go_back()
+            Button:
+                text: "Save Image"
+                on_release: root.save_image()
