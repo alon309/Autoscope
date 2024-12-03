@@ -1,0 +1,42 @@
+<FeedbackPopup>:
+    title: root.title_text
+    size_hint: None, None
+    size: dp(350), dp(250)
+    auto_dismiss: False
+    background_color: 0, 0, 0, 0  # רקע שקוף
+    BoxLayout:
+        orientation: "vertical"
+        spacing: dp(10)
+        padding: dp(20)
+
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 1  # צבע לבן
+            RoundedRectangle:
+                size: self.size
+                pos: self.pos
+                radius: [dp(20)]
+
+        # הודעה
+        Label:
+            text: root.message_text
+            font_size: dp(16)
+            size_hint_y: None
+            height: dp(100)
+            halign: "center"
+            valign: "middle"
+            color: 0.4, 0.4, 0.4, 1  # טקסט אפור כהה
+
+        # יישור כפתור במרכז
+        BoxLayout:
+            size_hint_y: None
+            height: dp(50)
+            orientation: "horizontal"
+            padding: [dp(50), 0, dp(50), 0]  # ריווח משני הצדדים
+
+            RoundedButton_:
+                text: "Close"
+                size_hint: 1, 1
+                background_color: 0.027, 0.929, 0.749, 1  # רקע ירוק
+                color: 1, 1, 1, 1  # טקסט לבן
+                on_release: root.dismiss_with_callback()

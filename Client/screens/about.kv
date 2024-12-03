@@ -1,0 +1,89 @@
+<AboutScreen>:
+    name: "about"
+
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 1
+            Rectangle:
+                size: self.size
+                pos: self.pos
+
+        Image:
+            source: "Icons/otoscope.png"
+            size_hint: (None, None)
+            size: dp(80), dp(80)
+            pos_hint: {"right": 0.98, "top": 0.98}
+
+        ClickableImage:
+            source: "./Icons/menu.png"
+            size_hint: (None, None)
+            size: dp(65), dp(65)
+            pos_hint: {"x": 0.02, "top": 0.98}
+            # on_release: root.go_back()
+            
+        ClickableImage:
+            source: "./Icons/back.png"
+            size_hint: (None, None)
+            size: dp(65), dp(65)
+            pos_hint: {"x": 0.2, "top": 0.98}
+            on_release: root.go_back()
+
+        Label:
+            text: "About"
+            size_hint: None, None
+            size: dp(300), dp(50)
+            pos_hint: {"center_x": 0.5, "top": 0.9}
+            font_size: dp(30)
+            bold: True
+            color: 0.3, 0.3, 0.3, 1
+
+        Label:
+
+            text: "AutoScope is an innovative application designed to assist"
+            size_hint: 0.9, None
+            height: dp(200)
+            pos_hint: {'center_x': 0.5, 'center_y': 0.7}
+            halign: 'center'
+            valign: 'middle'
+            color: 0.8, 0.8, 0.8, 1
+            text_size: self.width, None  # עיטוף טקסט
+
+        # עידוד לפידבק
+        Label:
+            text: "We would love to hear your feedback:"
+            size_hint: None, None
+            size: dp(250), dp(30)
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            font_size: dp(18)
+            color: 0.8, 0.8, 0.8, 1
+
+        # קופסה להזנת פידבק
+        BoxLayout:
+            id: feedback_box
+            orientation: 'horizontal'
+            size_hint: 0.9, None
+            height: dp(50)
+            pos_hint: {'center_x': 0.5, 'y': 0.1}
+            spacing: dp(10)
+
+            RoundedTextInput:
+                id: feedback_input
+                size_hint: 0.8, None
+                height: dp(50)
+                multiline: True
+                hint_text: "Write your feedback here..."
+                hint_text_color: 1, 1, 1, 0.6
+                padding: [dp(10), dp(10), dp(10), dp(10)]
+                #background_color: 0.2, 0.2, 0.2, 1
+                foreground_color: 1, 1, 1, 1
+                cursor_color: 1, 1, 1, 1
+                on_focus: root.on_focus(self, self.focus)
+                on_text: root.adjust_text_input_height(self.text)
+
+            RoundedButton_:
+                text: "Send"
+                size_hint: 0.2, 1
+                background_color: 0.1, 0.6, 0.8, 1
+                color: 1, 1, 1, 1
+                on_release: root.submit_feedback()

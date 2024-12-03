@@ -1,32 +1,14 @@
-from kivy.uix.label import Label
-from kivy.uix.button import Button
-from kivy.uix.floatlayout import FloatLayout
-from kivy.graphics import Color, Rectangle
-from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.screenmanager import Screen
-from rounded_button import RoundedButton
+from kivy.uix.label import Label
 from kivy.metrics import dp
 
 
 class HelpScreen(Screen):
+
     def __init__(self, **kwargs):
         super(HelpScreen, self).__init__(**kwargs)
 
-        layout = FloatLayout()
-
-        # Background color for the help screen
-        with self.canvas.before:
-            Color(0.1, 0.1, 0.1, 1)
-            self.rect = Rectangle(size=self.size, pos=self.pos)
-        
-        layout.bind(size=self._update_rect, pos=self._update_rect)
-
-        # Add title
-        title = Label(text="Help & FAQs", size_hint=(None, None), size=(dp(300), dp(50)), pos_hint={'center_x': 0.5, 'top': 1})
-        layout.add_widget(title)
-
-        # FAQs
-        faqs = [
+        self.faqs = [
             "1. What is AutoScope?\n   - AutoScope is an application for detecting ear infections using deep learning techniques.",
             "2. How does AutoScope work?\n   - Users can take or upload pictures of their ears, which are then analyzed by our algorithms.",
             "3. Is my data secure?\n   - Yes, we prioritize user privacy and data security in our application.",
@@ -34,32 +16,27 @@ class HelpScreen(Screen):
             "5. What should I do if I encounter a problem?\n   - Please contact us using the information below.",
             "6. Are you doctors? Are the results definitive?\n   - No, we are not medical professionals. The results provided by AutoScope are recommendations and should not be considered a substitute for professional medical advice."
         ]
+        self.load_faqs()
 
-        # Create a layout for FAQs
-        faqs_layout = BoxLayout(orientation='vertical', size_hint=(0.9, None), height=dp(350), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+    def go_back(self):
+        self.manager.current = 'home'
 
-        for faq in faqs:
-            faq_label = Label(text=faq, size_hint_y=None, height=dp(50), halign='left', valign='middle')
-            faq_label.bind(size=faq_label.setter('text_size'))  # Allow text wrapping
+    def load_faqs(self):
+        # וודא שה-id faqs_layout קיים ב-KV
+        faqs_layout = self.ids.get('faqs_layout')
+        if not faqs_layout:
+            print("Error: faqs_layout ID not found in KV file.")
+            return
+
+        faqs_layout.clear_widgets()
+        for faq in self.faqs:
+            faq_label = Label(
+                text=faq,
+                size_hint_y=None,
+                height=dp(70),
+                halign='left',
+                valign='middle',
+                color=(0.3, 0.3, 0.3, 1)
+            )
+            faq_label.bind(size=faq_label.setter('text_size'))  # Enable text wrapping
             faqs_layout.add_widget(faq_label)
-
-        layout.add_widget(faqs_layout)
-
-        # Contact information
-        contact_info = Label(text="Contact Us:\nEmail: contact@autoscope.com\nPhone: (123) 456-7890",
-                             size_hint=(0.9, None), height=dp(100), pos_hint={'center_x': 0.5, 'y': 0.1}, halign='center')
-        contact_info.bind(size=contact_info.setter('text_size'))  # Allow text wrapping
-        layout.add_widget(contact_info)
-
-        back_btn = RoundedButton(background_normal = "Icons/back.png", size_hint=(None, None), height=dp(65), width=dp(75), pos_hint={'x': 0, 'top': 0.1})
-        back_btn.bind(on_release=self.close_help)
-        layout.add_widget(back_btn)
-
-        self.add_widget(layout)
-
-    def _update_rect(self, instance, value):
-        self.rect.pos = instance.pos
-        self.rect.size = instance.size
-
-    def close_help(self, instance):
-        self.manager.current = 'main'

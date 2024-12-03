@@ -1,0 +1,59 @@
+<HistoryScreen>:
+    name: "history"
+
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: 0, 0, 0, 1
+            Rectangle:
+                size: self.size
+                pos: self.pos
+
+        BoxLayout:
+            orientation: 'vertical'
+            padding: dp(20)
+            spacing: dp(10)
+
+            # תצוגת היסטוריה
+            ScrollView:
+                size_hint: (1, 0.8)
+                GridLayout:
+                    id: data_layout
+                    cols: 3
+                    spacing: dp(10)
+                    padding: dp(10)
+                    size_hint_y: None
+                    height: self.minimum_height
+
+
+        ClickableImage:
+            source: "./Icons/menu.png"
+            size_hint: (None, None)
+            size: dp(65), dp(65)
+            pos_hint: {"x": 0.02, "top": 0.98}
+            # on_release: root.go_back()
+            
+        ClickableImage:
+            source: "./Icons/back.png"
+            size_hint: (None, None)
+            size: dp(65), dp(65)
+            pos_hint: {"x": 0.2, "top": 0.98}
+            on_release: root.go_back()
+
+        FloatLayout:
+            # מיכל ששם את כפתורי הניווט במרכז
+            BoxLayout:
+                size_hint: (None, None)
+                size: dp(100), dp(100)
+                spacing: dp(20)  # מרווח בין הכפתורים
+                pos_hint: {"center_x": 0.5, "center_y": 0.1}
+
+                ClickableImage:
+                    source: "./Icons/img_prev.png"
+                    id: prev_button
+                    on_release: root.prev_page()
+
+                ClickableImage:
+                    source: "./Icons/img_next.png"
+                    id: next_button
+                    on_release: root.next_page()

@@ -1,0 +1,53 @@
+<EarCheckScreen>:
+    name: "earCheck"
+
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 1  # צבע רקע לבן
+            Rectangle:
+                size: self.size
+                pos: self.pos
+
+        Image:
+            source: "Icons/otoscope.png"
+            size_hint: (None, None)
+            size: dp(80), dp(80)
+            pos_hint: {"right": 0.98, "top": 0.98}
+
+        ClickableImage:
+            source: "./Icons/menu.png"
+            size_hint: (None, None)
+            size: dp(65), dp(65)
+            pos_hint: {"x": 0.02, "top": 0.98}
+            # on_release: root.go_back()
+            
+        ClickableImage:
+            source: "./Icons/back.png"
+            size_hint: (None, None)
+            size: dp(65), dp(65)
+            pos_hint: {"x": 0.2, "top": 0.98}
+            on_release: root.go_back()
+
+        RoundedButton_:
+            text: "Camera"
+            icon: "./Icons/camera.png"
+            icon_size: [dp(90), dp(90)]
+            font_size: dp(24)
+            size_hint: (0.6, None)
+            height: dp(68)
+            pos_hint: {"center_x": 0.5, "center_y": 0.57}
+            background_color: 0.1, 0.6, 0.8, 1
+            #on_release: root.open_my_account()
+
+
+        RoundedButton_:
+            text: "Album"
+            icon: "./Icons/album.png"
+            icon_size: [dp(90), dp(90)]
+            size_hint: (0.6, None)
+            font_size: dp(24)
+            height: dp(68)
+            pos_hint: {"center_x": 0.5, "center_y": 0.4}
+            background_color: 0.1, 0.6, 0.8, 1
+            on_release: root.open_file_explorer()

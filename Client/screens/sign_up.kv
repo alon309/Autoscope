@@ -1,0 +1,137 @@
+<SignUpScreen>:
+    name: "signUp"
+
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 1  # לבן כרקע
+            Rectangle:
+                size: self.size
+                pos: self.pos
+
+        # לוגו האפליקציה
+        Image:
+            source: "Icons/otoscope.png"
+            size_hint: (None, None)
+            size: dp(100), dp(100)
+            pos_hint: {"center_x": 0.5, "top": 1}
+
+        # כותרת האפליקציה
+        Label:
+            text: "Autoscope"
+            font_size: dp(28)
+            color: 0, 0, 0, 1  # שחור
+            size_hint: (None, None)
+            pos_hint: {"center_x": 0.5, "top": 0.88}  # קרוב מתחת לאייקון
+
+        # תיאור האפליקציה
+        Label:
+            text: "Early detection of ear infections"
+            font_size: dp(14)
+            color: 0.4, 0.4, 0.4, 1  # אפור כהה
+            size_hint: (None, None)
+            pos_hint: {"center_x": 0.5, "top": 0.84}  # קרוב מתחת לכותרת
+
+        # שדה שם מלא
+        RoundedTextInput:
+            id: full_name_input
+            hint_text: "Full name"
+            hint_text_color: 1, 1, 1, 0.6
+            size_hint: (0.8, None)
+            height: dp(45)
+            pos_hint: {"center_x": 0.5, "center_y": 0.68}
+            multiline: False
+            on_text_validate: root.switch_focus_to_next(self, root.ids.email_input)
+
+        # שדה אימייל
+        RoundedTextInput:
+            id: email_input
+            hint_text: "Email"
+            hint_text_color: 1, 1, 1, 0.6
+            size_hint: (0.8, None)
+            height: dp(45)
+            pos_hint: {"center_x": 0.5, "center_y": 0.58}
+            multiline: False
+            on_text_validate: root.switch_focus_to_next(self, root.ids.gender_input)
+        
+        # שדה מגדר
+        Spinner:
+            id: gender_input
+            text: "Gender"
+            values: ["male", "female"]
+            hint_text_color: 1, 1, 1, 0.6
+            size_hint: (0.8, None)
+            height: dp(45)
+            pos_hint: {"center_x": 0.5, "center_y": 0.48}
+            on_text: root.switch_focus_to_next(self, root.ids.phone_prefix)
+
+        # שדה מספר טלפון
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: (0.8, None)
+            height: dp(45)
+            pos_hint: {"center_x": 0.5, "center_y": 0.38}
+
+            # קידומת טלפון
+            Spinner:
+                id: phone_prefix
+                text: "+972"
+                values: ["+972", "+1", "+44", "+33", "+91", "+86"]
+                size_hint: (0.3, None)
+                height: dp(45)
+                background_color: 0.1, 0.6, 0.8, 1
+                color: 1, 1, 1, 1  # צבע טקסט לבן
+                sync_height: True
+                on_text: root.switch_focus_to_next(self, root.ids.phone_number_input)
+
+            RoundedTextInput:
+                id: phone_number_input
+                hint_text: "Phone number"
+                hint_text_color: 1, 1, 1, 0.6
+                size_hint: (0.7, None)
+                height: dp(45)
+                multiline: False
+                on_text_validate: root.switch_focus_to_next(self, root.ids.password_input)
+
+        # שדה סיסמה
+        RoundedTextInput:
+            id: password_input
+            hint_text: "Password"
+            hint_text_color: 1, 1, 1, 0.6
+            password: True
+            size_hint: (0.8, None)
+            height: dp(45)
+            pos_hint: {"center_x": 0.5, "center_y": 0.28}
+            multiline: False
+            on_text_validate: root.switch_focus_to_next(self, root.ids.confirm_password_input)
+
+        # שדה אישור סיסמה
+        RoundedTextInput:
+            id: confirm_password_input
+            hint_text: "Confirm"
+            hint_text_color: 1, 1, 1, 0.6
+            password: True
+            size_hint: (0.8, None)
+            height: dp(45)
+            pos_hint: {"center_x": 0.5, "center_y": 0.18}
+            multiline: False
+            on_text_validate: root.sign_up_func()
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: (0.9, None)  # גודל מתאים לרוחב המסך
+            height: dp(50)  # גובה הכפתורים
+            spacing: dp(10)  # מרווח בין הכפתורים
+            pos_hint: {"center_x": 0.5, "center_y": 0.05}  # מיקום השורה
+
+            RoundedButton_:
+                text: "Log In"
+                size_hint: (0.5, 1)  # מותאם לגודל של BoxLayout
+                background_color: 0.3, 0.3, 0.3, 1
+                on_release: root.open_login_screen()
+
+            RoundedButton_:
+                text: "Sign Up"
+                size_hint: (0.5, 1)  # מותאם לגודל של BoxLayout
+                background_color: 0.1, 0.6, 0.8, 1
+                on_release: root.sign_up_func()

@@ -1,0 +1,70 @@
+<HomeScreen>:
+    name: "home"
+
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 1  # צבע רקע לבן
+            Rectangle:
+                size: self.size
+                pos: self.pos
+
+        # לוגו האפליקציה
+        Image:
+            source: "Icons/otoscope.png"
+            size_hint: (None, None)
+            size: dp(80), dp(80)
+            pos_hint: {"right": 0.98, "top": 0.98}
+
+        # תמונת משתמש
+        Image:
+            source: root.gender_image_path
+            size_hint: (None, None)
+            size: dp(140), dp(140)
+            allow_stretch: True  # מאפשר מתיחה של התמונה
+            pos_hint: {"center_x": 0.5, "top": 0.92}
+
+        # כפתור 'My Account'
+        RoundedButton_:
+            text: "My account"
+            size_hint: (0.4, None)
+            height: dp(85)
+            pos_hint: {"center_x": 0.27, "center_y": 0.57}
+            background_color: 0.1, 0.6, 0.8, 1
+            on_release: root.open_my_account()
+
+        # כפתור 'Check your ear'
+        RoundedButton_:
+            text: "Check your ear"
+            size_hint: (0.4, None)
+            height: dp(85)
+            pos_hint: {"center_x": 0.73, "center_y": 0.57}
+            background_color: 0.1, 0.6, 0.8, 1
+            on_release: root.check_ear()
+
+        # כפתור 'Help'
+        RoundedButton_:
+            text: "Help"
+            size_hint: (0.4, None)
+            height: dp(85)
+            pos_hint: {"center_x": 0.27, "center_y": 0.4}
+            background_color: 0.1, 0.6, 0.8, 1
+            on_release: root.open_help()
+
+        # כפתור 'About'
+        RoundedButton_:
+            text: "About"
+            size_hint: (0.4, None)
+            height: dp(85)
+            pos_hint: {"center_x": 0.73, "center_y": 0.4}
+            background_color: 0.1, 0.6, 0.8, 1
+            on_release: root.open_about()
+
+        # כפתור 'Log out'
+        RoundedButton_:
+            text: "Log out"
+            size_hint: (0.4, None)
+            height: dp(50)
+            pos_hint: {"center_x": 0.5, "center_y": 0.2}
+            background_color: 0.3, 0.3, 0.3, 1
+            on_release: root.logout()

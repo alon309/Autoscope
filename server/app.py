@@ -57,9 +57,8 @@ def save_result():
     image_file = request.files['image']
 
     # Ensure a safe file name
-    filename = secure_filename(image_file.filename)
-    unid = str(uuid.uuid4())
-    unique_filename = f"{unid}_{filename}"  # Ensure uniqueness
+    unid = str(uuid.uuid4().hex)
+    unique_filename = f"{unid}"
 
     # Create a temporary file
     try:
@@ -78,17 +77,17 @@ def save_result():
             if not doc_ref.get().exists:
                 return jsonify({"error": f"User {user_id} does not exist"}), 404
 
-            # Use a unique key for the results
-            result_id = str(uuid.uuid4())  # Generate a unique identifier for the result
-
-            # Create or update the results field in Firestore with date and time
+            # Add result to results array
+            new_result = {
+                'diagnose': diagnose,
+                'image': image_url,
+                'datetime': datetime_str
+            }
             doc_ref.update({
-                f'results.{result_id}.diagnose': diagnose,
-                f'results.{result_id}.image': image_url,
-                f'results.{result_id}.datetime': datetime_str
+                'results': firestore.ArrayUnion([new_result])
             })
 
-            return jsonify({"result_id": result_id, "image_url": image_url, "message": f"Image uploaded and diagnose updated successfully for user {user_id}"}), 200
+            return jsonify({"message": f"Result added successfully for user {user_id}", "image": image_url}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -99,6 +98,7 @@ def save_result():
             os.remove(temp_file.name)
         except OSError as e:
             print(f"Error removing temporary file: {e}")
+
 
 
 
@@ -128,6 +128,7 @@ def signup():
     email = data.get('email')
     password = data.get('password')
     phone_number = data.get('phone_number')
+    gender = data.get('gender')
 
     try:
         user = auth.create_user(
@@ -141,6 +142,7 @@ def signup():
 
         user_doc_ref.set({
             'phone_number': phone_number,
+            'gender': gender,
             'results': None
         })
 
@@ -176,7 +178,6 @@ def login():
         firebase_user_info = {
             "email": user_data.get("email"),
             "display_name": user_data.get("displayName"),
-            #"phone_number": user_data.get("phone_number", "+972111111111"),
             "uid": uid
         }
         
@@ -215,6 +216,8 @@ def save_settings():
     full_name = data.get('full_name')
     email = data.get('email')
     phone_number = data.get('phone_number')
+    gender = data.get('gender')
+    print(gender)
 
     try:
         # Update user details in Firebase Authentication
@@ -229,7 +232,10 @@ def save_settings():
 
         user_doc_ref.update({
             'phone_number': phone_number,
+            'gender': gender
         })
+
+        print(user_doc_ref)
 
         return jsonify({"status": "success", "message": "User details updated successfully"}), 200
     except Exception as e:

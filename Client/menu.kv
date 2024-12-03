@@ -1,0 +1,31 @@
+<Menu>:
+    pos_hint: {"x": -1, "top": 1}  # מתחבא בצד שמאל של המסך
+    size_hint: None, 1  # גובה מלא ורוחב קבוע
+    width: dp(250)
+    canvas.before:
+        Color:
+            rgba: 0.2, 0.2, 0.2, 1  # צבע רקע כהה
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+    BoxLayout:
+        orientation: "vertical"
+        padding: dp(10)
+        spacing: dp(10)
+
+        Button:
+            text: "Home"
+            on_release: app.sm.current = "home"
+
+        Button:
+            text: "Settings"
+            on_release: app.sm.current = "settings"
+
+        Button:
+            text: "Help"
+            on_release: app.sm.current = "help"
+
+        Button:
+            text: "Logout"
+            on_release: app.sm.current = "login"

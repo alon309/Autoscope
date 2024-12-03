@@ -1,0 +1,73 @@
+<UserLoginScreen>:
+    name: "login"
+
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 1  # לבן כרקע
+            Rectangle:
+                size: self.size
+                pos: self.pos
+
+        # לוגו האפליקציה
+        Image:
+            source: "Icons/otoscope.png"
+            size_hint: (None, None)
+            size: dp(120), dp(120)
+            pos_hint: {"center_x": 0.5, "top": 0.93}
+
+        # כותרת האפליקציה
+        Label:
+            text: "Autoscope"
+            font_size: dp(28)
+            color: 0, 0, 0, 1  # שחור
+            size_hint: (None, None)
+            pos_hint: {"center_x": 0.5, "top": 0.76}  # קרוב מתחת לאייקון
+
+        # תיאור האפליקציה
+        Label:
+            text: "Early detection of ear infections"
+            font_size: dp(14)
+            color: 0.4, 0.4, 0.4, 1  # אפור כהה
+            size_hint: (None, None)
+            pos_hint: {"center_x": 0.5, "top": 0.72}  # קרוב מתחת לכותרת
+
+        # שדה אימייל
+        RoundedTextInput:
+            id: email_input
+            hint_text: "Email"
+            hint_text_color: 1, 1, 1, 0.6
+            size_hint: (0.8, None)
+            height: dp(50)
+            pos_hint: {"center_x": 0.5, "center_y": 0.55}
+            multiline: False
+            on_text_validate: root.switch_focus_to_next(self, root.ids.password_input)
+
+        # שדה סיסמה
+        RoundedTextInput:
+            id: password_input
+            hint_text: "Password"
+            hint_text_color: 1, 1, 1, 0.6
+            password: True
+            size_hint: (0.8, None)
+            height: dp(50)
+            pos_hint: {"center_x": 0.5, "center_y": 0.45}
+            multiline: False
+            on_text_validate: root.sign_in_func()
+
+        # כפתור כניסה
+        RoundedButton_:
+            text: "Log In"
+            size_hint: (0.5, None)
+            height: dp(50)
+            pos_hint: {"center_x": 0.5, "center_y": 0.3}
+            on_release: root.sign_in_func()
+
+        # כפתור הרשמה
+        RoundedButton_:
+            text: "Sign Up"
+            size_hint: (0.5, None)
+            height: dp(50)
+            pos_hint: {"center_x": 0.5, "center_y": 0.2}
+            background_color: 0.3, 0.3, 0.3, 1
+            on_release: root.sign_up_func()

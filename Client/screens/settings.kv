@@ -1,0 +1,108 @@
+<SettingsScreen>:
+    name: "settings"
+
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 1
+            Rectangle:
+                size: self.size
+                pos: self.pos
+
+        Image:
+            source: "Icons/otoscope.png"
+            size_hint: (None, None)
+            size: dp(80), dp(80)
+            pos_hint: {"right": 0.98, "top": 0.98}
+
+        ClickableImage:
+            source: "./Icons/menu.png"
+            size_hint: (None, None)
+            size: dp(65), dp(65)
+            pos_hint: {"x": 0.02, "top": 0.98}
+            # on_release: root.go_back()
+            
+        ClickableImage:
+            source: "./Icons/back.png"
+            size_hint: (None, None)
+            size: dp(65), dp(65)
+            pos_hint: {"x": 0.2, "top": 0.98}
+            on_release: root.go_back()
+
+        Label:
+            text: "Change Settings"
+            size_hint: None, None
+            size: dp(300), dp(50)
+            pos_hint: {"center_x": 0.5, "top": 0.9}
+            font_size: dp(30)
+            bold: True
+            color: 0.3, 0.3, 0.3, 1
+
+        # שדה אימייל
+        RoundedTextInput:
+            id: email_input
+            text: app.user_details.get('details', {}).get("Email", "")
+            hint_text: "Email"
+            size_hint: (0.8, None)
+            height: dp(40)
+            pos_hint: {"center_x": 0.5, "center_y": 0.7}
+            multiline: False
+            on_text_validate: root.switch_focus_to_next(self, root.ids.name_input)
+
+        # שדה שם מלא
+        RoundedTextInput:
+            id: name_input
+            text: app.user_details.get('details', {}).get("Full Name", "")
+            hint_text: "Name"
+            size_hint: (0.8, None)
+            height: dp(40)
+            pos_hint: {"center_x": 0.5, "center_y": 0.6}
+            multiline: False
+            on_text_validate: root.switch_focus_to_next(self, root.ids.phone_input)
+
+        # שדה מספר טלפון
+        RoundedTextInput:
+            id: phone_input
+            text: app.user_details.get('details', {}).get("Phone Number", "")
+            hint_text: "Phone Number"
+            size_hint: (0.8, None)
+            height: dp(40)
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+            multiline: False
+            on_text_validate: root.switch_focus_to_next(self, root.ids.gender_input)
+
+        Spinner:
+            id: gender_input
+            text: app.user_details.get('details', {}).get("gender", "")
+            values: ["male", "female"]
+            size_hint: (0.8, None)
+            height: dp(40)
+            pos_hint: {"center_x": 0.5, "center_y": 0.4}
+         
+        Label:
+            text: "Notification Settings"
+            size_hint: None, None
+            size: dp(100), dp(50)
+            pos_hint: {"center_x": 0.5, "top": 0.3}
+            font_size: dp(30)
+            bold: True
+            color: 0.3, 0.3, 0.3, 1
+
+        # מתג התראות
+        Switch:
+            id: notification_switch
+            active: True
+            size_hint: (None, None)
+            size: dp(100), dp(50)
+            pos_hint: {"x": 0, "top": 0.25}
+
+        RoundedButton_:
+            text: "Save"
+            icon: "./Icons/save.png"
+            icon_size: [dp(90), dp(90)]
+            size_hint: (0.6, None)
+            font_size: dp(24)
+            height: dp(68)
+            pos_hint: {"center_x": 0.5, "center_y": 0.1}
+            background_color: 0.1, 0.6, 0.8, 1
+            on_release: root.save_settings()

@@ -1,0 +1,90 @@
+<AccountScreen>:
+    name: "account"
+
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 1  # צבע רקע לבן
+            Rectangle:
+                size: self.size
+                pos: self.pos
+
+        # לוגו האפליקציה
+        Image:
+            source: "Icons/otoscope.png"
+            size_hint: (None, None)
+            size: dp(80), dp(80)
+            pos_hint: {"right": 0.98, "top": 0.98}
+
+        Label:
+            text: root.hello_message
+            font_size: dp(28)
+            color: 0, 0, 0, 1  # שחור
+            size_hint: (None, None)
+            pos_hint: {"center_x": 0.5, "top": 0.78}  # קרוב מתחת לאייקון
+
+        RoundedButton_:
+            text: "History"
+            background_color: 0.1, 0.6, 0.8, 1
+            icon: "./Icons/history.png"
+            icon_size: [dp(50), dp(50)]
+            size_hint: (0.4, None)
+            height: dp(85)
+            pos_hint: {"center_x": 0.27, "center_y": 0.57}
+            background_color: 0.1, 0.6, 0.8, 1
+            on_release:
+                app.close_side_menu()
+                root.open_history()
+
+
+        RoundedButton_:
+            background_color: 0.1, 0.6, 0.8, 1
+            text: "Settings"
+            icon: "./Icons/settings.png"
+            icon_size: [dp(50), dp(50)]
+            size_hint: (0.4, None)
+            height: dp(85)
+            pos_hint: {"center_x": 0.73, "center_y": 0.57}
+            background_color: 0.1, 0.6, 0.8, 1
+            on_release:
+                app.close_side_menu()
+                root.open_settings()
+
+        RoundedButton_:
+            text: "test"
+            size_hint: (0.4, None)
+            height: dp(85)
+            pos_hint: {"center_x": 0.27, "center_y": 0.4}
+            background_color: 0.1, 0.6, 0.8, 1
+
+        RoundedButton_:
+            text: "test"
+            size_hint: (0.4, None)
+            height: dp(85)
+            pos_hint: {"center_x": 0.73, "center_y": 0.4}
+            background_color: 0.1, 0.6, 0.8, 1
+
+        FloatLayout:
+
+            # תפריט צדדי
+            Menu:
+                pos_hint: {"x": -1, "top": 1}
+                id: side_menu
+
+            # אייקון פתיחת תפריט
+            ClickableImage:
+                source: "./Icons/menu.png"
+                size_hint: (None, None)
+                size: dp(65), dp(65)
+                pos_hint: {"x": 0.02, "top": 0.98}
+                on_release: app.toggle_side_menu()
+            
+        ClickableImage:
+            source: "./Icons/back.png"
+            size_hint: (None, None)
+            size: dp(65), dp(65)
+            pos_hint: {"x": 0.2, "top": 0.98}
+            on_release:
+                app.close_side_menu()
+                root.go_back()
+

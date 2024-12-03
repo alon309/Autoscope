@@ -1,0 +1,66 @@
+<BlueRoundedButton>:
+    size_hint: None, None
+    size: dp(150), dp(50)  # גודל ברירת מחדל
+    background_color: 0, 0, 0, 0  # ביטול צבע רקע ברירת מחדל
+    background_normal: ""  # ביטול רקע ברירת מחדל
+    background_down: ""  # ביטול רקע לחיצה
+    color: 1, 1, 1, 1  # צבע טקסט לבן
+    font_size: dp(18)
+    canvas.before:
+        Color:
+            rgba: 0.1, 0.6, 0.8, 1  # צבע רקע כחול מותאם
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+            radius: [dp(25)]  # פינות מעוגלות
+
+<GrayRoundedButton>:
+    size_hint: None, None
+    size: dp(150), dp(50)  # גודל ברירת מחדל
+    background_color: 0, 0, 0, 0  # ביטול צבע רקע ברירת מחדל
+    background_normal: ""  # ביטול רקע ברירת מחדל
+    background_down: ""  # ביטול רקע לחיצה
+    color: 1, 1, 1, 1  # צבע טקסט לבן
+    font_size: dp(18)
+    canvas.before:
+        Color:
+            rgba: 0.3, 0.3, 0.3, 1  # צבע רקע כחול מותאם
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+            radius: [dp(25)]  # פינות מעוגלות
+
+<BlueRoundedButtonWithIcon>:
+    size_hint: None, None
+    size: dp(200), dp(50)
+    background_color: 0, 0, 0, 0  # ביטול רקע ברירת מחדל
+    background_normal: ""
+    background_down: ""
+    text: ""  # ביטול טקסט ברירת מחדל
+    canvas.before:
+        Color:
+            rgba: 0.1, 0.6, 0.8, 1  # צבע רקע כחול
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+            radius: [dp(25)]
+    BoxLayout:
+        orientation: 'horizontal'
+        size_hint: 1, 1
+        spacing: dp(10)
+        padding: dp(10), 0
+        Image:
+            source: root.icon  # נתיב האייקון
+            size_hint: None, None
+            size: root.icon_size  # גודל האייקון
+            allow_stretch: True
+            keep_ratio: True
+        Label:
+            text: root.text  # טקסט הכפתור
+            color: 1, 1, 1, 1
+            font_size: self.font_size
+            halign: 'center'
+            valign: 'middle'
+            size_hint: 1, 1
+            text_size: self.size
+
