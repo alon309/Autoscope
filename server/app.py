@@ -7,7 +7,16 @@ from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 import json
 
-import uuid  # לייצור מפתחות ייחודיים
+import tensorflow as tf
+print("TensorFlow version:", tf.__version__)
+
+
+
+
+from PIL import Image
+import numpy as np
+
+import uuid
 import requests
 
 from flask_cors import CORS  # Import CORS
@@ -26,6 +35,10 @@ if firebase_credentials is None:
 
 cred_dict = json.loads(firebase_credentials)
 
+
+# Define class names (update this based on your dataset)
+CLASS_NAMES = ['aom', 'com', 'normal']
+
 # Initialize Firebase
 cred = credentials.Certificate(cred_dict)
 firebase_admin.initialize_app(cred, {
@@ -38,6 +51,24 @@ print(f"Initialized bucket: {bucket.name}")
 
 # Initialize Firestore
 db = firestore.client()
+
+def load_model_dynamic(model_path):
+    if os.path.isdir(model_path):  # אם זה תיקייה, כנראה SavedModel
+        model = tf.keras.models.load_model(model_path)
+        print("Loaded SavedModel format")
+    elif model_path.endswith('.h5'):  # אם זה קובץ עם סיומת .h5
+        model = tf.keras.models.load_model(model_path)
+        print("Loaded H5 format")
+    else:
+        raise ValueError("Unsupported model format. Please provide a SavedModel directory or .h5 file.")
+    return model
+
+# שימוש בפונקציה
+MODEL_PATH = 'VGG16model.h5'
+#MODEL_PATH = r"C:\MODEL\VGG16model.h5"
+model = load_model_dynamic(MODEL_PATH)
+print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+
 
 # Home screen
 @app.route('/')
@@ -107,19 +138,49 @@ def save_result():
 @app.route('/api/analyze_image', methods=['POST'])
 def analyze_image():
     try:
-        # Get the user ID
-        user_id = request.form.get('user_id')
-        
+        print("Model Summary:")
+        print(model.summary())
+        print("Model Input Shape:", model.input_shape)
+        print("Model Output Shape:", model.output_shape)
+
         if 'image' not in request.files:
+            print("No image file provided")
             return jsonify({"error": "No image file provided"}), 400
 
         image_file = request.files['image']
+        print("Image file received:", image_file.filename)
 
-        return jsonify({"message": f"Image uploaded and diagnosed successfully for user {user_id}"}), 200
+        img = Image.open(image_file).convert('RGB').resize((224, 224))
+        print("Image after resizing:", img.size)
+
+        img_array = np.array(img) / 255.0
+        print("Image array shape after processing:", img_array.shape)
+
+        img_array = np.expand_dims(img_array, axis=0)
+        print("Input to model (shape):", img_array.shape)
+
+        predictions = model.predict(img_array)
+        print("Predictions:", predictions)
+
+        predicted_class_index = np.argmax(predictions)
+        print("Predicted class index:", predicted_class_index)
+
+        predicted_class = CLASS_NAMES[predicted_class_index]
+        print("Predicted class:", predicted_class)
+
+        confidence = float(np.max(predictions))
+        print("Confidence score:", confidence)
+
+        return jsonify({
+            "predicted_class": predicted_class,
+            "confidence": confidence
+        }), 200
+
     except Exception as e:
+        print(f"Error occurred: {str(e)}")
         return jsonify({"error": str(e)}), 500
-    finally:
-        print("test")
+
+
 
 @app.route('/api/signup', methods=['POST'])
 def signup():

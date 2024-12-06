@@ -42,8 +42,11 @@ class ChosenImageScreen(Screen):
                     files = {'image': image_file}
                     data = {'user_id': str(self.user_id)}
                     response = requests.post(url, files=files, data=data)
+                    response_data = response.json()
+                    confidence = response_data.get("confidence")
+                    predicted_class = response_data.get("predicted_class")
                     results_screen = self.manager.get_screen('result')
-                    results_screen.update_data(self.chosen_current_image, results, self.user_id)
+                    results_screen.update_data(self.chosen_current_image, predicted_class + ' ' + str(confidence), self.user_id)
                     self.manager.current = 'result'
             except Exception as e:
                 print(f"Error during analysis request: {e}")

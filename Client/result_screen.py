@@ -56,7 +56,7 @@ class ResultsScreen(Screen):
                 files = {'image': image_file}
                 data = {
                     'user_id': self.user_id,
-                    'diagnose': 'Ear infection detected',
+                    'diagnose': self.result_string,
                     'datetime': current_datetime
                 }
 
@@ -82,7 +82,7 @@ class ResultsScreen(Screen):
                 # עדכון הנתונים המקומיים
                 app = App.get_running_app()
                 new_result = {
-                    'diagnose': 'Ear infection detected',
+                    'diagnose': self.result_string,
                     'image': result_data.get('image'),
                     'datetime': current_datetime
                 }
