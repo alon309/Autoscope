@@ -33,20 +33,25 @@ class ChosenImageScreen(Screen):
         self.manager.current = 'earCheck'
 
     def analyze_image(self):
-        print("Analyzing the image...")
-        results = "This is just an example\nDiagnosis for this image is:\nRecommendations are:"
-        if self.image_path:
-            try:
-                url = f"{SERVER_URL}/api/analyze_image"
-                with open(self.image_path, 'rb') as image_file:
-                    files = {'image': image_file}
-                    data = {'user_id': str(self.user_id)}
-                    response = requests.post(url, files=files, data=data)
-                    response_data = response.json()
-                    confidence = response_data.get("confidence")
-                    predicted_class = response_data.get("predicted_class")
-                    results_screen = self.manager.get_screen('result')
-                    results_screen.update_data(self.chosen_current_image, predicted_class + ' ' + str(confidence), self.user_id)
-                    self.manager.current = 'result'
-            except Exception as e:
-                print(f"Error during analysis request: {e}")
+        if not self.image_path:
+            print("No image selected.")
+            return
+
+        try:
+            url = f"{SERVER_URL}/api/analyze_image"
+            with open(self.image_path, 'rb') as image_file:
+                files = {'image': image_file}
+                data = {'user_id': str(self.user_id)}
+                response = requests.post(url, files=files, data=data)
+                response.raise_for_status()
+                response_data = response.json()
+
+                confidence = response_data.get("confidence")
+                predicted_class = response_data.get("predicted_class")
+
+                results_screen = self.manager.get_screen('result')
+                results_screen.update_data(self.chosen_current_image, f"{predicted_class} {confidence}", self.user_id)
+                self.manager.current = 'result'
+        except requests.exceptions.RequestException as e:
+            print(f"Error during analysis request: {e}")
+

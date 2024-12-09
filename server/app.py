@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 import json
 
 import tensorflow as tf
+tf.config.threading.set_intra_op_parallelism_threads(1)
+tf.config.threading.set_inter_op_parallelism_threads(1)
 print("TensorFlow version:", tf.__version__)
 
 
@@ -51,27 +53,82 @@ print(f"Initialized bucket: {bucket.name}")
 
 # Initialize Firestore
 db = firestore.client()
+'''
+# טען את המודל הדחוס
+TFLITE_MODEL_PATH = os.path.join(os.getcwd(), "mysite/VGG16model.tflite")
 
-def load_model_dynamic(model_path):
-    if os.path.isdir(model_path):  # אם זה תיקייה, כנראה SavedModel
-        model = tf.keras.models.load_model(model_path)
-        print("Loaded SavedModel format")
-    elif model_path.endswith('.h5'):  # אם זה קובץ עם סיומת .h5
-        model = tf.keras.models.load_model(model_path)
-        print("Loaded H5 format")
-    else:
-        raise ValueError("Unsupported model format. Please provide a SavedModel directory or .h5 file.")
-    return model
+interpreter = tf.lite.Interpreter(model_path=TFLITE_MODEL_PATH)
+interpreter.allocate_tensors()
 
-# שימוש בפונקציה
-MODEL_PATH = 'VGG16model.h5'
-#MODEL_PATH = r"C:\MODEL\VGG16model.h5"
-model = load_model_dynamic(MODEL_PATH)
-print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+# קבלת פרטי הקלט והפלט של המודל
+input_details = interpreter.get_input_details()
+output_details = interpreter.get_output_details()
+
+print("TFLite Model loaded successfully!")
+print("Input details:", input_details)
+print("Output details:", output_details)
+'''
+def load_model_dynamic_safe(model_path):
+    """
+    Wrapper for load_model_dynamic with error handling.
+    """
+    try:
+        if not os.path.exists(model_path):
+            raise FileNotFoundError(f"The specified path '{model_path}' does not exist.")
+        
+        if os.path.isdir(model_path):  # אם זה תיקייה, כנראה SavedModel
+            model = tf.keras.models.load_model(model_path)
+            print("Loaded SavedModel format")
+        elif model_path.endswith('.h5'):  # אם זה קובץ עם סיומת .h5
+            model = tf.keras.models.load_model(model_path)
+            print("Loaded H5 format")
+        else:
+            raise ValueError("Unsupported model format. Please provide a SavedModel directory or .h5 file.")
+        
+        return model
+    
+    except FileNotFoundError as e:
+        print(f"Error: {e}")
+    except ValueError as e:
+        print(f"Error: {e}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+    return None
+
+# טען את המודל TFLite
+MODEL_PATH = os.path.join(os.getcwd(), "mysite/VGG16model.tflite")
+# MODEL_PATH = os.path.join(os.getcwd(), "mysite/VGG16model.h5")
+# MODEL_PATH = os.path.join(os.getcwd(), r"C:\Users\ndvp3\OneDrive - ort braude college of engineering\שולחן העבודה\autoscope\server/VGG16model.h5")
+# model = load_model_dynamic_safe(MODEL_PATH)
+
+try:
+    interpreter = tf.lite.Interpreter(model_path=MODEL_PATH)
+    interpreter.allocate_tensors()
+
+    # קבלת פרטי הקלט והפלט של המודל
+    input_details = interpreter.get_input_details()
+    output_details = interpreter.get_output_details()
+
+    print("TFLite Model loaded successfully!")
+    print("Input details:", input_details)
+    print("Output details:", output_details)
+except Exception as e:
+    print(f"Error loading TFLite model: {e}")
+    interpreter = None
+'''
+if model:
+    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+    print("Model loaded successfully.")
+else:
+    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+    print("Failed to load the model.")
+'''
+
+
 
 
 # Home screen
-@app.route('/')
+@app.route('/test')
 def home():
     return "AutoScope - Server is Running...!"
 
@@ -130,55 +187,99 @@ def save_result():
         except OSError as e:
             print(f"Error removing temporary file: {e}")
 
-
-
-
-
-
 @app.route('/api/analyze_image', methods=['POST'])
 def analyze_image():
     try:
-        print("Model Summary:")
-        print(model.summary())
-        print("Model Input Shape:", model.input_shape)
-        print("Model Output Shape:", model.output_shape)
-
+        # בדיקה אם קובץ התמונה נשלח
         if 'image' not in request.files:
-            print("No image file provided")
             return jsonify({"error": "No image file provided"}), 400
 
+        # עיבוד התמונה
         image_file = request.files['image']
-        print("Image file received:", image_file.filename)
+        img = Image.open(image_file).convert('RGB').resize((224, 224))  # שים לב שגודל התמונה צריך להתאים למודל שלך
+        img_array = np.expand_dims(np.array(img) / 255.0, axis=0).astype(np.float32)
 
-        img = Image.open(image_file).convert('RGB').resize((224, 224))
-        print("Image after resizing:", img.size)
+        # קלט למודל
+        interpreter.set_tensor(input_details[0]['index'], img_array)
 
-        img_array = np.array(img) / 255.0
-        print("Image array shape after processing:", img_array.shape)
+        # הרצת המודל
+        interpreter.invoke()
 
-        img_array = np.expand_dims(img_array, axis=0)
-        print("Input to model (shape):", img_array.shape)
-
-        predictions = model.predict(img_array)
-        print("Predictions:", predictions)
-
+        # קבלת התוצאה
+        predictions = interpreter.get_tensor(output_details[0]['index'])
         predicted_class_index = np.argmax(predictions)
-        print("Predicted class index:", predicted_class_index)
-
         predicted_class = CLASS_NAMES[predicted_class_index]
-        print("Predicted class:", predicted_class)
-
         confidence = float(np.max(predictions))
-        print("Confidence score:", confidence)
 
+        # החזרת תוצאה
         return jsonify({
             "predicted_class": predicted_class,
             "confidence": confidence
         }), 200
 
     except Exception as e:
-        print(f"Error occurred: {str(e)}")
         return jsonify({"error": str(e)}), 500
+    
+''' the good one ->
+@app.route('/api/analyze_image', methods=['POST'])
+def analyze_image():
+    try:
+        # בדיקה אם קובץ התמונה נשלח
+        if 'image' not in request.files:
+            return jsonify({"error": "No image file provided"}), 400
+
+        # עיבוד התמונה
+        image_file = request.files['image']
+        img = Image.open(image_file).convert('RGB').resize((224, 224))  # שים לב שגודל התמונה צריך להתאים למודל שלך
+        img_array = np.expand_dims(np.array(img) / 255.0, axis=0).astype(np.float32)
+
+        # חיזוי בעזרת המודל
+        predictions = model.predict(img_array)
+        predicted_class_index = np.argmax(predictions)
+        predicted_class = CLASS_NAMES[predicted_class_index]
+        confidence = float(np.max(predictions))
+
+        # החזרת תוצאה
+        return jsonify({
+            "predicted_class": predicted_class,
+            "confidence": confidence
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+'''
+'''
+@app.route('/api/analyze_image', methods=['POST'])
+def analyze_image():
+    try:
+        if 'image' not in request.files:
+            return jsonify({"error": "No image file provided"}), 400
+
+        # עיבוד התמונה
+        image_file = request.files['image']
+        img = Image.open(image_file).convert('RGB').resize((224, 224))
+        img_array = np.expand_dims(np.array(img) / 255.0, axis=0).astype(np.float32)
+
+        # קלט למודל
+        interpreter.set_tensor(input_details[0]['index'], img_array)
+
+        # הרצת המודל
+        interpreter.invoke()
+
+        # קבלת התוצאה
+        predictions = interpreter.get_tensor(output_details[0]['index'])
+        predicted_class_index = np.argmax(predictions)
+        predicted_class = CLASS_NAMES[predicted_class_index]
+        confidence = float(np.max(predictions))
+
+        return jsonify({
+            "predicted_class": predicted_class,
+            "confidence": confidence
+        }), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+'''
+
 
 
 
