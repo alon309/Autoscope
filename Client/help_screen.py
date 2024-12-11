@@ -22,7 +22,6 @@ class HelpScreen(Screen):
         self.manager.current = 'home'
 
     def load_faqs(self):
-        # וודא שה-id faqs_layout קיים ב-KV
         faqs_layout = self.ids.get('faqs_layout')
         if not faqs_layout:
             print("Error: faqs_layout ID not found in KV file.")

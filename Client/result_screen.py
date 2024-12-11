@@ -35,7 +35,6 @@ class ResultsScreen(Screen):
         """Save the current result."""
         print(self.result_string)
         
-        # בדיקה אם יש תמונה
         if not self.image:
             print("No image to save.")
             return
@@ -44,14 +43,11 @@ class ResultsScreen(Screen):
 
         print("Saving the result...")
 
-        # קבלת התאריך והשעה הנוכחיים
         current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-        # כתובת השרת
         url = f"{SERVER_URL}/api/save_result"
 
         try:
-            # פתיחת הקובץ והעלאתו לשרת
             with open(image_path, 'rb') as image_file:
                 files = {'image': image_file}
                 data = {
@@ -62,7 +58,6 @@ class ResultsScreen(Screen):
 
                 response = requests.post(url, files=files, data=data)
                 
-                # בדיקה אם התגובה מהשרת תקינה
                 if response.status_code != 200:
                     popup = FeedbackPopup(
                         title_text="Failed to save result",
@@ -79,7 +74,6 @@ class ResultsScreen(Screen):
                     )
                     return popup.open()
 
-                # עדכון הנתונים המקומיים
                 app = App.get_running_app()
                 new_result = {
                     'diagnose': self.result_string,
@@ -87,7 +81,6 @@ class ResultsScreen(Screen):
                     'datetime': current_datetime
                 }
 
-                # בדיקה והוספה של התוצאה למערך
                 if 'results' not in app.user_details or not isinstance(app.user_details['results'], list):
                     app.user_details['results'] = []
                 app.user_details['results'].append(new_result)

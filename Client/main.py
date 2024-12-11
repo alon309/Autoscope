@@ -33,7 +33,7 @@ class AutoScopeApp(App):
         
         self.user_details = {}  # Global variable accessible from all screens
         self.sm = ScreenManager()  # Global ScreenManager
-        self.sm.transition = SlideTransition()  # הגדרת האנימציה
+        self.sm.transition = SlideTransition()
 
     def build(self):
         
@@ -60,16 +60,14 @@ class AutoScopeApp(App):
         return self.sm
     
     def close_side_menu(self):
-        """סגירת תפריט צדדי במסך הנוכחי"""
-        current_screen = self.sm.current_screen  # המסך הנוכחי
-        side_menu = current_screen.ids.get('side_menu')  # מציאת התפריט
+        current_screen = self.sm.current_screen
+        side_menu = current_screen.ids.get('side_menu')
         if side_menu:
-            side_menu.pos_hint = {"x": -1, "top": 1}  # סגור את התפריט
+            side_menu.pos_hint = {"x": -1, "top": 1}
 
     def toggle_side_menu(self):
-        """פתיחה/סגירה של תפריט צדדי במסך הנוכחי"""
-        current_screen = self.sm.current_screen  # המסך הנוכחי
-        side_menu = current_screen.ids.get('side_menu')  # מציאת התפריט
+        current_screen = self.sm.current_screen
+        side_menu = current_screen.ids.get('side_menu')
         if side_menu:
             side_menu.pos_hint = {"x": 0, "top": 1} if side_menu.pos_hint["x"] == -1 else {"x": -1, "top": 1}
 

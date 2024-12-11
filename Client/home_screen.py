@@ -65,7 +65,7 @@ class HomeScreen(Screen):
         yes_button = RoundedButton_(
             text="Yes",
             size_hint=(0.5, 2),
-            background_color=(1, 0, 0, 1)  # אדום
+            background_color=(1, 0, 0, 1)
         )
         yes_button.bind(on_release=lambda instance: self.confirm_logout(popup))
         buttons_layout.add_widget(yes_button)
@@ -74,7 +74,7 @@ class HomeScreen(Screen):
         no_button = RoundedButton_(
             text="No",
             size_hint=(0.5, 2),
-            background_color=(0.3, 0.3, 0.3, 1)  # אפור
+            background_color=(0.3, 0.3, 0.3, 1)
         )
         no_button.bind(on_release=lambda instance: popup.dismiss())
         buttons_layout.add_widget(no_button)

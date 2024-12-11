@@ -12,9 +12,9 @@ class SettingsScreen(Screen):
     def __init__(self, **kwargs):
         super(SettingsScreen, self).__init__(**kwargs)
 
-        # רקע למסך
+
         with self.canvas.before:
-            Color(0.1, 0.1, 0.1, 1)  # צבע רקע כהה
+            Color(0.1, 0.1, 0.1, 1)
             self.rect = Rectangle(size=self.size, pos=self.pos)
         self.bind(size=self._update_rect, pos=self._update_rect)
 
@@ -80,8 +80,8 @@ class SettingsScreen(Screen):
 
     def switch_focus_to_next(self, current_field, next_field):
         """Switch focus from current field to the next."""
-        if isinstance(next_field, Spinner):  # אם השדה הבא הוא Spinner
-            next_field.is_open = True  # פתח את ה-Spinner
-            Window.release_keyboard()  # סגור את המקלדת
-        elif hasattr(next_field, 'focus'):  # אם השדה הבא תומך בפוקוס
+        if isinstance(next_field, Spinner):
+            next_field.is_open = True
+            Window.release_keyboard()
+        elif hasattr(next_field, 'focus'):
             next_field.focus = True

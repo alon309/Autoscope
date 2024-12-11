@@ -10,15 +10,15 @@ class AboutScreen(Screen):
         super(AboutScreen, self).__init__(**kwargs)
 
     def on_focus(self, instance, value):
-        if value:  # אם המקלדת נפתחת
+        if value:
             self.ids.feedback_box.pos_hint = {'center_x': 0.5, 'y': 0.4}
-        else:  # אם המקלדת נסגרת
+        else:
             self.ids.feedback_box.pos_hint = {'center_x': 0.5, 'y': 0.1}
 
     def adjust_text_input_height(self, value):
         """Adjust the height of the TextInput based on the amount of text."""
-        num_lines = len(value.split("\n")) + 1  # מספר השורות בטקסט
-        new_height = min(dp(150), max(dp(50), dp(25) * num_lines))  # גובה מקסימלי ומינימלי
+        num_lines = len(value.split("\n")) + 1
+        new_height = min(dp(150), max(dp(50), dp(25) * num_lines))
         self.ids.feedback_input.height = new_height
         self.ids.feedback_box.height = new_height
 

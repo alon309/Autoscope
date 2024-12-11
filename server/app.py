@@ -54,13 +54,11 @@ print(f"Initialized bucket: {bucket.name}")
 # Initialize Firestore
 db = firestore.client()
 '''
-# טען את המודל הדחוס
 TFLITE_MODEL_PATH = os.path.join(os.getcwd(), "mysite/VGG16model.tflite")
 
 interpreter = tf.lite.Interpreter(model_path=TFLITE_MODEL_PATH)
 interpreter.allocate_tensors()
 
-# קבלת פרטי הקלט והפלט של המודל
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
 
@@ -95,7 +93,6 @@ def load_model_dynamic_safe(model_path):
         print(f"An unexpected error occurred: {e}")
     return None
 
-# טען את המודל TFLite
 MODEL_PATH = os.path.join(os.getcwd(), "mysite/VGG16model.tflite")
 # MODEL_PATH = os.path.join(os.getcwd(), "mysite/VGG16model.h5")
 # MODEL_PATH = os.path.join(os.getcwd(), r"C:\Users\ndvp3\OneDrive - ort braude college of engineering\שולחן העבודה\autoscope\server/VGG16model.h5")
@@ -105,7 +102,6 @@ try:
     interpreter = tf.lite.Interpreter(model_path=MODEL_PATH)
     interpreter.allocate_tensors()
 
-    # קבלת פרטי הקלט והפלט של המודל
     input_details = interpreter.get_input_details()
     output_details = interpreter.get_output_details()
 
@@ -190,28 +186,22 @@ def save_result():
 @app.route('/api/analyze_image', methods=['POST'])
 def analyze_image():
     try:
-        # בדיקה אם קובץ התמונה נשלח
         if 'image' not in request.files:
             return jsonify({"error": "No image file provided"}), 400
 
-        # עיבוד התמונה
         image_file = request.files['image']
-        img = Image.open(image_file).convert('RGB').resize((224, 224))  # שים לב שגודל התמונה צריך להתאים למודל שלך
+        img = Image.open(image_file).convert('RGB').resize((224, 224))
         img_array = np.expand_dims(np.array(img) / 255.0, axis=0).astype(np.float32)
 
-        # קלט למודל
         interpreter.set_tensor(input_details[0]['index'], img_array)
 
-        # הרצת המודל
         interpreter.invoke()
 
-        # קבלת התוצאה
         predictions = interpreter.get_tensor(output_details[0]['index'])
         predicted_class_index = np.argmax(predictions)
         predicted_class = CLASS_NAMES[predicted_class_index]
         confidence = float(np.max(predictions))
 
-        # החזרת תוצאה
         return jsonify({
             "predicted_class": predicted_class,
             "confidence": confidence
@@ -224,22 +214,21 @@ def analyze_image():
 @app.route('/api/analyze_image', methods=['POST'])
 def analyze_image():
     try:
-        # בדיקה אם קובץ התמונה נשלח
+
         if 'image' not in request.files:
             return jsonify({"error": "No image file provided"}), 400
 
-        # עיבוד התמונה
+
         image_file = request.files['image']
-        img = Image.open(image_file).convert('RGB').resize((224, 224))  # שים לב שגודל התמונה צריך להתאים למודל שלך
+        img = Image.open(image_file).convert('RGB').resize((224, 224))
         img_array = np.expand_dims(np.array(img) / 255.0, axis=0).astype(np.float32)
 
-        # חיזוי בעזרת המודל
+
         predictions = model.predict(img_array)
         predicted_class_index = np.argmax(predictions)
         predicted_class = CLASS_NAMES[predicted_class_index]
         confidence = float(np.max(predictions))
 
-        # החזרת תוצאה
         return jsonify({
             "predicted_class": predicted_class,
             "confidence": confidence
@@ -255,18 +244,17 @@ def analyze_image():
         if 'image' not in request.files:
             return jsonify({"error": "No image file provided"}), 400
 
-        # עיבוד התמונה
+
         image_file = request.files['image']
         img = Image.open(image_file).convert('RGB').resize((224, 224))
         img_array = np.expand_dims(np.array(img) / 255.0, axis=0).astype(np.float32)
 
-        # קלט למודל
         interpreter.set_tensor(input_details[0]['index'], img_array)
 
-        # הרצת המודל
+
         interpreter.invoke()
 
-        # קבלת התוצאה
+
         predictions = interpreter.get_tensor(output_details[0]['index'])
         predicted_class_index = np.argmax(predictions)
         predicted_class = CLASS_NAMES[predicted_class_index]
@@ -331,35 +319,32 @@ def login():
     try:
         # שלח בקשה ל-API של Firebase
         response = requests.post(firebase_url, json=firebase_data)
-        response.raise_for_status()  # יעלה שגיאה אם הקוד לא 200
+        response.raise_for_status()
         
         user_data = response.json()
         uid = user_data.get("localId")
 
-        # קבל את פרטי המשתמש מ-Firebase Authentication
         firebase_user_info = {
             "email": user_data.get("email"),
             "display_name": user_data.get("displayName"),
             "uid": uid
         }
-        
-        # קבל את פרטי המשתמש מהדאטאבייס
-        doc_ref = db.collection('Users').document(uid)  # השתמש ב-uid כ-document ID
+
+        doc_ref = db.collection('Users').document(uid)
         user_doc = doc_ref.get()
 
         if user_doc.exists:
             
-            user_details = user_doc.to_dict()  # קבל את כל הפרטים מהמסמך
+            user_details = user_doc.to_dict()
 
-            user_details.update(firebase_user_info)  # עדכן את המידע עם פרטי Firebase
+            user_details.update(firebase_user_info)
 
-            return jsonify(user_details), 200  # החזרת כל הפרטים כולל uid
+            return jsonify(user_details), 200
 
         else:
-            return jsonify({"error": "User not found."}), 404  # טיפול במקרה שהמסמך לא קיים
+            return jsonify({"error": "User not found."}), 404
     
     except requests.exceptions.HTTPError as http_err:
-        # קבל את פרטי השגיאה מהתגובה
         error_details = response.json() if response.content else {}
         return jsonify({"error": error_details.get("error", {}).get("message", "An unknown error occurred.")}), 400
     
@@ -401,7 +386,7 @@ def save_settings():
 
         return jsonify({"status": "success", "message": "User details updated successfully"}), 200
     except Exception as e:
-        print(f"Error updating user: {str(e)}")  # הדפס שגיאות אם יש
+        print(f"Error updating user: {str(e)}")
         return jsonify({"status": "error", "message": str(e)}), 400
 
 

@@ -97,7 +97,7 @@ class SignUpScreen(Screen):
 
     def switch_focus_to_next(self, current_field, next_field):
         """Switch focus from current field to the next."""
-        if isinstance(next_field, Spinner):  # אם השדה הבא הוא Spinner
-            next_field.is_open = True  # פתח את התפריט
-        elif hasattr(next_field, 'focus'):  # אם לשדה הבא יש פוקוס
-            next_field.focus = True  # העבר פוקוס לשדה הבא
+        if isinstance(next_field, Spinner):
+            next_field.is_open = True
+        elif hasattr(next_field, 'focus'):
+            next_field.focus = True

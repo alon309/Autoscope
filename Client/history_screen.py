@@ -24,11 +24,10 @@ class HistoryScreen(Screen):
             self.update_nav_buttons()
             return
 
-        history_items = self.history_data  # רשימה של מילונים
+        history_items = self.history_data
         start_index = self.current_page * self.page_size
         end_index = min(start_index + self.page_size, len(history_items))
 
-        # מעבר על כל פריט ברשימה
         for entry in history_items[start_index:end_index]:
             date_label = Label(text=entry.get('datetime', 'Unknown'), size_hint_y=None, height=40)
 
