@@ -77,7 +77,7 @@ class OtoScopeVideoScreen(Screen):
                 usb_devices = usb_manager.getDeviceList()
                 if not usb_devices.isEmpty():
                     for device_name in usb_devices.keySet():
-                        available_cameras.append(f"USB Camera: {device_name}")
+                        available_cameras.append(f"USB Camera {len(available_cameras)}")
             except Exception as e:
                 print(f"Error checking USB cameras: {e}")
         return available_cameras
@@ -92,7 +92,8 @@ class OtoScopeVideoScreen(Screen):
         try:
             if "USB Camera" in selected_camera and ANDROID:
                 print("Attempting to open USB Camera...")
-                self.camera_widget = Camera(index=0, resolution=(640, 480), play=True)
+                usb_index = int(selected_camera.split()[-1])  # Extracts the last part of the string as the index
+                self.camera_widget = Camera(index=usb_index, resolution=(640, 480), play=True)
             elif "Internal Camera" in selected_camera:
                 camera_index = int(selected_camera.split()[-1])
                 self.camera_widget = Camera(index=camera_index, resolution=(640, 480), play=True)
