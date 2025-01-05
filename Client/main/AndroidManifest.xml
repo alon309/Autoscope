@@ -1,25 +1,29 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.kivy.myapp">
 
+    <!-- הרשאות נדרשות -->
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-feature android:name="android.hardware.usb.host" android:required="true" />
-    <uses-feature android:name="android.hardware.camera" />
-    <uses-feature android:name="android.hardware.camera.autofocus" />
 
+    <!-- תכונות נדרשות -->
+    <uses-feature android:name="android.hardware.usb.host" android:required="true" />
+    <uses-feature android:name="android.hardware.camera" android:required="true" />
+    <uses-feature android:name="android.hardware.camera.external" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="true" />
 
     <application
         android:allowBackup="true"
         android:label="OtoScope"
-        android:icon="@drawable/icon">
+        android:icon="@drawable/icon"
+        android:requestLegacyExternalStorage="false"
+        android:usesCleartextTraffic="false">
 
         <!-- Receiver to handle USB device attachment -->
         <receiver android:name="org.kivy.myapp.UsbBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"/>
+                <action android:name="org.kivy.myapp.USB_PERMISSION"/>
             </intent-filter>
         </receiver>
 
