@@ -18,10 +18,10 @@
 
         Label:
             text: root.hello_message
-            font_size: dp(28)
-            color: 0, 0, 0, 1  # שחור
+            font_size: dp(22)
+            color: 0, 0, 0, 0.5  # שחור
             size_hint: (None, None)
-            pos_hint: {"center_x": 0.5, "top": 1}  # קרוב מתחת לאייקון
+            pos_hint: {"center_x": 0.5, "top": 1}
 
 
         # User profile picture
@@ -35,15 +35,20 @@
         # Button: 'Settings'
         RoundedButton_:
             text: "Settings"
+            icon: "./Icons/settings.png"
+            icon_size: [dp(50), dp(50)]
             size_hint: (0.4, None)
             height: dp(85)
             pos_hint: {"center_x": 0.27, "center_y": 0.57}
             background_color: 0.1, 0.6, 0.8, 1
             on_release: root.open_settings()
+            
 
         # Button: 'Check your ear'
         RoundedButton_:
             text: "Check your ear"
+            icon: "./Icons/check.png"
+            icon_size: [dp(50), dp(50)]
             size_hint: (0.4, None)
             height: dp(85)
             pos_hint: {"center_x": 0.73, "center_y": 0.57}
@@ -53,6 +58,8 @@
         # Button: 'Help'
         RoundedButton_:
             text: "Help"
+            icon: "./Icons/help.png"
+            icon_size: [dp(50), dp(50)]
             size_hint: (0.4, None)
             height: dp(85)
             pos_hint: {"center_x": 0.27, "center_y": 0.4}
@@ -62,6 +69,8 @@
         # Button: 'About'
         RoundedButton_:
             text: "About"
+            icon: "./Icons/about.png"
+            icon_size: [dp(50), dp(50)]
             size_hint: (0.4, None)
             height: dp(85)
             pos_hint: {"center_x": 0.73, "center_y": 0.4}
@@ -71,6 +80,8 @@
         # Button: 'Share'
         RoundedButton_:
             text: "Share"
+            icon: "./Icons/share.png"
+            icon_size: [dp(50), dp(50)]
             size_hint: (0.4, None)
             height: dp(85)
             pos_hint: {"center_x": 0.27, "center_y": 0.23}
@@ -80,6 +91,8 @@
         # Button: 'History'
         RoundedButton_:
             text: "History"
+            icon: "./Icons/history.png"
+            icon_size: [dp(50), dp(50)]
             size_hint: (0.4, None)
             height: dp(85)
             pos_hint: {"center_x": 0.73, "center_y": 0.23}

@@ -105,6 +105,8 @@ class OtoScopeVideoScreen(Screen):
             app = App.get_running_app()  # Get the current app instance
             chosen_image_screen.update_data(image_path=image_path, user_id=app.user_details.get("uid"))
             self.manager.current = 'chosenImage'
+            if self.capture:
+                self.capture.release()
         else:
             print("No frame available to capture.")
 

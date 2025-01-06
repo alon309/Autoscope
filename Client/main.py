@@ -2,7 +2,6 @@ from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager
 
 from home_screen import HomeScreen
-from account_screen import AccountScreen
 from ear_check_screen import EarCheckScreen
 from login_screen import UserLoginScreen
 from about_screen import AboutScreen
@@ -43,7 +42,7 @@ class AutoScopeApp(App):
         Builder.load_file("screens/sign_up.kv")
 
         Builder.load_file("screens/home.kv")
-        Builder.load_file("screens/account.kv")
+
         Builder.load_file("screens/ear_check.kv")
         Builder.load_file("screens/otoscope.kv")
         Builder.load_file("screens/chosen_image.kv")
@@ -78,7 +77,6 @@ class AutoScopeApp(App):
         # Define screens to add
         screens_to_add = [
             (HomeScreen, 'home'),
-            (AccountScreen, 'account'),
             (EarCheckScreen, 'earCheck'),
             (OtoScopeVideoScreen, 'otoscope'),
             (SettingsScreen, 'settings'),

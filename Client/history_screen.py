@@ -67,7 +67,7 @@ class HistoryScreen(Screen):
             self.update_page()
 
     def go_back(self):
-        self.manager.current = 'account'
+        self.manager.current = 'home'
 
     def update_history(self, history_data):
         self.history_data = history_data

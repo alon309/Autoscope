@@ -63,6 +63,10 @@ class HomeScreen(Screen):
         self.manager.transition.duration = 0
         self.parent.current = 'history'
 
+    def update_full_name(self, full_name):
+        app = App.get_running_app()
+        self.hello_message = f"Hello {app.user_details.get('details', {}).get('Full Name', '')}!"    
+
     def logout(self):
         """Show confirmation popup before logging out."""
         # Layout for popup content

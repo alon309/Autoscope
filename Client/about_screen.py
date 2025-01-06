@@ -3,6 +3,8 @@ from kivy.properties import StringProperty
 from kivy.app import App
 from kivy.metrics import dp
 from feedback_popup import FeedbackPopup
+from config import SERVER_URL
+import requests
 
 
 class AboutScreen(Screen):
@@ -28,10 +30,27 @@ class AboutScreen(Screen):
     def submit_feedback(self):
         feedback = self.ids.feedback_input.text
         if feedback.strip():
-            print(f"Feedback submitted: {feedback}")
-            self.ids.feedback_input.text = ""  # Clear the input field
-            pupup_title = 'Feedback submitted'
-            pupup_text = 'Thank you for your feedback!'
+
+            app = App.get_running_app()
+            url = f"{SERVER_URL}/api/send_email"
+            name = app.user_details.get('details', {}).get('Full Name', '')
+            email = app.user_details.get('details', {}).get("Email", "")
+
+            data = {
+                "from_email": email,
+                "to_email": "market.monitor.b@gmail.com",
+                "subject": f"Feedback from {name}",
+                "html": f"Feedback from {name} ( {email} ): {feedback}"
+            }
+
+            response = requests.post(url, json=data)
+            if response.status_code == 200:
+                self.ids.feedback_input.text = ""  # Clear the input field
+                pupup_title = 'Feedback submitted'
+                pupup_text = 'Thank you for your feedback!'
+            else:
+                pupup_title = 'Feedback Not submitted'
+                pupup_text = 'There was an error, please try again!'
         else:
             pupup_title = 'Feedback Not submitted'
             pupup_text = 'No feedback entered!'

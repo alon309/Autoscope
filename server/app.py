@@ -424,43 +424,36 @@ def get_history():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
+
 
 @app.route('/api/send_email', methods=['POST'])
 def send_email():
     data = request.json
 
-    # קבלת נתונים מהבקשה
-    recipient_email = data.get("email")
-    recipient_name = data.get("name")
-    html_content = data.get("html")
 
-    # פרטי המייל
-    sender_email = "market.monitor.b@gmail.com"
-    sender_password = "bzys zisc foms wlkj"
+    from_email = data.get("from_email")
+    to_email = data.get("to_email")
+    subject = data.get("subject")
+    content = data.get("html")
 
-    ''' if not (recipient_email and recipient_name and html_content):
-        return jsonify({"error": "Missing required fields"}), 400
-    '''
+    main_email = "market.monitor.b@gmail.com"
+    main_password = "bzys zisc foms wlkj"
 
     try:
 
         msg = MIMEMultipart("alternative")
-        msg["From"] = sender_email
-        msg["To"] = recipient_email
-        msg["Subject"] = f"From {recipient_name} - AutoScope App!"
+        msg["From"] = from_email
+        msg["To"] = to_email
+        msg["Subject"] = subject
 
-        # צירוף תוכן ה-HTML
-        msg.attach(MIMEText(html_content, "html"))
+        msg.attach(MIMEText(content, "html"))
 
-        # התחברות לשרת ה-SMTP של Gmail
         smtp_server = "smtp.gmail.com"
         smtp_port = 587
         server = smtplib.SMTP(smtp_server, smtp_port)
         server.starttls()
-        server.login(sender_email, sender_password)
+        server.login(main_email, main_password)
 
-        # שליחת המייל
         server.send_message(msg)
         server.quit()
 

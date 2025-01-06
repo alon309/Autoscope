@@ -26,8 +26,9 @@ class ShareAppScreen(Screen):
         email_to = recipient_email
         email = app.user_details.get('details', {}).get("Email", "")
         data = {
-            "email": email_to,
-            "name": name,
+            "to_email": email_to,
+            "from_email": email,
+            "subject": f"From {name} - AutoScope App!",
             "html": f"""
                         <html>
                             <body style="font-family: Arial, sans-serif; line-height: 1.6;">

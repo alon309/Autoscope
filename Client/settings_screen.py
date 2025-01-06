@@ -29,7 +29,6 @@ class SettingsScreen(Screen):
         email = self.ids.email_input.text
         name = self.ids.name_input.text
         phone = self.ids.phone_input.text
-        notifications_enabled = self.ids.notification_switch.active
         gender = self.ids.gender_input.text
 
         app.user_details['details'] = {
@@ -42,7 +41,7 @@ class SettingsScreen(Screen):
         home_screen = self.manager.get_screen("home")
         home_screen.update_profile_image(gender)
 
-        home_screen = self.manager.get_screen("account")
+        home_screen = self.manager.get_screen("home")
         home_screen.update_full_name(name)
 
         url = f"{SERVER_URL}/api/save_settings"
@@ -62,7 +61,7 @@ class SettingsScreen(Screen):
 
             popup = FeedbackPopup(
                 title_text="Settings Saved",
-                message_text=f'{email}, {name}, {phone}, Notifications: {"On" if notifications_enabled else "Off"}'
+                message_text=f'{email}, {name}, {phone}'
             )
             popup.open()
 
