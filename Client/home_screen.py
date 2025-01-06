@@ -4,18 +4,22 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.metrics import dp
 from kivy.uix.screenmanager import Screen
+from feedback_popup import FeedbackPopup
 from custom_widgets import RoundedTextInput, RoundedButton_
 from kivy.app import App
 from kivy.properties import StringProperty
 
 
 class HomeScreen(Screen):
+    hello_message = StringProperty("")
     gender_image_path = StringProperty("Icons/male.png")
+    
     def __init__(self, **kwargs):
         super(HomeScreen, self).__init__(**kwargs)
     
         app = App.get_running_app()
         self.gender_image_path = f"Icons/{app.user_details.get('details', {}).get('gender', '')}.png"
+        self.hello_message = f"Hello {app.user_details.get('details', {}).get('Full Name', '')}!"
 
 
 
@@ -23,9 +27,9 @@ class HomeScreen(Screen):
     def update_profile_image(self, gender):
         self.gender_image_path = f"Icons/{gender}.png"
 
-    def open_my_account(self):
+    def open_settings(self):
         self.manager.transition.duration = 0
-        self.manager.current = 'account'
+        self.manager.current = 'settings'
 
     def check_ear(self):
         self.manager.transition.duration = 0
@@ -38,6 +42,26 @@ class HomeScreen(Screen):
     def open_about(self):
         self.manager.transition.duration = 0
         self.manager.current = 'about'
+    
+    def open_share(self):
+        self.manager.transition.duration = 0
+        self.manager.current = 'shareApp'
+    
+    def open_history(self):
+        app = App.get_running_app()
+        history_data = app.user_details.get('results', [])
+
+        if not history_data:
+            popup = FeedbackPopup(
+                title_text="No History",
+                message_text='No data to show'
+            )
+            return popup.open()
+
+        history_screen = self.parent.get_screen('history')
+        history_screen.update_history(history_data)
+        self.manager.transition.duration = 0
+        self.parent.current = 'history'
 
     def logout(self):
         """Show confirmation popup before logging out."""

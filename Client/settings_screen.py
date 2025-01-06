@@ -74,7 +74,7 @@ class SettingsScreen(Screen):
             popup.open()
 
     def go_back(self):
-        self.manager.current = 'account'
+        self.manager.current = 'home'
 
 
 

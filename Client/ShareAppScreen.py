@@ -68,4 +68,4 @@ class ShareAppScreen(Screen):
 
     def go_back(self):
         self.manager.transition.duration = 0
-        self.manager.current = 'account'     
+        self.manager.current = 'home'     

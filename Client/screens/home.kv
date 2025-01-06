@@ -4,36 +4,44 @@
     FloatLayout:
         canvas.before:
             Color:
-                rgba: 1, 1, 1, 1  # צבע רקע לבן
+                rgba: 1, 1, 1, 1  # White background
             Rectangle:
                 size: self.size
                 pos: self.pos
 
-        # לוגו האפליקציה
+        # App logo
         Image:
             source: "Icons/otoscope.png"
             size_hint: (None, None)
             size: dp(80), dp(80)
             pos_hint: {"right": 0.98, "top": 0.98}
 
-        # תמונת משתמש
+        Label:
+            text: root.hello_message
+            font_size: dp(28)
+            color: 0, 0, 0, 1  # שחור
+            size_hint: (None, None)
+            pos_hint: {"center_x": 0.5, "top": 1}  # קרוב מתחת לאייקון
+
+
+        # User profile picture
         Image:
             source: root.gender_image_path
             size_hint: (None, None)
             size: dp(140), dp(140)
-            allow_stretch: True  # מאפשר מתיחה של התמונה
-            pos_hint: {"center_x": 0.5, "top": 0.92}
+            allow_stretch: True
+            pos_hint: {"center_x": 0.5, "top": 0.9}
 
-        # כפתור 'My Account'
+        # Button: 'Settings'
         RoundedButton_:
-            text: "My account"
+            text: "Settings"
             size_hint: (0.4, None)
             height: dp(85)
             pos_hint: {"center_x": 0.27, "center_y": 0.57}
             background_color: 0.1, 0.6, 0.8, 1
-            on_release: root.open_my_account()
+            on_release: root.open_settings()
 
-        # כפתור 'Check your ear'
+        # Button: 'Check your ear'
         RoundedButton_:
             text: "Check your ear"
             size_hint: (0.4, None)
@@ -42,7 +50,7 @@
             background_color: 0.1, 0.6, 0.8, 1
             on_release: root.check_ear()
 
-        # כפתור 'Help'
+        # Button: 'Help'
         RoundedButton_:
             text: "Help"
             size_hint: (0.4, None)
@@ -51,7 +59,7 @@
             background_color: 0.1, 0.6, 0.8, 1
             on_release: root.open_help()
 
-        # כפתור 'About'
+        # Button: 'About'
         RoundedButton_:
             text: "About"
             size_hint: (0.4, None)
@@ -60,11 +68,29 @@
             background_color: 0.1, 0.6, 0.8, 1
             on_release: root.open_about()
 
-        # כפתור 'Log out'
+        # Button: 'Share'
+        RoundedButton_:
+            text: "Share"
+            size_hint: (0.4, None)
+            height: dp(85)
+            pos_hint: {"center_x": 0.27, "center_y": 0.23}
+            background_color: 0.1, 0.6, 0.8, 1
+            on_release: root.open_share()
+
+        # Button: 'History'
+        RoundedButton_:
+            text: "History"
+            size_hint: (0.4, None)
+            height: dp(85)
+            pos_hint: {"center_x": 0.73, "center_y": 0.23}
+            background_color: 0.1, 0.6, 0.8, 1
+            on_release: root.open_history()
+
+        # Button: 'Log out'
         RoundedButton_:
             text: "Log out"
             size_hint: (0.4, None)
             height: dp(50)
-            pos_hint: {"center_x": 0.5, "center_y": 0.2}
+            pos_hint: {"center_x": 0.5, "center_y": 0.1}
             background_color: 0.3, 0.3, 0.3, 1
             on_release: root.logout()
