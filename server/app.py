@@ -7,6 +7,10 @@ from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 import json
 
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
 import tensorflow as tf
 tf.config.threading.set_intra_op_parallelism_threads(1)
 tf.config.threading.set_inter_op_parallelism_threads(1)
@@ -92,8 +96,8 @@ def load_model_dynamic_safe(model_path):
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
     return None
-
-MODEL_PATH = os.path.join(os.getcwd(), "mysite/VGG16model.tflite")
+MODEL_PATH = os.path.join(os.getcwd(), "mysite/compressed_model.tflite")
+# MODEL_PATH = os.path.join(os.getcwd(), "mysite/VGG16model.tflite")
 # MODEL_PATH = os.path.join(os.getcwd(), "mysite/VGG16model.h5")
 # MODEL_PATH = os.path.join(os.getcwd(), r"C:\Users\ndvp3\OneDrive - ort braude college of engineering\שולחן העבודה\autoscope\server/VGG16model.h5")
 # model = load_model_dynamic_safe(MODEL_PATH)
@@ -418,6 +422,49 @@ def get_history():
 
         return jsonify(history_data), 200
 
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+
+@app.route('/api/send_email', methods=['POST'])
+def send_email():
+    data = request.json
+
+    # קבלת נתונים מהבקשה
+    recipient_email = data.get("email")
+    recipient_name = data.get("name")
+    html_content = data.get("html")
+
+    # פרטי המייל
+    sender_email = "market.monitor.b@gmail.com"
+    sender_password = "bzys zisc foms wlkj"
+
+    ''' if not (recipient_email and recipient_name and html_content):
+        return jsonify({"error": "Missing required fields"}), 400
+    '''
+
+    try:
+
+        msg = MIMEMultipart("alternative")
+        msg["From"] = sender_email
+        msg["To"] = recipient_email
+        msg["Subject"] = f"From {recipient_name} - AutoScope App!"
+
+        # צירוף תוכן ה-HTML
+        msg.attach(MIMEText(html_content, "html"))
+
+        # התחברות לשרת ה-SMTP של Gmail
+        smtp_server = "smtp.gmail.com"
+        smtp_port = 587
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()
+        server.login(sender_email, sender_password)
+
+        # שליחת המייל
+        server.send_message(msg)
+        server.quit()
+
+        return jsonify({"message": "Email sent successfully!"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
