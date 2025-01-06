@@ -1,0 +1,66 @@
+<ShareAppScreen>:
+    name: "shareApp"
+
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: 0, 0, 0, 1
+            Rectangle:
+                size: self.size
+                pos: self.pos
+
+        # Back Button at the top left
+        ClickableImage:
+            source: "./Icons/back.png"
+            size_hint: (None, None)
+            size: dp(65), dp(65)
+            pos_hint: {"x": 0.02, "top": 0.98}
+            on_release: root.go_back()
+
+        # Otoscope Icon at the top right
+        Image:
+            source: "Icons/otoscope.png"
+            size_hint: (None, None)
+            size: dp(80), dp(80)
+            pos_hint: {"right": 0.98, "top": 0.98}
+
+        BoxLayout:
+            orientation: 'vertical'
+            padding: dp(20)
+            spacing: dp(15)
+            size_hint: (0.8, None)
+            height: dp(300)
+            pos_hint: {"center_x": 0.5, "center_y": 0.5}
+
+            Label:
+                text: "Share the App"
+                font_size: "24sp"
+                size_hint_y: None
+                height: dp(40)
+                halign: 'center'
+
+            TextInput:
+                id: recipient_email
+                hint_text: "Enter recipient's email"
+                multiline: False
+                size_hint_y: None
+                height: dp(44)
+
+            RoundedButton_:
+                text: "Share"
+                size_hint: (None, None)
+                size: dp(200), dp(68)
+                font_size: dp(24)
+                pos_hint: {"center_x": 0.5}
+                background_color: 0.1, 0.6, 0.8, 1
+                on_release: root.share_via_email(recipient_email.text)
+
+            Label:
+                id: message_label
+                text: ""
+                font_size: "18sp"
+                size_hint_y: None
+                height: dp(40)
+                halign: 'center'
+                valign: 'middle'
+                color: (0, 1, 0, 1)  # Green for success, red for error

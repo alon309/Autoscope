@@ -37,6 +37,10 @@ class AccountScreen(Screen):
         self.manager.transition.duration = 0
         self.manager.current = 'settings'
     
+    def open_share(self):
+         self.manager.transition.duration = 0
+         self.manager.current = 'shareApp'
+    
     def go_back(self):
         self.manager.transition.duration = 0
         self.manager.current = 'home'        

@@ -51,11 +51,14 @@
                 root.open_settings()
 
         RoundedButton_:
-            text: "test"
+            text: "Share"
             size_hint: (0.4, None)
             height: dp(85)
             pos_hint: {"center_x": 0.27, "center_y": 0.4}
             background_color: 0.1, 0.6, 0.8, 1
+            on_release:
+                app.close_side_menu()
+                root.open_share()
 
         RoundedButton_:
             text: "test"

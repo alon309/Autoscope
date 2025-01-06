@@ -19,6 +19,7 @@ from kivy.uix.image import Image
 from custom_widgets import RoundedTextInput, RoundedButton_
 from kivy.uix.boxlayout import BoxLayout
 from otoscope_video_screen import OtoScopeVideoScreen
+from ShareAppScreen import ShareAppScreen
 from kivy.uix.screenmanager import Screen
 
 class Menu(BoxLayout):
@@ -51,6 +52,7 @@ class AutoScopeApp(App):
         Builder.load_file("screens/settings.kv")
         Builder.load_file("screens/help.kv")
         Builder.load_file("screens/about.kv")
+        Builder.load_file("screens/shareApp.kv")
         Builder.load_file("menu.kv")
 
         
@@ -84,7 +86,8 @@ class AutoScopeApp(App):
             (AboutScreen, 'about'),
             (ChosenImageScreen, 'chosenImage'),
             (HelpScreen, 'help'),
-            (HistoryScreen, 'history')
+            (HistoryScreen, 'history'),
+            (ShareAppScreen, "shareApp")
         ]
         
         # Add all screens to the ScreenManager

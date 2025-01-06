@@ -38,3 +38,12 @@
             pos_hint: {"x": 0.2, "top": 0.98}
             on_release:
                 root.go_back()
+
+        RoundedButton_:
+            text: "Captue"
+            size_hint: (0.6, None)
+            font_size: dp(24)
+            height: dp(68)
+            pos_hint: {"center_x": 0.5, "center_y": 0.1}
+            background_color: 0.1, 0.6, 0.8, 1
+            on_release: root.capture_image()
