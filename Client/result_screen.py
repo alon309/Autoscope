@@ -1,12 +1,13 @@
 from kivy.uix.screenmanager import Screen
 from kivy.app import App
-from kivy.core.image import Image as CoreImage
-from kivy.metrics import dp
 from datetime import datetime
 import requests
 from config import SERVER_URL
 from feedback_popup import FeedbackPopup
-
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.textinput import TextInput
+from kivy.uix.button import Button
+from kivy.uix.popup import Popup
 
 class ResultsScreen(Screen):
     def __init__(self, **kwargs):
@@ -15,6 +16,9 @@ class ResultsScreen(Screen):
         self.image = None
         self.result_string = "No results yet"
         self.user_id = None
+        self.new_result = None
+        
+    def on_enter(self):
         self.new_result = None
 
     def update_data(self, image, result_string, user_id):
@@ -121,54 +125,42 @@ class ResultsScreen(Screen):
         name = app.user_details.get('details', {}).get('Full Name', '')
         email = app.user_details.get('details', {}).get("Email", "")
         
-        # בדוק אם self.new_result מוגדר
         if not self.new_result or not self.new_result.get('image') or not self.new_result.get('datetime') or not self.new_result.get('diagnose'):
             popup = FeedbackPopup(
                 title_text='Failed',
                 message_text='Please Save result before sharing!'
             )
             return popup.open()
-        
-        # ודא שהקישור לתמונה כולל את ?alt=media להורדה
+
         image_url = f"{self.new_result['image']}?alt=media"
         datetime = f"{self.new_result['datetime']}"
         diagnose = f"{self.new_result['diagnose']}"
-        from kivy.uix.popup import Popup
 
-        # פתיחת ה-popup להזנת המייל
         email_popup = Popup(
             title="Enter Email Address",
             size_hint=(None, None),
             size=(400, 200)
         )
-        from kivy.uix.popup import Popup
-        from kivy.uix.boxlayout import BoxLayout
-        from kivy.uix.textinput import TextInput
-        from kivy.uix.button import Button
-        from kivy.uix.label import Label
+
         content = BoxLayout(orientation="vertical", padding=20, spacing=10)
         
         email_input = TextInput(hint_text="Enter recipient's email", size_hint=(1, None), height=40, multiline=False)
         content.add_widget(email_input)
         
         buttons_layout = BoxLayout(size_hint_y=None, height=50, spacing=10)
-        
-        # כפתור Cancel
+
         cancel_button = Button(text="Cancel", on_press=email_popup.dismiss)
         buttons_layout.add_widget(cancel_button)
-        
-        # כפתור Send
+
         def on_send(instance):
             email_to = email_input.text.strip()
             
-            if not email_to:  # אם לא הוזנה כתובת מייל, הצג הודעה
+            if not email_to:
                 email_input.hint_text = "Please enter a valid email"
                 return
-            
-            # סגירת ה-popup
+
             email_popup.dismiss()
-            
-            # שליחת המייל
+
             data = {
                 "to_email": email_to,
                 "from_email": email,

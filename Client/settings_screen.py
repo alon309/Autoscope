@@ -61,7 +61,7 @@ class SettingsScreen(Screen):
 
             popup = FeedbackPopup(
                 title_text="Settings Saved",
-                message_text=f'{email}, {name}, {phone}'
+                message_text=f'Settings saved successfully'
             )
             popup.open()
 

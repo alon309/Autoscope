@@ -7,9 +7,8 @@ from kivy.uix.image import Image
 from kivy.clock import Clock
 from kivy.graphics.texture import Texture
 from kivy.uix.screenmanager import Screen
-from kivy.core.image import Image as CoreImage
-from kivy.core.image import Texture as CoreTexture
 from kivy.app import App
+import time
 
 class OtoScopeVideoScreen(Screen):
     def __init__(self, **kwargs):
@@ -92,12 +91,27 @@ class OtoScopeVideoScreen(Screen):
                 texture.blit_buffer(buf, colorfmt="bgr", bufferfmt="ubyte")
                 self.video_display.texture = texture
 
+
     def capture_image(self, *args):
         """
         Capture the current frame and navigate to the ChosenImageScreen.
         """
         if self.current_frame is not None:
-            image_path = "captured_image.jpg"  # Temporary file path
+            # Use the app's user data directory to store temporary files.
+            # This ensures compatibility across different operating systems and provides a secure, isolated location for saving files.
+            directory = App.get_running_app().user_data_dir 
+            
+            for filename in os.listdir(directory):
+                if filename.startswith("captured_image"):
+                    file_path = os.path.join(directory, filename)
+                    try:
+                        os.remove(file_path)
+                        print(f"File {filename} has been deleted.")
+                    except Exception as e:
+                        print(f"Error deleting file {filename}: {e}")
+
+            image_path = os.path.join(directory, f"captured_image_{int(time.time())}.jpg")
+            
             cv2.imwrite(image_path, self.current_frame)  # Save the current frame
 
             # Navigate to the ChosenImageScreen
@@ -105,10 +119,13 @@ class OtoScopeVideoScreen(Screen):
             app = App.get_running_app()  # Get the current app instance
             chosen_image_screen.update_data(image_path=image_path, user_id=app.user_details.get("uid"))
             self.manager.current = 'chosenImage'
+            
+            # שחרור capture
             if self.capture:
                 self.capture.release()
         else:
             print("No frame available to capture.")
+
 
     def on_stop(self):
         """
@@ -125,3 +142,7 @@ class OtoScopeVideoScreen(Screen):
     def on_pre_enter(self):
         app = App.get_running_app()
         app.breadcrumb.update_breadcrumb(['Home', 'Ear Check', 'OtoScope'])
+        
+    def on_enter(self):
+        self.current_frame = None
+        self.video_display.texture = None

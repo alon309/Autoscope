@@ -3,7 +3,7 @@ from kivy.core.image import Image as CoreImage
 from config import SERVER_URL
 import requests
 from kivy.app import App
-
+from feedback_popup import FeedbackPopup
 
 class ChosenImageScreen(Screen):
     def __init__(self, **kwargs):
@@ -29,6 +29,8 @@ class ChosenImageScreen(Screen):
             except Exception as e:
                 print(f"Error loading image: {e}")
                 self.ids.image_display.texture = None
+        else:
+            self.ids.image_display.texture = None
 
     def go_back(self):
         self.manager.current = 'earCheck'
@@ -54,7 +56,12 @@ class ChosenImageScreen(Screen):
                 results_screen.update_data(self.chosen_current_image, f"{predicted_class} {confidence}", self.user_id)
                 self.manager.current = 'result'
         except requests.exceptions.RequestException as e:
-            print(f"Error during analysis request: {e}")
+            popup = FeedbackPopup(
+                title_text = 'Error during analysis request',
+                message_text = 'Make sure the image is correct\nand try again!'
+            )
+            popup.open()
+            print(f"Error during analysis request:\nplease try again!")
 
 
     def on_pre_enter(self):
