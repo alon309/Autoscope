@@ -78,10 +78,10 @@ def load_model_dynamic_safe(model_path):
         if not os.path.exists(model_path):
             raise FileNotFoundError(f"The specified path '{model_path}' does not exist.")
         
-        if os.path.isdir(model_path):  # אם זה תיקייה, כנראה SavedModel
+        if os.path.isdir(model_path):
             model = tf.keras.models.load_model(model_path)
             print("Loaded SavedModel format")
-        elif model_path.endswith('.h5'):  # אם זה קובץ עם סיומת .h5
+        elif model_path.endswith('.h5'):
             model = tf.keras.models.load_model(model_path)
             print("Loaded H5 format")
         else:
@@ -311,7 +311,6 @@ def login():
     email = data.get("email")
     password = data.get("password")
 
-    # URL של ה-API של Firebase
     firebase_url = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyD25cuiclB7xuXAClAsX3sFpttko-T7X5Y"
     
     firebase_data = {
@@ -321,7 +320,6 @@ def login():
     }
 
     try:
-        # שלח בקשה ל-API של Firebase
         response = requests.post(firebase_url, json=firebase_data)
         response.raise_for_status()
         

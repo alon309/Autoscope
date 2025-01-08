@@ -15,12 +15,11 @@ class UserLoginScreen(Screen):
 
     def sign_in_func(self):
         Window.release_keyboard()
-        email = self.ids.email_input.text
-        password = self.ids.password_input.text
-        #email = 'ndvp39@gmail.com'
-        #password = '123123'
-        print(email)
-        print(password)
+        #email = self.ids.email_input.text
+        #password = self.ids.password_input.text
+        email = 'ndvp39@gmail.com'
+        password = '123123'
+
         server_url = f"{SERVER_URL}/api/login"
 
         data = {
@@ -62,7 +61,7 @@ class UserLoginScreen(Screen):
 
             popup = FeedbackPopup(
                 title_text="Success",
-                message_text="The operation completed successfully!"
+                message_text=f"Welcome Back, {full_name}"
             )
             popup.open()
 
@@ -93,3 +92,7 @@ class UserLoginScreen(Screen):
         """Switch focus from current field to the next"""
         if current_field.focus:  # Check if the current field has focus
             next_field.focus = True
+
+    def on_pre_enter(self):
+        app = App.get_running_app()
+        app.breadcrumb.update_breadcrumb(['Log In'])

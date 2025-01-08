@@ -69,4 +69,8 @@ class ShareAppScreen(Screen):
 
     def go_back(self):
         self.manager.transition.duration = 0
-        self.manager.current = 'home'     
+        self.manager.current = 'home'
+
+    def on_pre_enter(self):
+        app = App.get_running_app()
+        app.breadcrumb.update_breadcrumb(['Home', 'Share'])

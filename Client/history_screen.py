@@ -5,6 +5,7 @@ from io import BytesIO
 import requests
 from kivy.uix.image import Image
 from kivy.uix.label import Label
+from kivy.app import App
 
 
 class HistoryScreen(Screen):
@@ -74,3 +75,7 @@ class HistoryScreen(Screen):
         self.max_pages = (len(history_data) + self.page_size - 1) // self.page_size
         self.current_page = 0
         self.update_page()
+
+    def on_pre_enter(self):
+        app = App.get_running_app()
+        app.breadcrumb.update_breadcrumb(['Home', 'History'])

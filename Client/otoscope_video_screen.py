@@ -121,3 +121,7 @@ class OtoScopeVideoScreen(Screen):
         if self.capture:
             self.capture.release()
         self.manager.current = 'earCheck'
+
+    def on_pre_enter(self):
+        app = App.get_running_app()
+        app.breadcrumb.update_breadcrumb(['Home', 'Ear Check', 'OtoScope'])

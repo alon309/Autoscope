@@ -2,44 +2,44 @@
     size_hint: None, None
     size: dp(150), dp(50)
     background_color: 0, 0, 0, 0
-    background_normal: ""  # ביטול רקע ברירת מחדל
-    background_down: ""  # ביטול רקע לחיצה
-    color: 1, 1, 1, 1  # צבע טקסט לבן
+    background_normal: ""
+    background_down: ""
+    color: 1, 1, 1, 1
     font_size: dp(18)
     canvas.before:
         Color:
-            rgba: 0.1, 0.6, 0.8, 1  # צבע רקע כחול מותאם
+            rgba: 0.1, 0.6, 0.8, 1
         RoundedRectangle:
             size: self.size
             pos: self.pos
-            radius: [dp(25)]  # פינות מעוגלות
+            radius: [dp(25)]
 
 <GrayRoundedButton>:
     size_hint: None, None
-    size: dp(150), dp(50)  # גודל ברירת מחדל
-    background_color: 0, 0, 0, 0  # ביטול צבע רקע ברירת מחדל
-    background_normal: ""  # ביטול רקע ברירת מחדל
-    background_down: ""  # ביטול רקע לחיצה
-    color: 1, 1, 1, 1  # צבע טקסט לבן
+    size: dp(150), dp(50)
+    background_color: 0, 0, 0, 0
+    background_normal: ""
+    background_down: ""
+    color: 1, 1, 1, 1
     font_size: dp(18)
     canvas.before:
         Color:
-            rgba: 0.3, 0.3, 0.3, 1  # צבע רקע כחול מותאם
+            rgba: 0.3, 0.3, 0.3, 1
         RoundedRectangle:
             size: self.size
             pos: self.pos
-            radius: [dp(25)]  # פינות מעוגלות
+            radius: [dp(25)]
 
 <BlueRoundedButtonWithIcon>:
     size_hint: None, None
     size: dp(200), dp(50)
-    background_color: 0, 0, 0, 0  # ביטול רקע ברירת מחדל
+    background_color: 0, 0, 0, 0
     background_normal: ""
     background_down: ""
-    text: ""  # ביטול טקסט ברירת מחדל
+    text: ""
     canvas.before:
         Color:
-            rgba: 0.1, 0.6, 0.8, 1  # צבע רקע כחול
+            rgba: 0.1, 0.6, 0.8, 1
         RoundedRectangle:
             size: self.size
             pos: self.pos
@@ -50,13 +50,13 @@
         spacing: dp(10)
         padding: dp(10), 0
         Image:
-            source: root.icon  # נתיב האייקון
+            source: root.icon
             size_hint: None, None
-            size: root.icon_size  # גודל האייקון
+            size: root.icon_size
             allow_stretch: True
             keep_ratio: True
         Label:
-            text: root.text  # טקסט הכפתור
+            text: root.text
             color: 1, 1, 1, 1
             font_size: self.font_size
             halign: 'center'

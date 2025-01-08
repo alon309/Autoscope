@@ -1,6 +1,7 @@
 from kivy.uix.screenmanager import Screen
 from kivy.uix.label import Label
 from kivy.metrics import dp
+from kivy.app import App
 
 
 class HelpScreen(Screen):
@@ -39,3 +40,7 @@ class HelpScreen(Screen):
             )
             faq_label.bind(size=faq_label.setter('text_size'))  # Enable text wrapping
             faqs_layout.add_widget(faq_label)
+
+    def on_pre_enter(self):
+        app = App.get_running_app()
+        app.breadcrumb.update_breadcrumb(['Home', 'Help'])

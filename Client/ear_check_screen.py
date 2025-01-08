@@ -20,8 +20,6 @@ class EarCheckScreen(Screen):
     def __init__(self, **kwargs):
         super(EarCheckScreen, self).__init__(**kwargs)
 
-        self.menu_open = False  # Track menu state
-
     def request_storage_permissions(self):
         if ANDROID:
             request_permissions([Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE])
@@ -89,3 +87,7 @@ class EarCheckScreen(Screen):
     def go_back(self):
         self.manager.transition.duration = 0
         self.manager.current = 'home'
+
+    def on_pre_enter(self):
+        app = App.get_running_app()
+        app.breadcrumb.update_breadcrumb(['Home', 'Ear Check'])

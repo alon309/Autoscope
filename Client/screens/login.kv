@@ -4,35 +4,31 @@
     FloatLayout:
         canvas.before:
             Color:
-                rgba: 1, 1, 1, 1  # לבן כרקע
+                rgba: 1, 1, 1, 1
             Rectangle:
                 size: self.size
                 pos: self.pos
 
-        # לוגו האפליקציה
         Image:
             source: "Icons/otoscope.png"
             size_hint: (None, None)
             size: dp(120), dp(120)
             pos_hint: {"center_x": 0.5, "top": 0.93}
 
-        # כותרת האפליקציה
         Label:
             text: "Autoscope"
             font_size: dp(28)
-            color: 0, 0, 0, 1  # שחור
+            color: 0, 0, 0, 1
             size_hint: (None, None)
-            pos_hint: {"center_x": 0.5, "top": 0.76}  # קרוב מתחת לאייקון
+            pos_hint: {"center_x": 0.5, "top": 0.76}
 
-        # תיאור האפליקציה
         Label:
             text: "Early detection of ear infections"
             font_size: dp(14)
-            color: 0.4, 0.4, 0.4, 1  # אפור כהה
+            color: 0.4, 0.4, 0.4, 1
             size_hint: (None, None)
-            pos_hint: {"center_x": 0.5, "top": 0.72}  # קרוב מתחת לכותרת
+            pos_hint: {"center_x": 0.5, "top": 0.72}
 
-        # שדה אימייל
         RoundedTextInput:
             id: email_input
             hint_text: "Email"
@@ -43,7 +39,6 @@
             multiline: False
             on_text_validate: root.switch_focus_to_next(self, root.ids.password_input)
 
-        # שדה סיסמה
         RoundedTextInput:
             id: password_input
             hint_text: "Password"
@@ -55,7 +50,6 @@
             multiline: False
             on_text_validate: root.sign_in_func()
 
-        # כפתור כניסה
         RoundedButton_:
             text: "Log In"
             size_hint: (0.5, None)
@@ -63,7 +57,6 @@
             pos_hint: {"center_x": 0.5, "center_y": 0.3}
             on_release: root.sign_in_func()
 
-        # כפתור הרשמה
         RoundedButton_:
             text: "Sign Up"
             size_hint: (0.5, None)

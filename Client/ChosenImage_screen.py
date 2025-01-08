@@ -2,6 +2,7 @@ from kivy.uix.screenmanager import Screen
 from kivy.core.image import Image as CoreImage
 from config import SERVER_URL
 import requests
+from kivy.app import App
 
 
 class ChosenImageScreen(Screen):
@@ -55,3 +56,7 @@ class ChosenImageScreen(Screen):
         except requests.exceptions.RequestException as e:
             print(f"Error during analysis request: {e}")
 
+
+    def on_pre_enter(self):
+        app = App.get_running_app()
+        app.breadcrumb.update_breadcrumb(['Home', 'Ear Check', 'Analyze'])

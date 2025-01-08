@@ -21,8 +21,7 @@ from otoscope_video_screen import OtoScopeVideoScreen
 from ShareAppScreen import ShareAppScreen
 from kivy.uix.screenmanager import Screen
 
-class Menu(BoxLayout):
-    pass
+from widgets.breadcrumb import Breadcrumb
 
 class ClickableImage(ButtonBehavior, Image):
     pass
@@ -36,13 +35,16 @@ class AutoScopeApp(App):
         self.sm.transition = SlideTransition()
 
     def build(self):
-        
+
+        self.breadcrumb = Breadcrumb(size_hint=(1, None), height=40)
+        root_layout = BoxLayout(orientation='vertical')
+        root_layout.add_widget(self.breadcrumb)
+        root_layout.add_widget(self.sm)
+
         Builder.load_file("feedback.kv")
         Builder.load_file("screens/login.kv")
         Builder.load_file("screens/sign_up.kv")
-
         Builder.load_file("screens/home.kv")
-
         Builder.load_file("screens/ear_check.kv")
         Builder.load_file("screens/otoscope.kv")
         Builder.load_file("screens/chosen_image.kv")
@@ -52,25 +54,13 @@ class AutoScopeApp(App):
         Builder.load_file("screens/help.kv")
         Builder.load_file("screens/about.kv")
         Builder.load_file("screens/shareApp.kv")
-        Builder.load_file("menu.kv")
-
         
         self.sm.add_widget(UserLoginScreen(name='login'))
         self.sm.add_widget(SignUpScreen(name='signUp'))
-        
-        return self.sm
-    
-    def close_side_menu(self):
-        current_screen = self.sm.current_screen
-        side_menu = current_screen.ids.get('side_menu')
-        if side_menu:
-            side_menu.pos_hint = {"x": -1, "top": 1}
 
-    def toggle_side_menu(self):
-        current_screen = self.sm.current_screen
-        side_menu = current_screen.ids.get('side_menu')
-        if side_menu:
-            side_menu.pos_hint = {"x": 0, "top": 1} if side_menu.pos_hint["x"] == -1 else {"x": -1, "top": 1}
+        
+        
+        return root_layout
 
     def on_login_success(self):
         

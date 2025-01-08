@@ -4,6 +4,7 @@ from requests.exceptions import RequestException, ConnectionError, Timeout
 from kivy.metrics import dp
 from kivy.uix.spinner import Spinner
 from kivy.core.window import Window
+from kivy.app import App
 
 from config import SERVER_URL
 import requests
@@ -101,3 +102,7 @@ class SignUpScreen(Screen):
             next_field.is_open = True
         elif hasattr(next_field, 'focus'):
             next_field.focus = True
+
+    def on_pre_enter(self):
+        app = App.get_running_app()
+        app.breadcrumb.update_breadcrumb(['Sign Up'])

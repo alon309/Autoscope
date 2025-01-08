@@ -14,19 +14,12 @@
             size_hint: (None, None)
             size: dp(80), dp(80)
             pos_hint: {"right": 0.98, "top": 0.98}
-
-        ClickableImage:
-            source: "./Icons/menu.png"
-            size_hint: (None, None)
-            size: dp(65), dp(65)
-            pos_hint: {"x": 0.02, "top": 0.98}
-            # on_release: root.go_back()
             
         ClickableImage:
             source: "./Icons/back.png"
             size_hint: (None, None)
             size: dp(65), dp(65)
-            pos_hint: {"x": 0.2, "top": 0.98}
+            pos_hint: {"x": 0.02, "top": 0.98}
             on_release: root.go_back()
 
         Image:
@@ -34,16 +27,32 @@
             size_hint: 0.8, 0.7
             pos_hint: {"center_x": 0.5, "top": 0.9}
 
-        RoundedButton_:
-            text: "Save"
-            icon: "./Icons/save.png"
-            icon_size: [dp(90), dp(90)]
-            size_hint: (0.6, None)
-            font_size: dp(24)
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: (0.8, None)
             height: dp(68)
             pos_hint: {"center_x": 0.5, "center_y": 0.1}
-            background_color: 0.1, 0.6, 0.8, 1
-            on_release: root.save_result()
+
+            RoundedButton_:
+                text: "Save"
+                icon: "./Icons/save.png"
+                icon_size: [dp(90), dp(90)]
+                size_hint: (0.6, None)
+                font_size: dp(24)
+                height: dp(68)
+                background_color: 0.1, 0.6, 0.8, 1
+                on_release: root.save_result()
+
+            RoundedButton_:
+                text: "Share"
+                icon: "./Icons/share.png"
+                icon_size: [dp(90), dp(90)]
+                size_hint: (0.6, None)
+                font_size: dp(24)
+                height: dp(68)
+                background_color: 0.8, 0.6, 0.1, 1
+                on_release: root.share_result()
+
 
         Label:
             id: result_label

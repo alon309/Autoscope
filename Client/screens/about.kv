@@ -14,19 +14,12 @@
             size_hint: (None, None)
             size: dp(80), dp(80)
             pos_hint: {"right": 0.98, "top": 0.98}
-
-        ClickableImage:
-            source: "./Icons/menu.png"
-            size_hint: (None, None)
-            size: dp(65), dp(65)
-            pos_hint: {"x": 0.02, "top": 0.98}
-            # on_release: root.go_back()
             
         ClickableImage:
             source: "./Icons/back.png"
             size_hint: (None, None)
             size: dp(65), dp(65)
-            pos_hint: {"x": 0.2, "top": 0.98}
+            pos_hint: {"x": 0.02, "top": 0.98}
             on_release: root.go_back()
 
         Label:
@@ -49,9 +42,8 @@
             halign: 'center'
             valign: 'middle'
             color: 0.8, 0.8, 0.8, 1
-            text_size: self.width, None  # עיטוף טקסט
+            text_size: self.width, None
 
-        # עידוד לפידבק
         Label:
             text: "We would love to hear your feedback:"
             size_hint: None, None
@@ -60,7 +52,6 @@
             font_size: dp(18)
             color: 0.8, 0.8, 0.8, 1
 
-        # קופסה להזנת פידבק
         BoxLayout:
             id: feedback_box
             orientation: 'horizontal'
@@ -77,15 +68,14 @@
                 hint_text: "Write your feedback here..."
                 hint_text_color: 1, 1, 1, 0.6
                 padding: [dp(10), dp(10), dp(10), dp(10)]
-                #background_color: 0.2, 0.2, 0.2, 1
                 foreground_color: 1, 1, 1, 1
                 cursor_color: 1, 1, 1, 1
                 on_focus: root.on_focus(self, self.focus)
                 on_text: root.adjust_text_input_height(self.text)
 
-            RoundedButton_:
-                text: "Send"
-                size_hint: 0.2, 1
-                background_color: 0.1, 0.6, 0.8, 1
-                color: 1, 1, 1, 1
+            ClickableImage:
+                source: "./Icons/send.png"
+                size_hint: None, None
+                size: dp(48), dp(48)
                 on_release: root.submit_feedback()
+

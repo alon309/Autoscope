@@ -21,9 +21,6 @@ class HomeScreen(Screen):
         self.gender_image_path = f"Icons/{app.user_details.get('details', {}).get('gender', '')}.png"
         self.hello_message = f"Hello {app.user_details.get('details', {}).get('Full Name', '')}!"
 
-
-
-
     def update_profile_image(self, gender):
         self.gender_image_path = f"Icons/{gender}.png"
 
@@ -140,3 +137,7 @@ class HomeScreen(Screen):
 
         for screen in screens_to_readd:
             sm.add_widget(screen)
+
+    def on_pre_enter(self):
+        app = App.get_running_app()
+        app.breadcrumb.update_breadcrumb(['Home'])

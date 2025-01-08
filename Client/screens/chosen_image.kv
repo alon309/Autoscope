@@ -4,7 +4,7 @@
     FloatLayout:
         canvas.before:
             Color:
-                rgba: 1, 1, 1, 1  # צבע רקע לבן
+                rgba: 1, 1, 1, 1
             Rectangle:
                 size: self.size
                 pos: self.pos
@@ -14,19 +14,12 @@
             size_hint: (None, None)
             size: dp(80), dp(80)
             pos_hint: {"right": 0.98, "top": 0.98}
-
-        ClickableImage:
-            source: "./Icons/menu.png"
-            size_hint: (None, None)
-            size: dp(65), dp(65)
-            pos_hint: {"x": 0.02, "top": 0.98}
-            # on_release: root.go_back()
             
         ClickableImage:
             source: "./Icons/back.png"
             size_hint: (None, None)
             size: dp(65), dp(65)
-            pos_hint: {"x": 0.2, "top": 0.98}
+            pos_hint: {"x": 0.02, "top": 0.98}
             on_release: root.go_back()
 
         Image:

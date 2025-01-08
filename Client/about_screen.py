@@ -61,6 +61,9 @@ class AboutScreen(Screen):
         )
         popup.open()
 
+    def on_pre_enter(self):
+        app = App.get_running_app()
+        app.breadcrumb.update_breadcrumb(['Home', 'About'])
 
 
 '''

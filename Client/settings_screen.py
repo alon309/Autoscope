@@ -84,3 +84,7 @@ class SettingsScreen(Screen):
             Window.release_keyboard()
         elif hasattr(next_field, 'focus'):
             next_field.focus = True
+
+    def on_pre_enter(self):
+        app = App.get_running_app()
+        app.breadcrumb.update_breadcrumb(['Home', 'Settings'])
