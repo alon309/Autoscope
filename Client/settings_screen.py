@@ -1,7 +1,7 @@
 from kivy.uix.screenmanager import Screen
 from kivy.app import App
 from kivy.graphics import Color, Rectangle
-from feedback_popup import FeedbackPopup
+from widgets.feedback_popup import FeedbackPopup
 from kivy.uix.spinner import Spinner
 from kivy.core.window import Window
 from config import SERVER_URL

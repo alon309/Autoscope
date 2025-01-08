@@ -1,12 +1,11 @@
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.screenmanager import Screen
-from kivy.graphics import Color, Rectangle
 from kivy.uix.filechooser import FileChooserIconView
 from kivy.uix.popup import Popup
 from kivy.app import App
 from kivy.metrics import dp
-from rounded_button import RoundedButton
-from feedback_popup import FeedbackPopup
+from widgets.rounded_button import RoundedButton
+from widgets.feedback_popup import FeedbackPopup
 
 # Check if running on Android
 try:

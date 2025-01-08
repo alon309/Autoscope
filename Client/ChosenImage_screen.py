@@ -3,7 +3,7 @@ from kivy.core.image import Image as CoreImage
 from config import SERVER_URL
 import requests
 from kivy.app import App
-from feedback_popup import FeedbackPopup
+from widgets.feedback_popup import FeedbackPopup
 
 class ChosenImageScreen(Screen):
     def __init__(self, **kwargs):

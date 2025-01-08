@@ -15,11 +15,9 @@ from kivy.uix.screenmanager import SlideTransition
 from kivy.lang import Builder
 from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.image import Image
-from custom_widgets import RoundedTextInput, RoundedButton_
 from kivy.uix.boxlayout import BoxLayout
 from otoscope_video_screen import OtoScopeVideoScreen
 from ShareAppScreen import ShareAppScreen
-from kivy.uix.screenmanager import Screen
 
 from widgets.breadcrumb import Breadcrumb
 
@@ -41,7 +39,7 @@ class AutoScopeApp(App):
         root_layout.add_widget(self.breadcrumb)
         root_layout.add_widget(self.sm)
 
-        Builder.load_file("feedback.kv")
+        Builder.load_file("widgets/feedback.kv")
         Builder.load_file("screens/login.kv")
         Builder.load_file("screens/sign_up.kv")
         Builder.load_file("screens/home.kv")

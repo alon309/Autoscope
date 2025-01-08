@@ -1,8 +1,7 @@
 from kivy.uix.screenmanager import Screen
-from kivy.properties import StringProperty
 from kivy.app import App
 from kivy.metrics import dp
-from feedback_popup import FeedbackPopup
+from widgets.feedback_popup import FeedbackPopup
 from config import SERVER_URL
 import requests
 

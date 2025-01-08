@@ -1,11 +1,10 @@
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.button import Button
 from kivy.metrics import dp
 from kivy.uix.screenmanager import Screen
-from feedback_popup import FeedbackPopup
-from custom_widgets import RoundedTextInput, RoundedButton_
+from widgets.feedback_popup import FeedbackPopup
+from widgets.custom_widgets import RoundedButton_
 from kivy.app import App
 from kivy.properties import StringProperty
 

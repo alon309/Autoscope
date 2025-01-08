@@ -3,7 +3,7 @@ from kivy.app import App
 from datetime import datetime
 import requests
 from config import SERVER_URL
-from feedback_popup import FeedbackPopup
+from widgets.feedback_popup import FeedbackPopup
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
@@ -17,7 +17,7 @@ class ResultsScreen(Screen):
         self.result_string = "No results yet"
         self.user_id = None
         self.new_result = None
-        
+
     def on_enter(self):
         self.new_result = None
 
@@ -117,7 +117,7 @@ class ResultsScreen(Screen):
 
     def on_pre_enter(self):
         app = App.get_running_app()
-        app.breadcrumb.update_breadcrumb(['Home', 'Ear Check', 'Analyze', 'Save Result'])
+        app.breadcrumb.update_breadcrumb(['Home', 'Ear Check', 'Analyze', 'Result'])
 
     def share_result(self):
         app = App.get_running_app()

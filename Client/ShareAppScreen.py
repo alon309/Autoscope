@@ -3,7 +3,7 @@ from kivy.properties import StringProperty
 from config import SERVER_URL
 import requests
 from kivy.app import App
-from feedback_popup import FeedbackPopup
+from widgets.feedback_popup import FeedbackPopup
 
 
 class ShareAppScreen(Screen):

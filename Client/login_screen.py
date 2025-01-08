@@ -1,6 +1,6 @@
 from kivy.uix.screenmanager import Screen
 from kivy.app import App
-from feedback_popup import FeedbackPopup
+from widgets.feedback_popup import FeedbackPopup
 from kivy.core.window import Window
 from config import SERVER_URL
 

@@ -1,7 +1,6 @@
 from kivy.uix.screenmanager import Screen
-from feedback_popup import FeedbackPopup
+from widgets.feedback_popup import FeedbackPopup
 from requests.exceptions import RequestException, ConnectionError, Timeout
-from kivy.metrics import dp
 from kivy.uix.spinner import Spinner
 from kivy.core.window import Window
 from kivy.app import App
@@ -51,12 +50,6 @@ class SignUpScreen(Screen):
                     )
                     popup.open()
 
-                    '''self.feedback.show_message(s
-                        "Account Created",
-                        "Your account has been created successfully!",
-                        color='success',
-                        callback=self.open_login_screen
-                    )'''
                 else:
                     server_message = response.json().get("message", "An error occurred on the server!")
                     popup = FeedbackPopup(
