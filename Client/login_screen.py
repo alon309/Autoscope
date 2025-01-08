@@ -15,10 +15,10 @@ class UserLoginScreen(Screen):
 
     def sign_in_func(self):
         Window.release_keyboard()
-        #email = self.ids.email_input.text
-        #password = self.ids.password_input.text
-        email = 'ndvp39@gmail.com'
-        password = '123123'
+        email = self.ids.email_input.text
+        password = self.ids.password_input.text
+        # email = 'ndvp39@gmail.com'
+        # password = '123123'
 
         server_url = f"{SERVER_URL}/api/login"
 
