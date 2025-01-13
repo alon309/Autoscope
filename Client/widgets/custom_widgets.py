@@ -1,11 +1,13 @@
 from kivy.uix.textinput import TextInput
-from kivy.properties import ListProperty
 from kivy.graphics import Color, RoundedRectangle
 from kivy.metrics import dp
-from kivy.properties import StringProperty
+from kivy.properties import StringProperty, NumericProperty, ListProperty
 from kivy.uix.image import Image
 from kivy.uix.label import Label
 from kivy.uix.button import ButtonBehavior
+from kivy.uix.relativelayout import RelativeLayout
+from kivy.uix.behaviors import ButtonBehavior
+from kivy.uix.button import Button
 
 class RoundedTextInput(TextInput):
     def __init__(self, **kwargs):
@@ -24,18 +26,6 @@ class RoundedTextInput(TextInput):
     def set_background_color(self, color):
         self.bg_color.rgba = color
 
-
-
-from kivy.uix.relativelayout import RelativeLayout
-from kivy.properties import NumericProperty
-
-from kivy.uix.relativelayout import RelativeLayout
-from kivy.uix.behaviors import ButtonBehavior
-from kivy.uix.label import Label
-from kivy.uix.image import Image
-from kivy.graphics import Color, RoundedRectangle
-from kivy.properties import StringProperty, ListProperty, NumericProperty
-from kivy.metrics import dp
 
 
 class RoundedButton_(ButtonBehavior, RelativeLayout):
@@ -111,3 +101,17 @@ class RoundedButton_(ButtonBehavior, RelativeLayout):
 
     def update_label_font_size(self, *args):
         self.label.font_size = self.font_size
+
+
+class RoundedGrayButton(Button):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.background_color = (0, 0, 0, 0)
+        with self.canvas.before:
+            Color(0.3, 0.3, 0.3, 1)
+            self.rect = RoundedRectangle(radius=[10], size=self.size, pos=self.pos)
+        self.bind(pos=self.update_rect, size=self.update_rect)
+
+    def update_rect(self, *args):
+        self.rect.size = self.size
+        self.rect.pos = self.pos

@@ -37,11 +37,12 @@
                 height: dp(40)
                 halign: 'center'
 
-            TextInput:
+            RoundedTextInput:
                 id: recipient_email
                 hint_text: "Enter recipient's email"
                 multiline: False
                 size_hint_y: None
+                foreground_color: 1, 1, 1, 1
                 height: dp(44)
                 on_text_validate: root.share_via_email(recipient_email.text)
 

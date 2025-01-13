@@ -1,9 +1,6 @@
 import os
 import cv2
-from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.dropdown import DropDown
-from kivy.uix.button import Button
-from kivy.uix.image import Image
 from kivy.clock import Clock
 from kivy.graphics.texture import Texture
 from kivy.uix.screenmanager import Screen
@@ -17,29 +14,15 @@ class OtoScopeVideoScreen(Screen):
         self.capture = None  # OpenCV VideoCapture object
         self.current_frame = None  # To store the captured frame
 
-        # Main layout
-        layout = BoxLayout(orientation="vertical")
-        
-        # Dropdown to select camera
-        self.dropdown = DropDown()
-        self.camera_btn = Button(text="Select Camera", size_hint=(1, 0.1))
-        self.camera_btn.bind(on_release=self.dropdown.open)
-
         # Detect available cameras and add to dropdown
         self.cameras = self.get_available_cameras()
-        for idx, cam_name in self.cameras.items():
-            btn = Button(text=cam_name, size_hint_y=None, height=44)
-            btn.bind(on_release=lambda btn, idx=idx: self.select_camera(idx))
-            self.dropdown.add_widget(btn)
+        self.update_camera_spinner()
 
-        # Video display
-        self.video_display = Image()
-
-        # Add widgets to layout
-        layout.add_widget(self.camera_btn)
-        layout.add_widget(self.video_display)
-
-        self.add_widget(layout)
+    def update_camera_spinner(self):
+        """
+        Update the spinner with the available camera names.
+        """
+        self.ids.camera_spinner.values = list(self.cameras.values())
 
     def get_available_cameras(self):
         """
@@ -58,14 +41,22 @@ class OtoScopeVideoScreen(Screen):
         print(cameras)
         return cameras
 
-    def select_camera(self, index):
+    def select_camera(self, camera_name):
         """
         Switch to the selected camera.
         """
-        self.camera_index = index
-        self.camera_btn.text = self.cameras[index]
-        self.dropdown.dismiss()
-        self.start_video_stream()
+        # Find the camera index from the name
+        camera_index = None
+        for index, name in self.cameras.items():
+            if name == camera_name:
+                camera_index = index
+                break
+
+        if camera_index is not None:
+            self.camera_index = camera_index
+            self.ids.camera_spinner.text = self.cameras[camera_index]
+            self.start_video_stream()
+
 
     def start_video_stream(self):
         """
@@ -89,7 +80,7 @@ class OtoScopeVideoScreen(Screen):
                 buf = cv2.flip(frame, 0).tobytes()
                 texture = Texture.create(size=(frame.shape[1], frame.shape[0]), colorfmt="bgr")
                 texture.blit_buffer(buf, colorfmt="bgr", bufferfmt="ubyte")
-                self.video_display.texture = texture
+                self.ids.video_area.texture = texture
 
 
     def capture_image(self, *args):
@@ -145,4 +136,5 @@ class OtoScopeVideoScreen(Screen):
         
     def on_enter(self):
         self.current_frame = None
-        self.video_display.texture = None
+        self.ids.video_area.texture = None
+        self.ids.camera_spinner.text = 'Select Camera'

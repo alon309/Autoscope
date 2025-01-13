@@ -9,6 +9,22 @@
                 size: self.size
                 pos: self.pos
 
+        BoxLayout:
+            size_hint: None, None
+            size: dp(300), dp(300)
+            pos_hint: {"center_x": 0.5, "center_y": 0.6}
+            canvas.before:
+                Color:
+                    rgba: 0.5, 0.5, 0.5, 1
+                Line:
+                    width: 2
+                    rectangle: self.x, self.y, self.width, self.height
+
+            Image:
+                id: image_display
+                allow_stretch: True
+                keep_ratio: True
+
         Image:
             source: "Icons/otoscope.png"
             size_hint: (None, None)
@@ -22,13 +38,9 @@
             pos_hint: {"x": 0.02, "top": 0.98}
             on_release: root.go_back()
 
-        Image:
-            id: image_display
-            size_hint: 0.8, 0.7
-            pos_hint: {"center_x": 0.5, "top": 0.9}
-
         BoxLayout:
             orientation: 'horizontal'
+            spacing: dp(20)
             size_hint: (0.8, None)
             height: dp(68)
             pos_hint: {"center_x": 0.5, "center_y": 0.1}

@@ -12,16 +12,6 @@ class SettingsScreen(Screen):
     def __init__(self, **kwargs):
         super(SettingsScreen, self).__init__(**kwargs)
 
-
-        with self.canvas.before:
-            Color(0.1, 0.1, 0.1, 1)
-            self.rect = Rectangle(size=self.size, pos=self.pos)
-        self.bind(size=self._update_rect, pos=self._update_rect)
-
-    def _update_rect(self, instance, value):
-        self.rect.size = instance.size
-        self.rect.pos = instance.pos
-
     def save_settings(self):
         Window.release_keyboard()
         app = App.get_running_app()
