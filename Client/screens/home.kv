@@ -100,10 +100,17 @@
             on_release: root.open_history()
 
         # Button: 'Log out'
-        RoundedButton_:
-            text: "Log out"
-            size_hint: (0.4, None)
-            height: dp(50)
+        # RoundedButton_:
+            # text: "Log out"
+            # size_hint: (0.4, None)
+            # height: dp(50)
+            # pos_hint: {"center_x": 0.5, "center_y": 0.1}
+            # background_color: 0.3, 0.3, 0.3, 1
+            # on_release: root.logout()
+
+        ClickableImage:
+            source: "./Icons/logout.png"
+            size_hint: (None, None)
+            size: dp(65), dp(65)
             pos_hint: {"center_x": 0.5, "center_y": 0.1}
-            background_color: 0.3, 0.3, 0.3, 1
             on_release: root.logout()

@@ -4,7 +4,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.metrics import dp
 from kivy.uix.screenmanager import Screen
 from widgets.feedback_popup import FeedbackPopup
-from widgets.custom_widgets import RoundedButton_
+from widgets.custom_widgets import RoundedCostumButton
 from kivy.app import App
 from kivy.properties import StringProperty
 
@@ -74,6 +74,7 @@ class HomeScreen(Screen):
             halign='center',
             valign='middle',
             font_size=dp(18),
+            color=(0, 0, 0, 1)  # Black text
         )
         confirmation_label.bind(size=confirmation_label.setter('text_size'))  # Text wrapping
         layout.add_widget(confirmation_label)
@@ -81,24 +82,32 @@ class HomeScreen(Screen):
         # Buttons layout
         buttons_layout = BoxLayout(
             orientation='horizontal',
+            size_hint=(1, None),
+            height=dp(60),
             spacing=dp(20),
-            padding=dp(20)
+            padding=[dp(10), dp(10)]
         )
 
         # Yes button
-        yes_button = RoundedButton_(
+        yes_button = RoundedCostumButton(
             text="Yes",
-            size_hint=(0.5, 2),
-            background_color=(1, 0, 0, 1)
+            size_hint=(0.5, None),
+            height=dp(40),
+            button_color=[1, 0, 0, 1],
+            halign='center',
+            valign='middle'
         )
         yes_button.bind(on_release=lambda instance: self.confirm_logout(popup))
         buttons_layout.add_widget(yes_button)
 
         # No button
-        no_button = RoundedButton_(
+        no_button = RoundedCostumButton(
             text="No",
-            size_hint=(0.5, 2),
-            background_color=(0.3, 0.3, 0.3, 1)
+            size_hint=(0.5, None),
+            height=dp(40),
+            button_color=[0.5, 0.5, 0.5, 1],
+            halign='center',
+            valign='middle'
         )
         no_button.bind(on_release=lambda instance: popup.dismiss())
         buttons_layout.add_widget(no_button)
@@ -111,7 +120,9 @@ class HomeScreen(Screen):
             title="Confirm Logout",
             content=layout,
             size_hint=(0.8, 0.4),
-            auto_dismiss=False  # Requires user action to close
+            auto_dismiss=False,  # Requires user action to close
+            background='',  # Disable default background image
+            background_color=(1, 1, 1, 1)  # Set background color to white (RGBA)
         )
 
         popup.open()
