@@ -12,7 +12,7 @@
         Image:
             source: "Icons/otoscope.png"
             size_hint: (None, None)
-            size: dp(80), dp(80)
+            size: dp(60), dp(60)
             pos_hint: {"right": 0.98, "top": 0.98}
             
         ClickableImage:
@@ -52,5 +52,6 @@
             text: "Select Camera"
             values: ["Loading cameras..."]
             size_hint: (0.5, 0.1)
+            background_color: 0.1, 0.6, 0.8, 1
             pos_hint: {"center_x": 0.5, "top": 0.9}
             on_text: root.select_camera(root.ids.camera_spinner.text)

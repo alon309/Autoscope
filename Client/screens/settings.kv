@@ -12,7 +12,7 @@
         Image:
             source: "Icons/otoscope.png"
             size_hint: (None, None)
-            size: dp(80), dp(80)
+            size: dp(60), dp(60)
             pos_hint: {"right": 0.98, "top": 0.98}
             
         ClickableImage:
@@ -31,43 +31,107 @@
             bold: True
             color: 0.3, 0.3, 0.3, 1
 
-        RoundedTextInput:
-            id: email_input
-            text: app.user_details.get('details', {}).get("Email", "")
-            hint_text: "Email"
+        BoxLayout:
+            orientation: 'vertical'
             size_hint: (0.8, None)
-            height: dp(40)
+            height: dp(80)
             pos_hint: {"center_x": 0.5, "center_y": 0.7}
-            multiline: False
-            on_text_validate: root.switch_focus_to_next(self, root.ids.name_input)
 
-        RoundedTextInput:
-            id: name_input
-            text: app.user_details.get('details', {}).get("Full Name", "")
-            hint_text: "Name"
-            size_hint: (0.8, None)
-            height: dp(40)
-            pos_hint: {"center_x": 0.5, "center_y": 0.6}
-            multiline: False
-            on_text_validate: root.switch_focus_to_next(self, root.ids.phone_input)
+            Label:
+                text: "Email"
+                size_hint_y: None
+                height: dp(20)
+                font_size: dp(16)
+                halign: "left"
+                valign: "middle"
+                color: 0.3, 0.3, 0.3, 1
+                text_size: self.size
 
-        RoundedTextInput:
-            id: phone_input
-            text: app.user_details.get('details', {}).get("Phone Number", "")
-            hint_text: "Phone Number"
-            size_hint: (0.8, None)
-            height: dp(40)
-            pos_hint: {"center_x": 0.5, "center_y": 0.5}
-            multiline: False
-            on_text_validate: root.switch_focus_to_next(self, root.ids.gender_input)
+            RoundedTextInput:
+                id: email_input
+                text: app.user_details.get('details', {}).get("Email", "")
+                hint_text: "Email"
+                size_hint_y: None
+                height: dp(40)
+                multiline: False
+                padding: [10, (self.height - self.line_height) / 2]
+                on_text_validate: root.switch_focus_to_next(self, root.ids.name_input)
 
-        Spinner:
-            id: gender_input
-            text: app.user_details.get('details', {}).get("gender", "")
-            values: ["male", "female"]
+        BoxLayout:
+            orientation: 'vertical'
             size_hint: (0.8, None)
-            height: dp(40)
-            pos_hint: {"center_x": 0.5, "center_y": 0.4}
+            height: dp(80)
+            pos_hint: {"center_x": 0.5, "center_y": 0.56}
+
+            Label:
+                text: "Name"
+                size_hint_y: None
+                height: dp(20)
+                font_size: dp(16)
+                halign: "left"
+                valign: "middle"
+                color: 0.3, 0.3, 0.3, 1
+                text_size: self.size
+
+            RoundedTextInput:
+                id: name_input
+                text: app.user_details.get('details', {}).get("Full Name", "")
+                hint_text: "Name"
+                size_hint_y: None
+                height: dp(40)
+                multiline: False
+                padding: [10, (self.height - self.line_height) / 2]
+                on_text_validate: root.switch_focus_to_next(self, root.ids.phone_input)
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: (0.8, None)
+            height: dp(80)
+            pos_hint: {"center_x": 0.5, "center_y": 0.42}
+
+            Label:
+                text: "Phone Number"
+                size_hint_y: None
+                height: dp(20)
+                font_size: dp(16)
+                halign: "left"
+                valign: "middle"
+                color: 0.3, 0.3, 0.3, 1
+                text_size: self.size
+
+            RoundedTextInput:
+                id: phone_input
+                text: app.user_details.get('details', {}).get("Phone Number", "")
+                hint_text: "Phone Number"
+                size_hint_y: None
+                height: dp(40)
+                multiline: False
+                padding: [10, (self.height - self.line_height) / 2]
+                on_text_validate: root.switch_focus_to_next(self, root.ids.gender_input)
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: (0.8, None)
+            height: dp(80)
+            pos_hint: {"center_x": 0.5, "center_y": 0.28}
+
+            Label:
+                text: "Gender"
+                size_hint_y: None
+                height: dp(20)
+                font_size: dp(16)
+                halign: "left"
+                valign: "middle"
+                color: 0.3, 0.3, 0.3, 1
+                text_size: self.size
+
+            Spinner:
+                id: gender_input
+                text: app.user_details.get('details', {}).get("gender", "")
+                values: ["male", "female"]
+                size_hint_y: None
+                background_color: 0.1, 0.6, 0.8, 1
+                height: dp(40)
 
         RoundedButton_:
             text: "Save"

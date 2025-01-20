@@ -4,7 +4,7 @@
     FloatLayout:
         canvas.before:
             Color:
-                rgba: 0, 0, 0, 1
+                rgba: 1, 1, 1, 1
             Rectangle:
                 size: self.size
                 pos: self.pos
@@ -15,15 +15,14 @@
             spacing: dp(10)
 
             ScrollView:
-                size_hint: (1, 0.8)
                 GridLayout:
                     id: data_layout
-                    cols: 3
+                    cols: 1
                     spacing: dp(10)
                     padding: dp(10)
                     size_hint_y: None
                     height: self.minimum_height
-            
+
         ClickableImage:
             source: "./Icons/back.png"
             size_hint: (None, None)

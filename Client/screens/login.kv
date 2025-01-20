@@ -37,6 +37,7 @@
             height: dp(50)
             pos_hint: {"center_x": 0.5, "center_y": 0.55}
             multiline: False
+            padding: [10, (self.height - self.line_height) / 2]
             on_text_validate: root.switch_focus_to_next(self, root.ids.password_input)
 
         RoundedTextInput:
@@ -48,6 +49,7 @@
             height: dp(50)
             pos_hint: {"center_x": 0.5, "center_y": 0.45}
             multiline: False
+            padding: [10, (self.height - self.line_height) / 2]
             on_text_validate: root.sign_in_func()
 
         RoundedButton_:

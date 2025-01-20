@@ -9,10 +9,19 @@
                 size: self.size
                 pos: self.pos
 
+        Label:
+            text: "Share Us"
+            size_hint: None, None
+            size: dp(300), dp(50)
+            pos_hint: {"center_x": 0.5, "top": 0.9}
+            font_size: dp(30)
+            bold: True
+            color: 0.3, 0.3, 0.3, 1
+
         Image:
             source: "Icons/otoscope.png"
             size_hint: (None, None)
-            size: dp(80), dp(80)
+            size: dp(60), dp(60)
             pos_hint: {"right": 0.98, "top": 0.98}
             
         ClickableImage:
@@ -23,6 +32,7 @@
             on_release: root.go_back()
 
         BoxLayout:
+            id: box_email
             orientation: 'vertical'
             padding: dp(20)
             spacing: dp(15)
@@ -31,19 +41,26 @@
             pos_hint: {"center_x": 0.5, "center_y": 0.5}
 
             Label:
-                text: "Share the App"
-                font_size: "24sp"
-                size_hint_y: None
-                height: dp(40)
-                halign: 'center'
+                text: "Share the application with others Via Email"
+                size_hint: None, None
+                size: dp(250), dp(30)
+                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                font_size: dp(18)
+                color: 0.3, 0.3, 0.3, 1
 
             RoundedTextInput:
                 id: recipient_email
-                hint_text: "Enter recipient's email"
-                multiline: False
-                size_hint_y: None
+                size_hint: 0.8, None
+                height: dp(50)
+                pos_hint: {"center_x": 0.5}
+                multiline: True
+                hint_text: "Enter email here ..."
+                hint_text_color: 1, 1, 1, 0.6
+                padding: [dp(10), dp(10), dp(10), dp(10)]
                 foreground_color: 1, 1, 1, 1
-                height: dp(44)
+                cursor_color: 1, 1, 1, 1
+                padding: [10, (self.height - self.line_height) / 2]
+                on_focus: root.on_focus(self, self.focus)
                 on_text_validate: root.share_via_email(recipient_email.text)
 
             RoundedButton_:

@@ -104,13 +104,13 @@ class RoundedButton_(ButtonBehavior, RelativeLayout):
 
 
 class RoundedCostumButton(Button):
-    button_color = ListProperty([0.3, 0.3, 0.3, 1])  # צבע ברירת מחדל אפור
+    button_color = ListProperty([0.3, 0.3, 0.3, 1])
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.background_color = (0, 0, 0, 0)  # שקיפות
+        self.background_color = (0, 0, 0, 0)
         with self.canvas.before:
-            self.color_instruction = Color(*self.button_color)  # צבע הכפתור
+            self.color_instruction = Color(*self.button_color)
             self.rect = RoundedRectangle(radius=[10], size=self.size, pos=self.pos)
         self.bind(pos=self.update_rect, size=self.update_rect, button_color=self.update_color)
 

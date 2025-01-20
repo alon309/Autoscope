@@ -17,7 +17,7 @@ from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.image import Image
 from kivy.uix.boxlayout import BoxLayout
 from otoscope_video_screen import OtoScopeVideoScreen
-from ShareAppScreen import ShareAppScreen
+from share_app_screen import ShareAppScreen
 
 from widgets.breadcrumb import Breadcrumb
 

@@ -8,6 +8,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.uix.popup import Popup
+from widgets.custom_widgets import RoundedCostumButton
 
 class ResultsScreen(Screen):
     def __init__(self, **kwargs):
@@ -139,17 +140,20 @@ class ResultsScreen(Screen):
         email_popup = Popup(
             title="Enter Email Address",
             size_hint=(None, None),
-            size=(400, 200)
+            size=(400, 200),
+            auto_dismiss=False,  # Requires user action to close
+            background='',  # Disable default background image
+            background_color=(1, 1, 1, 1)  # Set background color to white (RGBA)
         )
 
         content = BoxLayout(orientation="vertical", padding=20, spacing=10)
         
-        email_input = TextInput(hint_text="Enter recipient's email", size_hint=(1, None), height=40, multiline=False)
+        email_input = TextInput(hint_text="Enter email to share with", size_hint=(1, None), height=40, multiline=False)
         content.add_widget(email_input)
         
         buttons_layout = BoxLayout(size_hint_y=None, height=50, spacing=10)
 
-        cancel_button = Button(text="Cancel", on_press=email_popup.dismiss)
+        cancel_button = RoundedCostumButton(text="Cancel", button_color=[0.3, 0.3, 0.3, 1], on_press=email_popup.dismiss)
         buttons_layout.add_widget(cancel_button)
 
         def on_send(instance):
@@ -198,7 +202,7 @@ class ResultsScreen(Screen):
             )
             popup.open()
         
-        send_button = Button(text="Send", on_press=on_send)
+        send_button = RoundedCostumButton(text="Send", button_color=[0.1, 0.6, 0.8, 1], on_press=on_send)
         buttons_layout.add_widget(send_button)
         
         content.add_widget(buttons_layout)

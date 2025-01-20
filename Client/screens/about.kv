@@ -12,7 +12,7 @@
         Image:
             source: "Icons/otoscope.png"
             size_hint: (None, None)
-            size: dp(80), dp(80)
+            size: dp(60), dp(60)
             pos_hint: {"right": 0.98, "top": 0.98}
             
         ClickableImage:
@@ -32,26 +32,14 @@
             color: 0.3, 0.3, 0.3, 1
 
         Label:
-            text: "AutoScope is an innovative application designed to assist users in detecting ear infections using deep learning techniques. Our goal is to provide quick and accurate analysis of ear images to improve health outcomes for users.\n\nDeveloped by: Alon Ternerider, Nadav Goldin\nSupervised by: Dr. Nataly Levi"
+            text: "AutoScope is an innovative application designed to assist users in detecting ear infections using deep learning techniques. Our goal is to provide quick and accurate analysis of ear images to improve health outcomes for users.\n\nDeveloped by: Alon Ternerider, Nadav Goldin\nSupervised by: Dr. Nataly Levi\n\n\nWe would love to hear your feedback:"
             size_hint: 0.9, None
             height: dp(200)
-            pos_hint: {'center_x': 0.5, 'center_y': 0.7}
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
             halign: 'center'
             valign: 'middle'
             text_size: self.width, None
-            color: 0.8, 0.8, 0.8, 1
-
-
-
-
-
-        Label:
-            text: "We would love to hear your feedback:"
-            size_hint: None, None
-            size: dp(250), dp(30)
-            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-            font_size: dp(18)
-            color: 0.8, 0.8, 0.8, 1
+            color: 0.3, 0.3, 0.3, 1
 
         BoxLayout:
             id: feedback_box
@@ -71,6 +59,7 @@
                 padding: [dp(10), dp(10), dp(10), dp(10)]
                 foreground_color: 1, 1, 1, 1
                 cursor_color: 1, 1, 1, 1
+                padding: [10, (self.height - self.line_height) / 2]
                 on_focus: root.on_focus(self, self.focus)
                 on_text: root.adjust_text_input_height(self.text)
 

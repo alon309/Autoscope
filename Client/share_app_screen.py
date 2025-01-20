@@ -56,7 +56,8 @@ class ShareAppScreen(Screen):
         response = requests.post(url, json=data)
         if response.status_code == 200:
             title = "Success"
-            text = f'App Shared successfully to: {email_to}!'
+            text = f'App Shared successfully to:\n{email_to}!'
+            self.ids.recipient_email.text = ''
         else:
             title = "Failed"
             text = f'App Shared failed, please try again!'
@@ -74,3 +75,9 @@ class ShareAppScreen(Screen):
     def on_pre_enter(self):
         app = App.get_running_app()
         app.breadcrumb.update_breadcrumb(['Home', 'Share'])
+
+    def on_focus(self, instance, value):
+        if value:
+            self.ids.box_email.pos_hint = {'center_x': 0.5, 'y': 0.4}
+        else:
+            self.ids.box_email.pos_hint = {'center_x': 0.5, 'y': 0.1}
