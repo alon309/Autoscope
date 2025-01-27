@@ -1,3 +1,27 @@
+<CustomProgressBar@Widget>:
+    progress: 0
+    max: 100
+    size_hint: (0.8, None)
+    height: dp(20)
+    pos_hint: {"center_x": 0.5, "center_y": 0.2}
+
+    canvas.before:
+
+        Color:
+            rgba: 0.8, 0.8, 0.8, 1
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+        Color:
+            rgba:
+                (0, 1, 0, (self.progress / 100.0)) if self.progress <= 50 else \
+                (1, 0, 0, (self.progress / 100.0))
+        Rectangle:
+            size: (self.width * (self.progress / (float(self.max) + 0.01)), self.height)
+            pos: self.pos
+
+
 <ResultsScreen>:
     name: "result"
 
@@ -71,9 +95,25 @@
             text: "No results yet"
             size_hint: 0.8, None
             height: dp(50)
-            pos_hint: {"center_x": 0.5, "y": 0.2}
+            pos_hint: {"center_x": 0.5, "y": 0.22}
             font_size: dp(18)
             halign: "center"
             valign: "middle"
             color: (0, 0, 0, 1)
 
+
+        Label:
+            id: info_label
+            text: "* Over 50% = Infected (red) *\n Under 50% = Normal (green)"
+            size_hint: 0.8, None
+            height: dp(50)
+            pos_hint: {"center_x": 0.5, "y": 0.86}
+            font_size: dp(10)
+            halign: "center"
+            valign: "middle"
+            color: (169, 169, 169, 1)
+
+        CustomProgressBar:
+            id: progress_bar
+            max: 100
+            progress: 0

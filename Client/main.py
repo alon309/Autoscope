@@ -18,6 +18,8 @@ from kivy.uix.image import Image
 from kivy.uix.boxlayout import BoxLayout
 from otoscope_video_screen import OtoScopeVideoScreen
 from share_app_screen import ShareAppScreen
+from kivy.uix.spinner import Spinner
+
 
 from widgets.breadcrumb import Breadcrumb
 

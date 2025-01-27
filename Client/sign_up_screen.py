@@ -11,6 +11,8 @@ import requests
 class SignUpScreen(Screen):
     def __init__(self, **kwargs):
         super(SignUpScreen, self).__init__(**kwargs)
+        self.is_first_password_visible = False
+        self.is_second_password_visible = False
 
 
     def sign_up_func(self):
@@ -99,3 +101,26 @@ class SignUpScreen(Screen):
     def on_pre_enter(self):
         app = App.get_running_app()
         app.breadcrumb.update_breadcrumb(['Sign Up'])
+
+    def toggle_password_visibility(self, img_instance, passOption):
+
+        if passOption == 0:
+
+            if self.is_first_password_visible:
+                self.ids.password_input.password = True
+                img_instance.source = "Icons/eye_close.png"  # להחזיר לתמונה של עין סגורה
+            else:
+                self.ids.password_input.password = False  # להראות את הסיסמה
+                img_instance.source = "Icons/eye_open.png"  # להציג תמונה של עין פתוחה
+            
+            self.is_first_password_visible = not self.is_first_password_visible
+
+        else:
+            if self.is_second_password_visible:
+                self.ids.confirm_password_input.password = True
+                img_instance.source = "Icons/eye_close.png"  # להחזיר לתמונה של עין סגורה
+            else:
+                self.ids.confirm_password_input.password = False  # להראות את הסיסמה
+                img_instance.source = "Icons/eye_open.png"  # להציג תמונה של עין פתוחה
+            
+            self.is_second_password_visible = not self.is_second_password_visible

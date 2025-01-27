@@ -7,7 +7,8 @@ from widgets.feedback_popup import FeedbackPopup
 from widgets.custom_widgets import RoundedCostumButton
 from kivy.app import App
 from kivy.properties import StringProperty
-
+from kivy.uix.popup import Popup
+import webview
 
 class HomeScreen(Screen):
     hello_message = StringProperty("")
@@ -19,6 +20,11 @@ class HomeScreen(Screen):
         app = App.get_running_app()
         self.gender_image_path = f"Icons/{app.user_details.get('details', {}).get('gender', '')}.png"
         self.hello_message = f"Hello {app.user_details.get('details', {}).get('Full Name', '')}!"
+
+    def open_video_popup(self):
+        webview.create_window('Watch Video', 'https://youtu.be/5sv_rZDjRUM')
+        webview.start()
+
 
     def update_profile_image(self, gender):
         self.gender_image_path = f"Icons/{gender}.png"
@@ -56,10 +62,9 @@ class HomeScreen(Screen):
 
         history_screen = self.parent.get_screen('history')
         history_screen.update_history(history_data)
-        self.manager.transition.duration = 0
         self.parent.current = 'history'
 
-    def update_full_name(self, full_name):
+    def update_full_name(self):
         app = App.get_running_app()
         self.hello_message = f"Hello {app.user_details.get('details', {}).get('Full Name', '')}!"    
 

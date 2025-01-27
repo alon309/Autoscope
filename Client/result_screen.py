@@ -9,37 +9,45 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.uix.popup import Popup
 from widgets.custom_widgets import RoundedCostumButton
+from kivy.graphics import Color, Rectangle
+from kivy.uix.widget import Widget
+from kivy.uix.progressbar import ProgressBar
+from kivy.properties import NumericProperty
 
 class ResultsScreen(Screen):
     def __init__(self, **kwargs):
         super(ResultsScreen, self).__init__(**kwargs)
 
+        self.progress_value = NumericProperty(0)
         self.image = None
         self.result_string = "No results yet"
+        self.confidence = 0
         self.user_id = None
         self.new_result = None
 
     def on_enter(self):
         self.new_result = None
 
-    def update_data(self, image, result_string, user_id):
-        """Update the data displayed in the ResultsScreen."""
+    def update_progress(self, value):
+        self.ids.progress_bar.progress = value
+
+    def update_data(self, image, result, confidence, user_id):
         self.image = image
-        self.result_string = result_string
+        self.result_string = result
+        self.confidence = confidence
         self.user_id = user_id
-        
-        # Update the image display
+
         if self.image:
             self.ids.image_display.texture = self.image.texture
-        
-        # Update the result label
-        self.ids.result_label.text = self.result_string
-        print(f"Data updated: {self.image}, {self.result_string}, {self.user_id}")
 
+        self.ids.result_label.text = f"{self.result_string} {self.confidence:.2f}%"
+        self.update_progress(self.confidence)
 
+        print(f"Data updated: {self.image}, {self.result_string}, {self.user_id}, {self.confidence}%")
+    
     def save_result(self):
-        """Save the current result."""
         print(self.result_string)
+        print(self.confidence)
         
         if not self.image:
             print("No image to save.")
@@ -58,7 +66,7 @@ class ResultsScreen(Screen):
                 files = {'image': image_file}
                 data = {
                     'user_id': self.user_id,
-                    'diagnose': self.result_string,
+                    'diagnose': f'{self.result_string}\n{self.confidence:.2f}%',
                     'datetime': current_datetime
                 }
 
@@ -82,7 +90,7 @@ class ResultsScreen(Screen):
 
                 app = App.get_running_app()
                 self.new_result = {
-                    'diagnose': self.result_string,
+                    'diagnose': f'{self.result_string}\n{self.confidence:.2f}%',
                     'image': result_data.get('image'),
                     'datetime': current_datetime
                 }
@@ -110,11 +118,8 @@ class ResultsScreen(Screen):
             )
             popup.open()
 
-
     def go_back(self):
-        """Return to the main screen."""
         self.manager.current = 'earCheck'
-
 
     def on_pre_enter(self):
         app = App.get_running_app()
@@ -208,5 +213,3 @@ class ResultsScreen(Screen):
         content.add_widget(buttons_layout)
         email_popup.add_widget(content)
         email_popup.open()
-
-

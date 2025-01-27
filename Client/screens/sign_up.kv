@@ -102,6 +102,14 @@
             padding: [10, (self.height - self.line_height) / 2]
             on_text_validate: root.switch_focus_to_next(self, root.ids.confirm_password_input)
 
+        ClickableImage:
+            id: toggle_first_password_visibility
+            source: "./Icons/eye_close.png"
+            size_hint: (None, None)
+            size: dp(25), dp(25)
+            pos_hint: {"center_x": 0.85, "center_y": 0.28}
+            on_release: root.toggle_password_visibility(self, 0)
+
         RoundedTextInput:
             id: confirm_password_input
             hint_text: "Confirm"
@@ -113,6 +121,14 @@
             multiline: False
             padding: [10, (self.height - self.line_height) / 2]
             on_text_validate: root.sign_up_func()
+
+        ClickableImage:
+            id: toggle_second_password_visibility
+            source: "./Icons/eye_close.png"
+            size_hint: (None, None)
+            size: dp(25), dp(25)
+            pos_hint: {"center_x": 0.85, "center_y": 0.18}
+            on_release: root.toggle_password_visibility(self, 1)
 
         BoxLayout:
             orientation: 'horizontal'

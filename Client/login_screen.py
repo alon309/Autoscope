@@ -11,14 +11,13 @@ import certifi
 class UserLoginScreen(Screen):
     def __init__(self, **kwargs):
         super(UserLoginScreen, self).__init__(**kwargs)
+        self.is_password_visible = False
 
 
     def sign_in_func(self):
         Window.release_keyboard()
         email = self.ids.email_input.text
         password = self.ids.password_input.text
-        # email = 'ndvp39@gmail.com'
-        # password = '123123'
 
         server_url = f"{SERVER_URL}/api/login"
 
@@ -52,11 +51,6 @@ class UserLoginScreen(Screen):
                 "results": results
             }
 
-            user_details_message = (f"User ID: {user_id}\n"
-                                    f"Full Name: {full_name}\n"
-                                    f"Email: {email}\n"
-                                    f"Phone Number: {phone_number}"
-                                    f"gender: {gender}")
             app.on_login_success() # set screens for user
 
             popup = FeedbackPopup(
@@ -96,3 +90,16 @@ class UserLoginScreen(Screen):
     def on_pre_enter(self):
         app = App.get_running_app()
         app.breadcrumb.update_breadcrumb(['Log In'])
+
+
+
+    def toggle_password_visibility(self, img_instance):
+        # מתפקדת להראות או להסתיר את הסיסמה
+        if self.is_password_visible:
+            self.ids.password_input.password = True  # להסתיר את הסיסמה
+            img_instance.source = "Icons/eye_close.png"  # להחזיר לתמונה של עין סגורה
+        else:
+            self.ids.password_input.password = False  # להראות את הסיסמה
+            img_instance.source = "Icons/eye_open.png"  # להציג תמונה של עין פתוחה
+        
+        self.is_password_visible = not self.is_password_visible

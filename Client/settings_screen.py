@@ -32,7 +32,7 @@ class SettingsScreen(Screen):
         home_screen.update_profile_image(gender)
 
         home_screen = self.manager.get_screen("home")
-        home_screen.update_full_name(name)
+        home_screen.update_full_name()
 
         url = f"{SERVER_URL}/api/save_settings"
         data = {

@@ -6,6 +6,7 @@ from kivy.graphics.texture import Texture
 from kivy.uix.screenmanager import Screen
 from kivy.app import App
 import time
+import threading
 
 class OtoScopeVideoScreen(Screen):
     def __init__(self, **kwargs):
@@ -15,10 +16,19 @@ class OtoScopeVideoScreen(Screen):
         self.current_frame = None  # To store the captured frame
 
         # Detect available cameras and add to dropdown
-        self.cameras = self.get_available_cameras()
-        self.update_camera_spinner()
+        self.cameras = {}
+        
+        # Run the camera detection in a separate thread
+        threading.Thread(target=self.load_cameras).start()
 
-    def update_camera_spinner(self):
+    def load_cameras(self):
+        """
+        Load the available cameras in a separate thread.
+        """
+        self.cameras = self.get_available_cameras()
+        Clock.schedule_once(self.update_camera_spinner)  # Schedule UI update after cameras are loaded
+
+    def update_camera_spinner(self, dt):
         """
         Update the spinner with the available camera names.
         """

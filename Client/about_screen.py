@@ -63,12 +63,3 @@ class AboutScreen(Screen):
     def on_pre_enter(self):
         app = App.get_running_app()
         app.breadcrumb.update_breadcrumb(['Home', 'About'])
-
-
-'''
-            text: "AutoScope is an innovative application designed to assist users 
-                   in detecting ear infections using deep learning techniques. Our goal 
-                   is to provide quick and accurate analysis of ear images to improve 
-                   health outcomes for users.\\n\\n"
-                   Developed by: Alon Ternerider, Nadav Goldin\\nSupervised by: Dr. Nataly Levi"
-'''            

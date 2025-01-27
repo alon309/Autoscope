@@ -11,6 +11,9 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 import tensorflow as tf
+from tensorflow.keras.applications.resnet50 import preprocess_input
+from tensorflow.keras.preprocessing.image import img_to_array, load_img
+from io import BytesIO
 tf.config.threading.set_intra_op_parallelism_threads(1)
 tf.config.threading.set_inter_op_parallelism_threads(1)
 print("TensorFlow version:", tf.__version__)
@@ -66,7 +69,7 @@ def load_model_dynamic_safe(model_path):
     try:
         if not os.path.exists(model_path):
             raise FileNotFoundError(f"The specified path '{model_path}' does not exist.")
-        
+
         if os.path.isdir(model_path):
             model = tf.keras.models.load_model(model_path)
             print("Loaded SavedModel format")
@@ -75,9 +78,9 @@ def load_model_dynamic_safe(model_path):
             print("Loaded H5 format")
         else:
             raise ValueError("Unsupported model format. Please provide a SavedModel directory or .h5 file.")
-        
+
         return model
-    
+
     except FileNotFoundError as e:
         print(f"Error: {e}")
     except ValueError as e:
@@ -85,7 +88,7 @@ def load_model_dynamic_safe(model_path):
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
     return None
-MODEL_PATH = os.path.join(os.getcwd(), "mysite/compressed_model.tflite")
+MODEL_PATH = os.path.join(os.getcwd(), "mysite/ResNet50_model.tflite")
 # MODEL_PATH = os.path.join(os.getcwd(), "mysite/VGG16model.tflite")
 # MODEL_PATH = os.path.join(os.getcwd(), "mysite/VGG16model.h5")
 # MODEL_PATH = os.path.join(os.getcwd(), r"C:\Users\ndvp3\OneDrive - ort braude college of engineering\שולחן העבודה\autoscope\server/VGG16model.h5")
@@ -172,25 +175,28 @@ def analyze_image():
             return jsonify({"error": "No image file provided"}), 400
 
         image_file = request.files['image']
-        img = Image.open(image_file).convert('RGB').resize((224, 224))
-        img_array = np.expand_dims(np.array(img) / 255.0, axis=0).astype(np.float32)
+        img = load_img(BytesIO(image_file.stream.read()), target_size=(224, 224))
+        img_array = img_to_array(img)
+        img_array = np.expand_dims(img_array, axis=0)
+        img_array = preprocess_input(img_array)
 
         interpreter.set_tensor(input_details[0]['index'], img_array)
-
         interpreter.invoke()
 
         predictions = interpreter.get_tensor(output_details[0]['index'])
-        predicted_class_index = np.argmax(predictions)
-        predicted_class = CLASS_NAMES[predicted_class_index]
-        confidence = float(np.max(predictions))
+        confidence = predictions[0][0] * 100
+        result = "Infected" if confidence > 50 else "Normal"
 
         return jsonify({
-            "predicted_class": predicted_class,
+            "result": result,
             "confidence": confidence
         }), 200
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        # הדפסת השגיאה לקונסולה לעזרה בדיבוג
+        print(f"An error occurred: {str(e)}")
+        # החזרת הודעת שגיאה כללית למשתמש
+        return jsonify({"error": "An error occurred during image analysis"}), 500
 
 @app.route('/api/signup', methods=['POST'])
 def signup():
@@ -220,13 +226,13 @@ def signup():
         return jsonify({"status": "success", "uid": user.uid}), 201
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 400
-    
+
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.json
     email = data.get("email")
     password = data.get("password")
-   
+
     firebase_data = {
         "email": email,
         "password": password,
@@ -236,7 +242,7 @@ def login():
     try:
         response = requests.post(firebase_url_login, json=firebase_data)
         response.raise_for_status()
-        
+
         user_data = response.json()
         uid = user_data.get("localId")
 
@@ -254,14 +260,14 @@ def login():
             return jsonify(user_details), 200
         else:
             return jsonify({"error": "User not found."}), 404
-    
+
     except requests.exceptions.HTTPError as http_err:
         error_details = response.json() if response.content else {}
         return jsonify({"error": error_details.get("error", {}).get("message", "An unknown error occurred.")}), 400
-    
+
     except Exception as err:
         return jsonify({"error": str(err)}), 500
-    
+
 
 @app.route('/api/save_settings', methods=['POST'])
 def save_settings():

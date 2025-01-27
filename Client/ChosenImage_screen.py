@@ -37,7 +37,6 @@ class ChosenImageScreen(Screen):
 
     def analyze_image(self):
         if not self.image_path:
-            print("No image selected.")
             return
 
         try:
@@ -50,10 +49,10 @@ class ChosenImageScreen(Screen):
                 response_data = response.json()
 
                 confidence = response_data.get("confidence")
-                predicted_class = response_data.get("predicted_class")
+                result = response_data.get("result")
 
                 results_screen = self.manager.get_screen('result')
-                results_screen.update_data(self.chosen_current_image, f"{predicted_class} {confidence}", self.user_id)
+                results_screen.update_data(self.chosen_current_image, result, confidence, self.user_id)
                 self.manager.current = 'result'
         except requests.exceptions.RequestException as e:
             popup = FeedbackPopup(
@@ -61,8 +60,6 @@ class ChosenImageScreen(Screen):
                 message_text = 'Make sure the image is correct\nand try again!'
             )
             popup.open()
-            print(f"Error during analysis request:\nplease try again!")
-
 
     def on_pre_enter(self):
         app = App.get_running_app()

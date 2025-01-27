@@ -1,5 +1,5 @@
 from kivy.uix.textinput import TextInput
-from kivy.graphics import Color, RoundedRectangle
+from kivy.graphics import Color, RoundedRectangle, Rectangle
 from kivy.metrics import dp
 from kivy.properties import StringProperty, NumericProperty, ListProperty
 from kivy.uix.image import Image
@@ -8,6 +8,7 @@ from kivy.uix.button import ButtonBehavior
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.button import Button
+from kivy.uix.progressbar import ProgressBar
 
 class RoundedTextInput(TextInput):
     def __init__(self, **kwargs):
@@ -120,3 +121,5 @@ class RoundedCostumButton(Button):
 
     def update_color(self, *args):
         self.color_instruction.rgba = self.button_color
+
+
