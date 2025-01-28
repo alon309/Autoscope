@@ -16,7 +16,6 @@ class HomeScreen(Screen):
     
     def __init__(self, **kwargs):
         super(HomeScreen, self).__init__(**kwargs)
-    
         app = App.get_running_app()
         self.gender_image_path = f"Icons/{app.user_details.get('details', {}).get('gender', '')}.png"
         self.hello_message = f"Hello {app.user_details.get('details', {}).get('Full Name', '')}!"
@@ -24,7 +23,6 @@ class HomeScreen(Screen):
     def open_video_popup(self):
         webview.create_window('Watch Video', 'https://youtu.be/5sv_rZDjRUM')
         webview.start()
-
 
     def update_profile_image(self, gender):
         self.gender_image_path = f"Icons/{gender}.png"

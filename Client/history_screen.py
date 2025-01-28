@@ -8,16 +8,13 @@ from kivy.uix.label import Label
 from kivy.app import App
 from datetime import datetime
 from kivy.uix.boxlayout import BoxLayout
-from kivy.graphics import Color, Rectangle
-
+import threading
+from kivy.clock import Clock
 
 class HistoryScreen(Screen):
     def __init__(self, **kwargs):
         super(HistoryScreen, self).__init__(**kwargs)
         self.history_data = []
-        self.page_size = 10  # 10 items per page
-        self.current_page = 0
-        self.max_pages = 0
 
     def update_page(self):
         data_layout = self.ids.data_layout
@@ -25,116 +22,100 @@ class HistoryScreen(Screen):
 
         if not self.history_data:
             data_layout.add_widget(Label(text="No history available", size_hint_y=None, height=dp(40)))
-            self.update_nav_buttons()
             return
 
-        start_index = self.current_page * self.page_size
-        end_index = min(start_index + self.page_size, len(self.history_data))
-        history_items = self.history_data[start_index:end_index]
+        for entry in self.history_data:
+            diagnose = entry.get('diagnose', 'No Result')
+            image_texture = entry.get('image_texture')
+            datetime_str = entry.get('datetime', 'Unknown')
 
-        for entry in history_items:
             row = BoxLayout(orientation='horizontal', size_hint_y=None, height=dp(100), spacing=dp(10))
 
-            # Image widget
-            try:
-                image_url = entry.get('image', '')
-                if image_url:
-                    img_data = requests.get(image_url).content
-                    image_texture = CoreImage(BytesIO(img_data), ext='png').texture
-                    image_widget = Image(size_hint=(None, None), size=(dp(80), dp(80)))
-                    image_widget.texture = image_texture
-                else:
-                    raise ValueError("No image URL")
-            except Exception:
+            if image_texture:
+                image_widget = Image(size_hint=(None, None), size=(dp(80), dp(80)))
+                image_widget.texture = image_texture
+            else:
                 image_widget = Label(text="No Image", size_hint=(None, None), size=(dp(80), dp(80)))
 
-            # Result label
             result_label = Label(
-                text=entry.get('diagnose', 'No Result'),
+                text=diagnose,
                 size_hint=(0.5, 1),
                 halign='center',
                 valign='middle',
-                color=(0, 0, 0, 1)  # Set text color to black
+                color=(1, 0, 0, 1) if diagnose.startswith("Infected") else (0, 1, 0, 1)
             )
             result_label.bind(size=result_label.setter('text_size'))
 
-            # Date and Time labels
-            datetime_str = entry.get('datetime', 'Unknown')
             try:
-                date_obj = datetime.strptime(datetime_str, '%Y-%m-%d %H:%M:%S')
-                date_label = Label(
-                    text=date_obj.strftime('%Y-%m-%d'),
-                    size_hint=(None, None),
-                    size=(dp(100), dp(20)),
-                    halign='center',
-                    color=(0, 0, 0, 1)  # Set text color to black
-                )
-                time_label = Label(
-                    text=date_obj.strftime('%H:%M:%S'),
-                    size_hint=(None, None),
-                    size=(dp(100), dp(20)),
-                    halign='center',
-                    color=(0, 0, 0, 1)  # Set text color to black
-                )
-            except ValueError:
-                date_label = Label(
-                    text='Unknown Date',
-                    size_hint=(None, None),
-                    size=(dp(100), dp(20)),
-                    halign='center',
-                    color=(0, 0, 0, 1)  # Set text color to black
-                )
-                time_label = Label(
-                    text='Unknown Time',
-                    size_hint=(None, None),
-                    size=(dp(100), dp(20)),
-                    halign='center',
-                    color=(0, 0, 0, 1)  # Set text color to black
-                )
+                if datetime_str != "Unknown":
+                    date_obj = datetime.strptime(datetime_str, '%Y-%m-%d %H:%M:%S')
+                    formatted_date = date_obj.strftime('%d/%m/%Y')
+                    formatted_time = date_obj.strftime('%I:%M %p')
+                else:
+                    formatted_date = "Unknown Date"
+                    formatted_time = "Unknown Time"
+            except Exception as e:
+                print(f"Error processing date: {e}")
+                formatted_date = "Invalid Date"
+                formatted_time = "Invalid Time"
 
-            # Create a vertical layout for date and time
-            datetime_layout = BoxLayout(orientation='vertical', size_hint=(None, 1), width=dp(100))
-            datetime_layout.add_widget(date_label)
-            datetime_layout.add_widget(time_label)
+            datetime_label  = Label(
+                text=f"{formatted_date}\n{formatted_time}",
+                size_hint=(0.2, 1),
+                halign='right',
+                valign='middle',
+                color=(0, 0, 0, 1)
+            )
+            datetime_label .bind(size=datetime_label .setter('text_size'))
 
-            # Adding widgets to row
+            # הוספת הרכיבים לשורה
             row.add_widget(image_widget)
             row.add_widget(result_label)
-            row.add_widget(datetime_layout)
+            row.add_widget(datetime_label )
 
-            # Add row to data layout
             data_layout.add_widget(row)
-
-            # Add separator line (gray line) after each row
-            separator = BoxLayout(size_hint_y=None, height=dp(2))
-            separator.canvas.before.clear()  # Clear any previous drawing
-
-            # Draw the gray line
-            with separator.canvas.before:
-                Color(0.5, 0.5, 0.5, 1)  # Set the color to gray
-                Rectangle(size=(self.width, dp(2)), pos=(0, 0))  # Draw rectangle for the separator
-
-            data_layout.add_widget(separator)
-
-
-        self.update_nav_buttons()
-
-    def update_nav_buttons(self):
-        self.ids.prev_button.disabled = self.current_page == 0
-        self.ids.next_button.disabled = self.current_page >= self.max_pages - 1
-
-    def prev_page(self):
-        if self.current_page > 0:
-            self.current_page -= 1
-            self.update_page()
-
-    def next_page(self):
-        if self.current_page < self.max_pages - 1:
-            self.current_page += 1
-            self.update_page()
 
     def go_back(self):
         self.manager.current = 'home'
+
+    def fetch_history(self):
+        def fetch_data():
+            updated_data = []
+            for entry in self.history_data:
+                image_url = entry.get('image', '')
+                try:
+                    if image_url:
+                        img_data = requests.get(image_url).content
+                        entry['image_data'] = img_data
+                    else:
+                        entry['image_data'] = None
+                except Exception as e:
+                    print(f"Error fetching image: {e}")
+                    entry['image_data'] = None
+
+                updated_data.append(entry)
+
+            Clock.schedule_once(lambda dt: self.process_images(updated_data))
+
+        threading.Thread(target=fetch_data, daemon=True).start()
+
+    def process_images(self, updated_data):
+        for entry in updated_data:
+            img_data = entry.get('image_data')
+            try:
+                if img_data:
+                    texture = CoreImage(BytesIO(img_data), ext='png').texture
+                    entry['image_texture'] = texture
+                else:
+                    entry['image_texture'] = None
+            except Exception as e:
+                print(f"Error processing image: {e}")
+                entry['image_texture'] = None
+
+        # עדכון GUI לאחר יצירת כל הטקסטורות
+        self.history_data = updated_data
+        self.update_page()
+        self.ids.loading_label.opacity = 0
 
     def update_history(self, history_data):
         # Sort data by date (latest first)
@@ -143,10 +124,11 @@ class HistoryScreen(Screen):
             key=lambda x: datetime.strptime(x.get('datetime', '1970-01-01 00:00:00'), '%Y-%m-%d %H:%M:%S'),
             reverse=True
         )
-        self.max_pages = (len(self.history_data) + self.page_size - 1) // self.page_size
-        self.current_page = 0
-        self.update_page()
 
     def on_pre_enter(self):
         app = App.get_running_app()
         app.breadcrumb.update_breadcrumb(['Home', 'History'])
+
+    def on_enter(self):
+        self.ids.loading_label.opacity = 1
+        self.fetch_history()

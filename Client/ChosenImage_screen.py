@@ -42,6 +42,7 @@ class ChosenImageScreen(Screen):
         try:
             url = f"{SERVER_URL}/api/analyze_image"
             with open(self.image_path, 'rb') as image_file:
+                
                 files = {'image': image_file}
                 data = {'user_id': str(self.user_id)}
                 response = requests.post(url, files=files, data=data)

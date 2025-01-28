@@ -9,9 +9,6 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.uix.popup import Popup
 from widgets.custom_widgets import RoundedCostumButton
-from kivy.graphics import Color, Rectangle
-from kivy.uix.widget import Widget
-from kivy.uix.progressbar import ProgressBar
 from kivy.properties import NumericProperty
 
 class ResultsScreen(Screen):
@@ -26,6 +23,7 @@ class ResultsScreen(Screen):
         self.new_result = None
 
     def on_enter(self):
+        self.ids.save_btn.disabled = False
         self.new_result = None
 
     def update_progress(self, value):
@@ -46,12 +44,12 @@ class ResultsScreen(Screen):
         print(f"Data updated: {self.image}, {self.result_string}, {self.user_id}, {self.confidence}%")
     
     def save_result(self):
-        print(self.result_string)
-        print(self.confidence)
         
         if not self.image:
             print("No image to save.")
             return
+        
+        self.ids.save_btn.disabled = True
 
         image_path = self.image.filename
 
@@ -97,7 +95,6 @@ class ResultsScreen(Screen):
                 if 'results' not in app.user_details or not isinstance(app.user_details['results'], list):
                     app.user_details['results'] = []
                 app.user_details['results'].append(self.new_result)
-
                 popup = FeedbackPopup(
                     title_text="Result saved successfully",
                     message_text="Result saved successfully!\nyou can see the result in your history."

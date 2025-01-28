@@ -70,6 +70,7 @@
             pos_hint: {"center_x": 0.5, "center_y": 0.1}
 
             RoundedButton_:
+                id: save_btn
                 text: "Save"
                 icon: "./Icons/save.png"
                 icon_size: [dp(90), dp(90)]
@@ -77,6 +78,7 @@
                 font_size: dp(24)
                 height: dp(68)
                 background_color: 0.1, 0.6, 0.8, 1
+                disabled: False
                 on_release: root.save_result()
 
             RoundedButton_:
