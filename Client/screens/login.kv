@@ -61,6 +61,7 @@
             on_release: root.toggle_password_visibility(self)
 
         RoundedButton_:
+            id: login_btn
             text: "Log In"
             size_hint: (0.5, None)
             height: dp(50)
@@ -68,9 +69,40 @@
             on_release: root.sign_in_func()
 
         RoundedButton_:
+            id: signup_btn
             text: "Sign Up"
             size_hint: (0.5, None)
             height: dp(50)
             pos_hint: {"center_x": 0.5, "center_y": 0.2}
             background_color: 0.3, 0.3, 0.3, 1
             on_release: root.sign_up_func()
+
+
+        FloatLayout:
+            id: loading_layout
+            opacity: 1
+            canvas.before:
+                Color:
+                    rgba: 0, 0, 0, 0.5
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+
+            FloatLayout:
+                size_hint: 1, 0.2
+                height: 50
+                pos_hint: {"center_x": 0.5, "center_y": 0.5}
+
+                canvas.before:
+                    Color:
+                        rgba: 1, 1, 1, 1
+                    RoundedRectangle:
+                        size: self.size
+                        pos: self.pos
+                        radius: [20]
+
+                Label:
+                    text: "Loading..."
+                    color: 0.3, 0.3, 0.3, 1
+                    size_hint: None, None
+                    pos_hint: {"center_x": 0.5, "center_y": 0.5}

@@ -138,12 +138,14 @@
             pos_hint: {"center_x": 0.5, "center_y": 0.05}
 
             RoundedButton_:
+                id: login_btn
                 text: "Log In"
                 size_hint: (0.5, 1)
                 background_color: 0.3, 0.3, 0.3, 1
                 on_release: root.open_login_screen()
 
             RoundedButton_:
+                id: signup_btn
                 text: "Sign Up"
                 size_hint: (0.5, 1)
                 background_color: 0.1, 0.6, 0.8, 1
