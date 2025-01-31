@@ -1,6 +1,5 @@
 import os
 import cv2
-from kivy.uix.dropdown import DropDown
 from kivy.clock import Clock
 from kivy.graphics.texture import Texture
 from kivy.uix.screenmanager import Screen
@@ -48,7 +47,7 @@ class OtoScopeVideoScreen(Screen):
             cameras[index] = f"Camera {index}"
             cap.release()
             index += 1
-        print(cameras)
+        # print(cameras)
         return cameras
 
     def select_camera(self, camera_name):
@@ -121,7 +120,7 @@ class OtoScopeVideoScreen(Screen):
             chosen_image_screen.update_data(image_path=image_path, user_id=app.user_details.get("uid"))
             self.manager.current = 'chosenImage'
             
-            # שחרור capture
+            # Release the capture object
             if self.capture:
                 self.capture.release()
         else:
@@ -136,15 +135,24 @@ class OtoScopeVideoScreen(Screen):
             self.capture.release()
 
     def go_back(self, *args):
+        """
+        Navigate back to the previous screen, releasing the capture object.
+        """
         if self.capture:
             self.capture.release()
         self.manager.current = 'earCheck'
 
     def on_pre_enter(self):
+        """
+        Update the breadcrumb navigation when entering this screen.
+        """
         app = App.get_running_app()
         app.breadcrumb.update_breadcrumb(['Home', 'Ear Check', 'OtoScope'])
         
     def on_enter(self):
+        """
+        Initialize UI elements when entering the screen.
+        """
         self.current_frame = None
         self.ids.video_area.texture = None
         self.ids.camera_spinner.text = 'Select Camera'

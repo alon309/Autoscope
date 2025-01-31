@@ -9,13 +9,12 @@ import json
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-
 import tensorflow as tf
 from tensorflow.keras.applications.resnet50 import preprocess_input
 from tensorflow.keras.preprocessing.image import img_to_array, load_img
 from io import BytesIO
-tf.config.threading.set_intra_op_parallelism_threads(1)
-tf.config.threading.set_inter_op_parallelism_threads(1)
+
+tf.config.threading.set_inter_op_parallelism_threads(1) # Optimize threading for TensorFlow
 print("TensorFlow version:", tf.__version__)
 
 from PIL import Image
@@ -26,7 +25,9 @@ from flask_cors import CORS  # Import CORS
 
 app = Flask(__name__)
 
-load_dotenv()
+load_dotenv() # Load environment variables from .env file
+
+# Get Firebase credentials and login URL from environment variables
 firebase_credentials = os.getenv('FIREBASE_CREDENTIALS')
 firebase_url_login = os.getenv('FIREBASE_URL')
 main_email = os.getenv('GMAIL_USER')
@@ -35,6 +36,7 @@ main_password = os.getenv('GMAIL_PASSWORD')
 # Enable CORS for the entire app
 CORS(app, resources={r"/*": {"origins": "*"}})
 
+# Ensure required environment variables are set
 if firebase_credentials is None:
     raise ValueError("Missing FIREBASE_CREDENTIALS in environment variables.")
 if firebase_url_login is None:
@@ -44,27 +46,22 @@ if main_email is None:
 if main_password is None:
     raise ValueError("Missing GMAIL_PASSWORD in environment variables.")
 
+# Convert Firebase credentials to dictionary and initialize Firebase
 cred_dict = json.loads(firebase_credentials)
-
-# Define class names (update this based on your dataset)
-CLASS_NAMES = ['aom', 'com', 'normal']
-
-# Initialize Firebase
 cred = credentials.Certificate(cred_dict)
 firebase_admin.initialize_app(cred, {
     'storageBucket': 'autoscope-88dd0.appspot.com'
 })
 
-# Verify bucket initialization
+# Initialize Firestore and Firebase Storage bucket
 bucket = storage.bucket()
 print(f"Initialized bucket: {bucket.name}")
-
-# Initialize Firestore
 db = firestore.client()
 
 def load_model_dynamic_safe(model_path):
     """
-    Wrapper for load_model_dynamic with error handling.
+    Wrapper for loading the model with error handling.
+    Checks if the model path exists and loads the model accordingly.
     """
     try:
         if not os.path.exists(model_path):
@@ -88,11 +85,8 @@ def load_model_dynamic_safe(model_path):
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
     return None
-MODEL_PATH = os.path.join(os.getcwd(), "mysite/ResNet50_model.tflite")
-# MODEL_PATH = os.path.join(os.getcwd(), "mysite/VGG16model.tflite")
-# MODEL_PATH = os.path.join(os.getcwd(), "mysite/VGG16model.h5")
-# MODEL_PATH = os.path.join(os.getcwd(), r"C:\Users\ndvp3\OneDrive - ort braude college of engineering\שולחן העבודה\autoscope\server/VGG16model.h5")
-# model = load_model_dynamic_safe(MODEL_PATH)
+
+MODEL_PATH = os.path.join(os.getcwd(), "mysite/ResNet50_model.tflite") # Load TFLite model
 
 try:
     interpreter = tf.lite.Interpreter(model_path=MODEL_PATH)
@@ -108,13 +102,14 @@ except Exception as e:
     print(f"Error loading TFLite model: {e}")
     interpreter = None
 
-# Home screen
-@app.route('/test')
+@app.route('/')
 def home():
     return "AutoScope - Server is Running...!"
 
+# API to save results, image, and diagnosis to Firebase Firestore
 @app.route('/api/save_result', methods=['POST'])
 def save_result():
+
     # Get the user ID, diagnose string, and date-time
     user_id = request.form.get('user_id')
     diagnose = request.form.get('diagnose')
@@ -129,7 +124,7 @@ def save_result():
     unid = str(uuid.uuid4().hex)
     unique_filename = f"{unid}"
 
-    # Create a temporary file
+    # Create a temporary file to save the image before uploading
     try:
         with tempfile.NamedTemporaryFile(delete=False) as temp_file:
             image_file.save(temp_file.name)
@@ -168,6 +163,7 @@ def save_result():
         except OSError as e:
             print(f"Error removing temporary file: {e}")
 
+# API to analyze image using TensorFlow Lite model
 @app.route('/api/analyze_image', methods=['POST'])
 def analyze_image():
     try:
@@ -175,17 +171,17 @@ def analyze_image():
             return jsonify({"error": "No image file provided"}), 400
 
         image_file = request.files['image']
-        img = load_img(BytesIO(image_file.stream.read()), target_size=(224, 224))
+        img = load_img(BytesIO(image_file.stream.read()), target_size=(224, 224)) # Resize image
         img_array = img_to_array(img)
         img_array = np.expand_dims(img_array, axis=0)
-        img_array = preprocess_input(img_array)
+        img_array = preprocess_input(img_array) # Preprocess image for the model
 
         interpreter.set_tensor(input_details[0]['index'], img_array)
         interpreter.invoke()
 
         predictions = interpreter.get_tensor(output_details[0]['index'])
         confidence = predictions[0][0] * 100
-        result = "Infected" if confidence > 50 else "Normal"
+        result = "Infected" if confidence > 50 else "Normal" # Threshold for diagnosis
 
         return jsonify({
             "result": result,
@@ -193,11 +189,10 @@ def analyze_image():
         }), 200
 
     except Exception as e:
-        # הדפסת השגיאה לקונסולה לעזרה בדיבוג
         print(f"An error occurred: {str(e)}")
-        # החזרת הודעת שגיאה כללית למשתמש
         return jsonify({"error": "An error occurred during image analysis"}), 500
 
+# API for user signup with Firebase Authentication
 @app.route('/api/signup', methods=['POST'])
 def signup():
     data = request.json
@@ -215,8 +210,8 @@ def signup():
             phone_number=phone_number
         )
 
+        # Save user details in Firestore
         user_doc_ref = db.collection('Users').document(user.uid)
-
         user_doc_ref.set({
             'phone_number': phone_number,
             'gender': gender,
@@ -227,6 +222,7 @@ def signup():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 400
 
+# API for user login
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.json
@@ -240,6 +236,7 @@ def login():
     }
 
     try:
+        # Send request to Firebase for login
         response = requests.post(firebase_url_login, json=firebase_data)
         response.raise_for_status()
 
@@ -268,7 +265,7 @@ def login():
     except Exception as err:
         return jsonify({"error": str(err)}), 500
 
-
+# API to save user settings like name, email, phone number, etc.
 @app.route('/api/save_settings', methods=['POST'])
 def save_settings():
     if not request.is_json:
@@ -300,7 +297,7 @@ def save_settings():
         print(f"Error updating user: {str(e)}")
         return jsonify({"status": "error", "message": str(e)}), 400
 
-
+# API to get the history of results for a user
 @app.route('/api/get_history', methods=['GET'])
 def get_history():
     user_id = request.args.get('user_id')  # Get user_id from query params
@@ -310,7 +307,7 @@ def get_history():
         doc = doc_ref.get()
         if not doc.exists:
             return jsonify({"error": f"User {user_id} does not exist"}), 404
-        # Assuming the history is stored under 'results' in Firestore
+        # history is stored under 'results' in Firestore
         results = doc.to_dict().get('results', {})
         # Format the history as a list of dictionaries
         history_data = [
@@ -325,6 +322,7 @@ def get_history():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# API to send email: using for feedback, result share and application share
 @app.route('/api/send_email', methods=['POST'])
 def send_email():
     data = request.json
@@ -350,7 +348,7 @@ def send_email():
         return jsonify({"error": str(e)}), 500
 
 
-# Run the server
+# Main function to run the Flask app
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
     # app.run()

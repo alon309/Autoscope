@@ -9,6 +9,7 @@ class HelpScreen(Screen):
     def __init__(self, **kwargs):
         super(HelpScreen, self).__init__(**kwargs)
 
+        # List of Frequently Asked Questions (FAQs) and their answers.
         self.faqs = [
             "1. What is AutoScope?\n   - AutoScope is an application for detecting ear infections using deep learning techniques.",
             "2. How does AutoScope work?\n   - Users can take or upload pictures of their ears, which are then analyzed by our algorithms.",
@@ -20,16 +21,22 @@ class HelpScreen(Screen):
         self.load_faqs()
 
     def go_back(self):
+        """Navigates back to the home screen."""
         self.manager.current = 'home'
 
     def load_faqs(self):
-        faqs_layout = self.ids.get('faqs_layout')
+        """
+        Loads the FAQ list and creates Label widgets for each FAQ.
+        These labels are added to the layout.
+        """
+        faqs_layout = self.ids.get('faqs_layout') # Fetch the layout container for FAQs from KV file.
         if not faqs_layout:
             print("Error: faqs_layout ID not found in KV file.")
             return
 
         faqs_layout.clear_widgets()
         for faq in self.faqs:
+            # Create a Label widget for each FAQ.
             faq_label = Label(
                 text=faq,
                 size_hint_y=None,
@@ -42,5 +49,8 @@ class HelpScreen(Screen):
             faqs_layout.add_widget(faq_label)
 
     def on_pre_enter(self):
+        """
+        Called before the screen is shown. Updates the breadcrumb navigation.
+        """
         app = App.get_running_app()
         app.breadcrumb.update_breadcrumb(['Home', 'Help'])

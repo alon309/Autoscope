@@ -11,6 +11,7 @@ class AboutScreen(Screen):
         super(AboutScreen, self).__init__(**kwargs)
 
     def on_focus(self, instance, value):
+        """ This function handles focus events for a widget """
         if value:
             self.ids.feedback_box.pos_hint = {'center_x': 0.5, 'y': 0.4}
         else:
@@ -23,9 +24,21 @@ class AboutScreen(Screen):
         self.ids.feedback_input.height = new_height
         self.ids.feedback_box.height = new_height
 
+        """ switch screen """
     def go_back(self):
         self.manager.current = 'home'
 
+    """ 
+    Handles the submission of user feedback. 
+
+    - Retrieves feedback from the input field.
+    - If feedback is not empty:
+    - Gets the user's name and email from the app's details.
+    - Sends an email with the feedback to the support email via an API request.
+    - If the request is successful, clears the input field and displays a success popup.
+    - If the request fails, displays an error popup.
+    - If feedback is empty, shows a warning popup.
+    """  
     def submit_feedback(self):
         feedback = self.ids.feedback_input.text
         if feedback.strip():
@@ -42,7 +55,7 @@ class AboutScreen(Screen):
                 "html": f"Feedback from {name} ( {email} ): {feedback}"
             }
 
-            response = requests.post(url, json=data)
+            response = requests.post(url, json=data) # send to server
             if response.status_code == 200:
                 self.ids.feedback_input.text = ""  # Clear the input field
                 pupup_title = 'Feedback submitted'
@@ -62,4 +75,4 @@ class AboutScreen(Screen):
 
     def on_pre_enter(self):
         app = App.get_running_app()
-        app.breadcrumb.update_breadcrumb(['Home', 'About'])
+        app.breadcrumb.update_breadcrumb(['Home', 'About']) # updating the bar status

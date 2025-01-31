@@ -7,12 +7,13 @@ from widgets.feedback_popup import FeedbackPopup
 
 
 class ShareAppScreen(Screen):
+    # The GitHub link to the project is stored as a StringProperty for dynamic access
     github_link = StringProperty("https://github.com/ndvp39/autoscope")
 
+    # Method to share the app via email
     def share_via_email(self, recipient_email):
-
+        # Check if the recipient email is provided, if not show an error popup
         if not recipient_email:
-
             popup = FeedbackPopup(
                 title_text = "Failed",
                 message_text = "App Shared failed: fill email!"
@@ -20,11 +21,15 @@ class ShareAppScreen(Screen):
             popup.open()
             return
 
-        app = App.get_running_app()
-        url = f"{SERVER_URL}/api/send_email"
+        app = App.get_running_app() # Get the running app instance
+        url = f"{SERVER_URL}/api/send_email" # Define the API endpoint for sending emails
+
+        # Get user's details like name and email
         name = app.user_details.get('details', {}).get('Full Name', '')
         email_to = recipient_email
         email = app.user_details.get('details', {}).get("Email", "")
+
+        # Prepare the email data to send to the server
         data = {
             "to_email": email_to,
             "from_email": email,
@@ -53,30 +58,38 @@ class ShareAppScreen(Screen):
                         """
         }
 
+        # Make a POST request to send the email
         response = requests.post(url, json=data)
+
+        # Show a success or failure message depending on the response status
         if response.status_code == 200:
             title = "Success"
             text = f'App Shared successfully to:\n{email_to}!'
-            self.ids.recipient_email.text = ''
+            self.ids.recipient_email.text = '' # Clear the email input field after success
         else:
             title = "Failed"
             text = f'App Shared failed, please try again!'
 
+        # Show a feedback popup with the result
         popup = FeedbackPopup(
             title_text = title,
             message_text = text
         )
         popup.open()
 
+    # Go back to the home screen without any transition animation
     def go_back(self):
         self.manager.transition.duration = 0
         self.manager.current = 'home'
 
+    # Update the breadcrumb navigation before entering the screen
     def on_pre_enter(self):
         app = App.get_running_app()
         app.breadcrumb.update_breadcrumb(['Home', 'Share'])
 
+    # Handle the focus event for the email input field
     def on_focus(self, instance, value):
+        # Adjust the position of the email input box when it gains or loses focus
         if value:
             self.ids.box_email.pos_hint = {'center_x': 0.5, 'y': 0.4}
         else:

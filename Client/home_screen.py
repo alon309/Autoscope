@@ -11,58 +11,73 @@ from kivy.uix.popup import Popup
 import webview
 
 class HomeScreen(Screen):
+    # Properties to hold the user's greeting message and gender-specific image path
     hello_message = StringProperty("")
     gender_image_path = StringProperty("Icons/male.png")
     
     def __init__(self, **kwargs):
+        """Initialize the screen with user-specific data like greeting message and gender image."""
         super(HomeScreen, self).__init__(**kwargs)
         app = App.get_running_app()
+        # Set gender-specific image based on the user's gender
         self.gender_image_path = f"Icons/{app.user_details.get('details', {}).get('gender', '')}.png"
+        # Set a personalized greeting message
         self.hello_message = f"Hello {app.user_details.get('details', {}).get('Full Name', '')}!"
 
     def open_video_popup(self):
+        """Open the tutorial video of the application in YouTube in a popup."""
         webview.create_window('Watch Video', 'https://youtu.be/5sv_rZDjRUM')
         webview.start()
 
     def update_profile_image(self, gender):
+        """Update the profile image based on the selected gender."""
         self.gender_image_path = f"Icons/{gender}.png"
 
     def open_settings(self):
+        """Navigate to the settings screen."""
         self.manager.transition.duration = 0
         self.manager.current = 'settings'
 
     def check_ear(self):
+        """Navigate to the ear check screen."""
         self.manager.transition.duration = 0
         self.manager.current = 'earCheck'
 
     def open_help(self):
+        """Navigate to the help screen."""
         self.manager.transition.duration = 0
         self.manager.current = 'help'
 
     def open_about(self):
+        """Navigate to the about screen."""
         self.manager.transition.duration = 0
         self.manager.current = 'about'
     
     def open_share(self):
+        """Navigate to the share app screen."""
         self.manager.transition.duration = 0
         self.manager.current = 'shareApp'
     
     def open_history(self):
+        """Open the history screen and update it with the user's history data."""
         app = App.get_running_app()
         history_data = app.user_details.get('results', [])
 
         if not history_data:
+            # If no history is available, show a feedback popup
             popup = FeedbackPopup(
                 title_text="No History",
                 message_text='No data to show'
             )
             return popup.open()
 
+        # If history is available, update the history screen with the data and switch to history screen
         history_screen = self.parent.get_screen('history')
         history_screen.update_history(history_data)
-        self.parent.current = 'history'
+        self.parent.current = 'history' # switch to history screen
 
     def update_full_name(self):
+        """Update the greeting message with the user's full name."""
         app = App.get_running_app()
         self.hello_message = f"Hello {app.user_details.get('details', {}).get('Full Name', '')}!"    
 
@@ -91,7 +106,7 @@ class HomeScreen(Screen):
             padding=[dp(10), dp(10)]
         )
 
-        # Yes button
+        # Yes button to confirm logout
         yes_button = RoundedCostumButton(
             text="Yes",
             size_hint=(0.5, None),
@@ -103,7 +118,7 @@ class HomeScreen(Screen):
         yes_button.bind(on_release=lambda instance: self.confirm_logout(popup))
         buttons_layout.add_widget(yes_button)
 
-        # No button
+        # No button to cancel logout
         no_button = RoundedCostumButton(
             text="No",
             size_hint=(0.5, None),
@@ -142,15 +157,18 @@ class HomeScreen(Screen):
         screens_to_keep = ['signUp', 'login']
         screens_to_readd = []
 
+        # Identify screens to keep and re-add them to the screen manager
         for screen_name in sm.screen_names:
             if screen_name in screens_to_keep:
                 screens_to_readd.append(sm.get_screen(screen_name))
 
         sm.clear_widgets()
 
+        # Re-add the screens to the manager
         for screen in screens_to_readd:
             sm.add_widget(screen)
 
     def on_pre_enter(self):
+        """Update breadcrumb navigation before entering the screen."""
         app = App.get_running_app()
         app.breadcrumb.update_breadcrumb(['Home'])
