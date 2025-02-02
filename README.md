@@ -44,3 +44,7 @@ AutoScope is an innovative application designed to assist in detecting ear infec
 ![Training Results](docs/TrainingResults1.png)
 
 
+## DataSet
+https://drive.google.com/drive/folders/1sEMcJdOCUzp4j2xg60la8kOfaeOBZmX4?usp=sharing
+
+
